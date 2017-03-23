@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+	<title> MuST Speech Transcription Platform </title>
+	<link rel="stylesheet" href="/~ntkleynhans/2016/speechui/css/ui.css" />
+    <link rel="stylesheet" href="/~ntkleynhans/2016/speechui/alertifyjs/css/alertify.min.css"/>
+    <link rel="stylesheet" href="/~ntkleynhans/2016/speechui//alertifyjs/css/themes/default.min.css"/>
+
+    <script src="/~ntkleynhans/2016/speechui/js/jquery-1.11.2.min.js"></script>
+
+    <script src="/~ntkleynhans/2016/speechui/alertifyjs/alertify.min.js"></script>
+
+    <script src="/~ntkleynhans/2016/speechui/js/vars.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/js/comms.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/js/admin.js"></script>
+
+</head>
+
+<body class="vbox viewport">
+
+<header><h1>Administration</h1></header>
+
+<section class="main hbox space-between">
+    <nav>
+        <ul>
+            <li><a onClick="Admin.home(); return false;" href="#">Home</a></li>
+            <li><a onClick="Admin.listusers(); return false;" href="#">Users</a></li>
+            <li><a onClick="Admin.adduser(); return false;" href="#">Add User</a></li>
+            <li><a onClick="Admin.logout(); return false;" href="#">Logout</a></li>
+        </ul>
+    </nav>
+
+    <article style="overflow-y:auto;">
+        <div id="adminspace"></div>
+    </article>
+</section>
+
+<footer> Copyright © DAC / NWU MuST </footer>
+
+</body>
+</html>
+

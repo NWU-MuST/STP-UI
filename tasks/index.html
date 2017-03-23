@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+	<title> MuST Speech Transcription Platform </title>
+	<link rel="stylesheet" href="/~ntkleynhans/2016/speechui/css/ui.css" />
+    <link rel="stylesheet" href="/~ntkleynhans/2016/speechui/alertifyjs/css/alertify.min.css"/>
+    <link rel="stylesheet" href="/~ntkleynhans/2016/speechui//alertifyjs/css/themes/default.min.css"/>
+
+    <script src="/~ntkleynhans/2016/speechui/js/jquery-1.11.2.min.js"></script>
+
+    <script src="/~ntkleynhans/2016/speechui/alertifyjs/alertify.min.js"></script>
+
+    <script src="/~ntkleynhans/2016/speechui/js/vars.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/js/comms.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/js/tasks.js"></script>
+
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/src/wavesurfer.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/src/util.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/src/webaudio.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/src/mediaelement.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/src/drawer.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/src/drawer.canvas.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/plugin/wavesurfer.timeline.js"></script>
+    <script src="/~ntkleynhans/2016/speechui/wavesurfer/plugin/wavesurfer.regions.js"></script>
+
+    <!-- Semantic UI theme
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/themes/semantic.min.css"/>
+    <!-- Bootstrap theme
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/alertifyjs/1.9.0/css/themes/bootstrap.min.css"/>
+    -->
+
+</head>
+
+<body class="vbox viewport">
+
+<header><h1>Tasks</h1></header>
+
+<section class="main hbox space-between">
+    <nav>
+        <ul>
+            <li><a onClick="Tasks.home(); return false;" href="#">Home</a></li>
+            <li><a onClick="Tasks.projects(); return false;" href="#">Projects</a></li>
+            <li><a onClick="Tasks.logout(); return false;" href="#">Logout</a></li>
+        </ul>
+    </nav>
+
+    <article style="overflow-y:auto;">
+        <div style="background-color: #000000;" id="waveform"></div>
+        <div id="waveform_timeline"></div>
+        <div id="upload"></div>
+        <div id="controls"></div>
+        <div id="segments"></div>
+    </article>
+</section>
+
+<footer> Copyright © DAC / NWU MuST </footer>
+
+</body>
+</html>
+
