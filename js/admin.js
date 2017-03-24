@@ -61,17 +61,21 @@ var Admin = (function (window, document, $, undefined) {
 
 		    // Logout application was successful
 		    if(xmlhttp.status==200) {
-            	localStorage.setItem("username", '');
-                localStorage.setItem("token", '');
-                localStorage.setItem("role", '');
-            	localStorage.removeItem("username");
-            	localStorage.removeItem("token");
-            	localStorage.removeItem("role");
+                var items = ["username", "token", "home", "role"];
+                for(var ndx = 0; ndx < items.length; items++) {
+        	        localStorage.setItem(items[ndx], '');
+        	        localStorage.removeItem(items[ndx]);
+                }
         		window.location.assign(HOME_URL);
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LOGOUT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOGOUT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get a list of registered users
@@ -99,7 +103,7 @@ var Admin = (function (window, document, $, undefined) {
                 users = response_data;
                 populate_users(response_data);
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + reponse_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LISTUSERS ERROR: " + reponse_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
@@ -222,13 +226,13 @@ var Admin = (function (window, document, $, undefined) {
 
         // Check that the username hasn't been taken yet
         if(users.hasOwnProperty(info.username)) { 
-            alert("Username already taken!");
+            alert("Sorry username already taken!");
             return false;
         }
 
         // Check both passwords are the same
         if(info.password !== info.repassword) {
-            alertify.alert("Passwords do not match!", function(){});
+            alertify.alert("Your provided passwords do not match!", function(){});
             return false;
         }
 
@@ -236,7 +240,7 @@ var Admin = (function (window, document, $, undefined) {
         var projman = document.getElementById("project").checked;
         var editor = document.getElementById("editor").checked;
         if((projman === false) && (editor === false)) {
-            alert("You must select a role!");
+            alert("You must select a role for the new user!");
             return false;
         }
 
@@ -275,10 +279,15 @@ var Admin = (function (window, document, $, undefined) {
                 alertify.success("New user added");
                 listusers();
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("ADDUSER ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("ADDUSER Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User cancelled adding new user - display current list
@@ -289,7 +298,7 @@ var Admin = (function (window, document, $, undefined) {
     // Remove user from the system
     module.deluser = function() {
         if(selected == -1) {
-            alertify.alert("No user selected!", function(){});
+            alertify.alert("Please select a user to delete!", function(){});
             return false;
         }
         alertify.confirm("Are you sure you want to delete this user?",
@@ -315,19 +324,24 @@ var Admin = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("User deleted");
+                alertify.success("User has been deleted");
                 listusers();
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("DELUSER ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("DELUSER Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Reset a users password
     module.resetpassword = function() {
         if(selected == -1) {
-            alertify.alert("No user selected!", function(){});
+            alertify.alert("Please selected a user who's password you would like to reset!", function(){});
             return false;
         }
        alertify.confirm("Are you sure you want to reset this user's password?",
@@ -356,10 +370,15 @@ var Admin = (function (window, document, $, undefined) {
                 populate_users(users);
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("RESETPASSWORD ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("RESTPASSWORD Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     return module;

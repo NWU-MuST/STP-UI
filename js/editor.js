@@ -6,6 +6,11 @@ var Editor = (function (window, document, $, undefined) {
 
     $(document).on( 'ready', check_browser );
 
+    // EDITOR WAVESURFER
+    var ALIGNMENT_DURATION_MAX = 120.0;
+    var RECOGNITION_DURATION_MAX = 120.0;
+    var MIN_AUDIO_ZOOM = 5.0;
+
     var wavesurfer = null;
     var timeline = null;
     var editor_height_constant = 0.55;
@@ -33,17 +38,17 @@ var Editor = (function (window, document, $, undefined) {
 	    }
 
         if(localStorage.getItem("role") === null) {
-            alertify.alert("No role selected from Home page! Redirecting you back to Home...", function(){});
+            alertify.alert("No role selected from Home page! Redirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
         if(localStorage.getItem("token") === null) {
-            alertify.alert("No token found! Redirecting you back to Home...", function(){});
+            alertify.alert("No token found! Redirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
         if(localStorage.getItem("job") === null) {
-            alertify.alert("No Job information found! Redirecting you back to Home...", function(){});
+            alertify.alert("No Job information found! Redirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
@@ -112,7 +117,7 @@ var Editor = (function (window, document, $, undefined) {
 
             if(job["readOnly"] === true) {
                 ev.editor.setReadOnly(true);
-                alertify.success("Editor in Read-Only mode!");
+                alertify.success("Editor in Read-Only mode");
             }
 
             nanospell.ckeditor('trans_editor',{ 
@@ -204,10 +209,10 @@ var Editor = (function (window, document, $, undefined) {
     // Public load text
     module.load_text = function () {
         if(CKEDITOR.instances.trans_editor.checkDirty() == true) {
-            alertify.confirm('There are unsaved changes. Proceed with loading text?',
+            alertify.confirm('There are unsaved text changes. Proceed with loading text?',
             function() {
                 load_text();
-            }, function(){"Load text cancelled!"});
+            }, function(){"Load text canceled"});
         } else {
             load_text();
         }
@@ -222,16 +227,21 @@ var Editor = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Text loaded!");
+                alertify.success("Text loaded");
 		        editor_html = response_data["text"];
 		        CKEDITOR.instances.trans_editor.focus();
 		        CKEDITOR.instances.trans_editor.setData(editor_html, set_editor_text);
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LOADTEXT ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOADTEXT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Clear this wavesurfer instance
@@ -241,7 +251,7 @@ var Editor = (function (window, document, $, undefined) {
 	    }
     }
 
-    //
+    //Load the job's audio
     function load_audio() {
 	    destory_wavesurfer();
         var data_url = APP_EGETAUDIO;
@@ -352,10 +362,15 @@ var Editor = (function (window, document, $, undefined) {
                 alertify.success("Text Saved!");
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("SAVETEXT ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("SAVETEXT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User has changed the language
@@ -372,7 +387,7 @@ var Editor = (function (window, document, $, undefined) {
         }
 
         if(!speech_service_language) {
-            alertify.alert("Please select the Audio Language!", function(){});
+            alertify.alert("Please select a language before calling a speech service!", function(){});
             return false;
         }
 
@@ -406,7 +421,7 @@ var Editor = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.alert("Speech service request successful\nClosing down editor and locking the job.", function(){});
+                alertify.alert("Speech service request successful.\nClosing down editor and locking the job.", function(){});
 			    localStorage.setItem("taskid", '');
 			    localStorage.setItem("projectid", '');
 			    localStorage.removeItem("taskid");
@@ -414,16 +429,21 @@ var Editor = (function (window, document, $, undefined) {
                 document.body.className = 'vbox viewport';
                 window.location.assign(JOB_URL);
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("SPEECHSERVICE ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("SPEECHSERVICE Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Save text and close the editor
     module.close_save = function() {
         if(CKEDITOR.instances.trans_editor.checkDirty() == true) {
-            alertify.confirm('Redirecting to back to the Jobs page. Leave anyway?',
+            alertify.confirm('Redirecting you back to the Jobs page. Leave anyway?',
                 function() {
                    var items = ["taskid", "projectid", "job"];
                     for(var ndx = 0; ndx < items.length; items++) {
@@ -460,13 +480,18 @@ var Editor = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Error cleared!");
+                alertify.success("Error cleared");
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("CLEARERROR ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("CLEARERROR Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     return module;

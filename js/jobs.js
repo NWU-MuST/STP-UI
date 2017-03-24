@@ -6,7 +6,6 @@ var Jobs = (function (window, document, $, undefined) {
 
     $(document).on( 'ready', check_browser );
 
-    var notset = ["null", null, undefined];
     var diarize_sub;
     var recognize_sub;
     var align_sub;
@@ -22,12 +21,12 @@ var Jobs = (function (window, document, $, undefined) {
 	    }
 
         if(localStorage.getItem("role") === null) {
-            alertify.alert("No role selected from Home page! Redirecting you back to Home...", function(){});
+            alertify.alert("No role selected from Home page! Redirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
         if(localStorage.getItem("token") === null) {
-            alertify.alert("No token found! Redirecting you back to Home...", function(){});
+            alertify.alert("No token found! Redirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
@@ -41,7 +40,7 @@ var Jobs = (function (window, document, $, undefined) {
 
     // Redirect the user to the homepage
     module.home = function() {
-        alertify.confirm('Redirecting to the Home page. Leave anyway?',
+        alertify.confirm('Going to redirect to the Home page. Leave anyway?',
             function() {
                 var items = ["username", "token", "home", "role"];
                 for(var ndx = 0; ndx < items.length; items++) {
@@ -101,13 +100,18 @@ var Jobs = (function (window, document, $, undefined) {
                 display_editor(editing);
                 display_collator(collating);
                 document.getElementById("defjob").click();
-                alertify.success("Jobs loaded!");
+                alertify.success("Jobs loaded");
                 document.body.className = 'vbox viewport';
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LOADTASKS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOADTASKS Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get languages from app server
@@ -131,10 +135,15 @@ var Jobs = (function (window, document, $, undefined) {
                 languages = response_data["languages"];
                 document.body.className = 'vbox viewport';
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LISTLANGUAGES ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LISTLANGUAGES Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get speech service subsystems from app server
@@ -158,10 +167,15 @@ var Jobs = (function (window, document, $, undefined) {
                 output = response_data["systems"];
                 document.body.className = 'vbox viewport';
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("SPEECHSUBSYSTEMS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("SPEECHSUBSYSTEMS Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User is trying to logout
@@ -192,10 +206,15 @@ var Jobs = (function (window, document, $, undefined) {
                 document.body.className = 'vbox viewport';
         		window.location.assign(HOME_URL);
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LOGOUT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOGOUT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get a list of categories from the app server
@@ -222,10 +241,15 @@ var Jobs = (function (window, document, $, undefined) {
                 filter_users();
                 document.body.className = 'vbox viewport';
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LOADUSERS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOADUSERS Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Separate users by roles
@@ -443,7 +467,7 @@ var Jobs = (function (window, document, $, undefined) {
     // Go edit a selected job
     module.edit_job = function(type) {
         if((eselected == -1)&&(cselected == -1)) {
-		    alertify.alert("No job selected for editing!", function(){});
+		    alertify.alert("Please select a job to edit!", function(){});
             return false;
         }
         var obj;
@@ -482,12 +506,12 @@ var Jobs = (function (window, document, $, undefined) {
     // Mark job completed
     module.job_done = function() {
         if(eselected == -1) {
-		    alertify.alert("No editing job selected!", function(){});
+		    alertify.alert("Please select an editing job to mark as done!", function(){});
             return false;
         }
 
         if(obj["editing"] != localStorage.username) {
-		    alertify.alert("You do not have ownership of the job!", function(){});
+		    alertify.alert("You do not have ownership of the selected job!", function(){});
             return false;
         }
 
@@ -508,25 +532,30 @@ var Jobs = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Job marked as done!");
+                alertify.success("Job marked as done");
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("TASKDONE ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("TASKDONE Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Collator re assign job to editor
     module.reassign_job = function() {
         if(cselected == -1) {
-		    alertify.alert("No collating job selected!", function(){});
+		    alertify.alert("Please select a collating job to reassign back to editor!", function(){});
             return false;
         }
 
         var obj = collating[cselected];
         if(obj["editing"] != localStorage.username) {
-		    alertify.alert("You do not have ownership of the job!", function(){});
+		    alertify.alert("You do not have ownership of the collating job!", function(){});
             return false;
         }
 
@@ -546,19 +575,24 @@ var Jobs = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Job reassigned to editor!");
+                alertify.success("Job reassigned to editor");
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("REASSIGNTASK ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("REASSIGNTASK Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Clear error from job
     module.clearerror_job = function(type) {
         if((eselected == -1) && (cselected == -1)) {
-		    alertify.alert("No job selected!", function(){});
+		    alertify.alert("Please select an editing or collating job to clear a job error!", function(){});
             return false;
         }
 
@@ -570,7 +604,7 @@ var Jobs = (function (window, document, $, undefined) {
         }
 
         if(obj["editing"] != localStorage.username) {
-		    alertify.alert("You do not have ownership of the job!", function(){});
+		    alertify.alert("You do not have ownership of this job!", function(){});
             return false;
         }
 
@@ -593,16 +627,21 @@ var Jobs = (function (window, document, $, undefined) {
                 alertify.success("Error cleared!");
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("CLEARERROR ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("CLEARERROR Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Unlock job
     module.unlock_job = function(type) {
         if((eselected == -1) && (cselected == -1)) {
-		    alertify.alert("No job selected!", function(){});
+		    alertify.alert("Please select an editing or collating job to unlock!", function(){});
             return false;
         }
 
@@ -614,7 +653,7 @@ var Jobs = (function (window, document, $, undefined) {
         }
 
         if(obj["editing"] != localStorage.username) {
-		    alertify.alert("You do not have ownership of the job!", function(){});
+		    alertify.alert("You do not have ownership of this job!", function(){});
             return false;
         }
 
@@ -637,10 +676,15 @@ var Jobs = (function (window, document, $, undefined) {
                 alertify.success("Error cleared!");
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("UNLOCKTASK ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("UNLOCKTASK Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get app server to generate a master document and download it
@@ -674,10 +718,97 @@ var Jobs = (function (window, document, $, undefined) {
                 download_name = "Document.docx";
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("BUILDMASTER ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("BUILDMASTER Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
+    }
+
+    // User wants to change their password
+    function changepassword() {
+        document.getElementById("defjob").click();
+
+        var ps = document.getElementById("jobspace");
+        ps.innerHTML = "";
+
+        var context;
+        context = "<fieldset><legend>New Password</legend><table class='project'>";
+        context += "<tr><td style='text-align: left;'><label>Password: </label></td>";
+        context += '<td><input id="password" name="password" placeholder="" type="password" maxlength="32"/></td></tr>';
+        context += "<tr><td style='text-align: left;'><label>Re-type Password: </label></td>";
+        context += '<td><input id="repassword" name="repassword" placeholder="" type="password" maxlength="32"/></td></tr>';
+        context += '</select></td></tr>';
+
+        context += '<tr><td><button onclick="Jobs.update_password()">Update</button></td>';
+        context += '<td style="text-align: right;"><button onclick="Jobs.password_cancel()">Cancel</button></td></tr></table></fieldset>';
+        ps.innerHTML = context;
+
+    }
+    module.changepassword = function() { changepassword(); };
+
+    // User wants to change password
+    module.update_password = function() {
+        document.body.className = 'vbox viewport waiting';
+        var password = document.getElementById("password").value;
+        var repassword = document.getElementById("repassword").value;
+
+        if(password == "") {
+            alertify.alert("Please enter password!", function(){});
+            document.body.className = 'vbox viewport';
+            return false;
+        }
+
+        if(repassword == "") {
+            alertify.alert("Please re-type password!", function(){});
+            document.body.className = 'vbox viewport';
+            return false;
+        }
+
+        if(password != repassword) {
+            alertify.alert("Your passwords do not match!", function(){});
+            document.body.className = 'vbox viewport';
+            return false;
+        }
+
+	    var data = {};
+	    data['token'] = localStorage.getItem("token");
+        data["password"] = password;
+	    appserver_send(APP_PCHANGEPASSWORD, data, update_password_callback);
+    }
+
+    // Callback for server response
+    function update_password_callback(xmlhttp) {
+	    // No running server detection
+	    if ((xmlhttp.status==503)) {
+		    alertify.alert("Application server unavailable", function(){});
+	    }
+	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
+		    var response_data = JSON.parse(xmlhttp.responseText);
+		    // Logout application was successful
+		    if(xmlhttp.status==200) {
+			    alertify.alert("Password updated!", function(){});
+                get_projects();
+                document.body.className = 'vbox viewport';
+		    } else { // Something unexpected happened
+			    alertify.alert("CHANGEPASSWORD ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+                document.body.className = 'vbox viewport';
+		    }
+	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("CHANGEPASSWORD Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
+    }
+
+    // User cancelled password update
+    module.password_cancel = function() {
+        display_editor(editing);
     }
 
     return module;

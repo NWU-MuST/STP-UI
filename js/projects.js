@@ -20,31 +20,32 @@ var Project = (function (window, document, $, undefined) {
 	    }
 
         if(localStorage.getItem("role") === null) {
-            alertify.alert("No role selected from Home page! Redirecting you back to Home...", function(){});
+            alertify.alert("No role selected from Home page! Redirecting you back to Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
         if(localStorage.getItem("token") === null) {
-            alertify.alert("No token found! Redirecting you back to Home...", function(){});
+            alertify.alert("No token found! Redirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
+        // Load data from server - stagger the calls with delays
         get_users();
-        get_categories();
-        get_languages();
-        get_projects();
-        get_createdprojects();
+        setTimeout(function() { get_categories(); }, 100);
+        setTimeout(function() { get_languages(); }, 200);
+        setTimeout(function() { get_projects(); }, 300);
+        setTimeout(function() { get_createdprojects(); }, 400);
 
         // User logged on using a temporary password
         if(localStorage.templogin === true) {
-            alertify.alert("You need to change your password now!", function(){});
+            alertify.alert("You need to change your password now!\nIf you do not, you will not be able to login once you leave this session.", function(){});
             changepassword();
         }
     }
 
     // Redirect the user to the homepage
     module.home = function() {
-        alertify.confirm('Redirecting to the Home page. Leave anyway?',
+        alertify.confirm('You will be redirected to the Home page. Leave anyway?',
             function() {
                 var items = ["username", "token", "home", "role"];
                 for(var ndx = 0; ndx < items.length; items++) {
@@ -52,7 +53,7 @@ var Project = (function (window, document, $, undefined) {
         	        localStorage.removeItem(items[ndx]);
                 }
 	            window.location.assign(HOME_URL);
-        }, function(){alertify.error("Cancel")});
+        }, function(){alertify.error("Redirect to the Home page canceled")});
     }
 
     // Tab selection code for different projects
@@ -98,10 +99,15 @@ var Project = (function (window, document, $, undefined) {
                 categories = response_data["categories"];
                 document.body.className = 'vbox viewport';
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("CATEGORIES ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("CATEGORIES Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get a list of languages from the app server
@@ -112,7 +118,7 @@ var Project = (function (window, document, $, undefined) {
 	    appserver_send(APP_PLISTLANGUAGES, data, languages_callback);
     }
 
-    // Save the languages
+    // Get languages callback
     var languages;
     function languages_callback(xmlhttp) {
 	    if ((xmlhttp.status==503)) {
@@ -125,13 +131,18 @@ var Project = (function (window, document, $, undefined) {
                 languages = response_data["languages"];
                 document.body.className = 'vbox viewport';
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LANGUAGES ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LANGUAGES Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
-    // Get a list of categories from the app server
+    // Get a list of users from the app server
     function get_users() {
         document.body.className = 'vbox viewport waiting';
 	    var data = {};
@@ -139,7 +150,7 @@ var Project = (function (window, document, $, undefined) {
 	    appserver_send(APP_PLOADUSERS, data, users_callback);
     }
 
-    // Save the categories
+    // Get users callback
     var users;
     var editors = {};
     var projectmanagers = {};
@@ -151,13 +162,19 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
+                alertify.success("Users loaded");
                 users = response_data;
                 filter_users();
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LOADUSERS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOADUSERS Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Separate users by roles
@@ -199,15 +216,20 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Retrieved Projects!");
+                alertify.success("Retrieved Projects");
                 projects = response_data;
                 display_projects(response_data);
                 document.getElementById("defproject").click();
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LISTPROJECTS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LISTPROJECTS Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get all projects created by this user
@@ -228,13 +250,19 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
+                alertify.success("Retrieved create projects");
                 created_projects = response_data;
                 display_createdprojects(response_data);
 		    } else { 
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("LISTCREATEDPROJECTS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LISTCREATEDPROJECTS Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Selected a column to sort by
@@ -476,18 +504,18 @@ var Project = (function (window, document, $, undefined) {
     // Save current project information and goto tasks splitter
     module.task_project = function() {
         if(selected == -1) {
-            alertify.alert("No project selected!", function(){});
+            alertify.alert("Please select a project before trying to create tasks!", function(){});
             return false;
         }
 
         var obj = projects["projects"][selected];
         if(obj["assigned"] == "Y") {
-            alertify.alert("Project has been assigned -- can't create tasks!", function(){});
+            alertify.alert("This project has been assigned so you will not be able to create tasks!", function(){});
             return false;
         }
 
         if(obj["jobid"] !== null) {
-            alertify.alert("Project has been locked -- waiting for process to finish!", function(){});
+            alertify.alert("This project has been locked but a speech service request and is waiting for process to finish!", function(){});
             return false;
         }
 
@@ -500,7 +528,7 @@ var Project = (function (window, document, $, undefined) {
     // Update project - can only happen after assignment
     module.update_project = function() {
         if(selected == -1) {
-            alertify.alert("No project selected!", function(){});
+            alertify.alert("Please select a project that you would like to update!", function(){});
             return false;
         }
 
@@ -511,7 +539,7 @@ var Project = (function (window, document, $, undefined) {
         }*/
 
         if(obj["jobid"] !== null) {
-            alertify.alert("Project has been locked -- waiting for process to finish!", function(){});
+            alertify.alert("This project has been locked but a speech service request and is waiting for process to finish!", function(){});
             return false;
         }
 
@@ -544,14 +572,19 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Project updated!");
+                alertify.success("Project updated");
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("UPDATEPROJECT ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("UPDATEPROJECT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Assign tasks
@@ -562,23 +595,23 @@ var Project = (function (window, document, $, undefined) {
         }
 
         var obj = projects["projects"][selected];
-        if(notset.indexOf(obj["jobid"]) !== -1) {
-            alertify.alert("Project is locked!", function(){});
+        if(notset.indexOf(obj["jobid"]) == -1) {
+            alertify.alert("This project has been locked but a speech service request and is waiting for process to finish!", function(){});
             return false;
         }
 
         if(obj["audiofile"] == undefined) {
-            alertify.alert("No audio uploaded!", function(){});
+            alertify.alert("Please upload audio and create tasks before assigning tasks!", function(){});
             return false;
         }
 
         if(obj["assigned"] == "Y") {
-            alertify.alert("Project has been assigned already!", function(){});
+            alertify.alert("This project has been assigned already!", function(){});
             return false;
         }
 
         if(notset.indexOf(obj["collator"]) !== -1) {
-            alertify.alert("Collator has not been selected!", function(){});
+            alertify.alert("Please select a collator before assigning the tasks!", function(){});
             return false;
         }
 
@@ -599,14 +632,19 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-			    alertify.success("Tasks assigned to Editors!");
+			    alertify.success("Tasks assigned to Editors");
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("ASSIGNTASKS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("ASSIGNTASKS Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User wants to upload audio
@@ -619,7 +657,7 @@ var Project = (function (window, document, $, undefined) {
         reader.addEventListener("load", function () {
             // Check if audio is OGG Vorbis
             if(file.type != "audio/ogg") {
-                alertify.alert("Only Vorbis OGG audio file format supported!", function(){});
+                alertify.alert("Only Vorbis OGG audio file format supported. Please convert your audio file before uploading!", function(){});
                 return false;
             }
             // Stop user from uploading file larger than 50 Mb
@@ -639,7 +677,7 @@ var Project = (function (window, document, $, undefined) {
     // Push audio to application server
     function save_audio(file, binary) {
         if(selected == -1) {
-            alertify.alert("No project selected!", function(){});
+            alertify.alert("Please select a project first before uploading an audio file!", function(){});
             return false;
         }
 
@@ -703,14 +741,19 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.alert("Audio Uploaded!", function(){});
+                alertify.success("Audio Uploaded");
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("UPLOADAUDIO ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("UPLOADAUDIO Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Get details for a new project
@@ -749,7 +792,7 @@ var Project = (function (window, document, $, undefined) {
 
 	    // Test if projectname set
 	    if(projectname == "") {
-            alertify.alert("No project name specified!", function(){});
+            alertify.alert("Please enter a project name!", function(){});
             return false;
 	    }
 
@@ -757,7 +800,7 @@ var Project = (function (window, document, $, undefined) {
         var e = document.getElementById("projmansel");
         var pjm = e.options[e.selectedIndex].value;
         if(pjm === "null") {
-            alertify.alert("Project manager not selected!", function(){});
+            alertify.alert("Please select a project manager!", function(){});
             return false;
         }
 
@@ -766,7 +809,7 @@ var Project = (function (window, document, $, undefined) {
         var cat = e.options[e.selectedIndex].value;
         var cattext = e.options[e.selectedIndex].text;
         if(cat === "null") {
-            alertify.alert("Project category not selected!", function(){});
+            alertify.alert("Please select project category", function(){});
             return false;
         }
 
@@ -789,14 +832,19 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Project Created!");
+                alertify.success("Project Created");
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("CREATEPROJECT ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("CREATEPROJECT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User cancelled new project - display current list
@@ -807,14 +855,14 @@ var Project = (function (window, document, $, undefined) {
     // Delete the selected project
     module.delete_project = function() {
         if(selected == -1) {
-            alertify.alert("No project selected!", function(){});
+            alertify.alert("Please select a project to delete!", function(){});
             return false;
         }
 
         alertify.confirm("Are you sure you want to delete this project?",
             function() {
                 remove_project(selected);
-            }, function(){});
+            }, function(){"Project deletion canceled"});
     }
 
     // Delete project from application server
@@ -836,20 +884,25 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Project Deleted!");
+                alertify.success("Project Deleted");
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("DELETEPROJECT ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("DELETEPROJECT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     //Remove project error message
     module.clearerror_project = function() {
         if(selected == -1) {
-            alertify.alert("No project selected!", function(){});
+            alertify.alert("Please select a project before trying to clear an error!", function(){});
             return false;
         }
 
@@ -870,26 +923,31 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Error cleared!");
+                alertify.success("Error cleared");
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("CLEARERROR ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("CLEARERROR Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     //Unlock project that has been closed due to speech job
     module.unlock_project = function() {
         if(selected == -1) {
-            alertify.alert("No project selected!", function(){});
+            alertify.alert("Please select a project to unlock!", function(){});
             return false;
         }
         var obj = projects["projects"][selected];
 
         if(notset.indexOf(obj["jobid"]) !== -1) {
-            alertify.alert("Project is not locked!", function(){});
+            alertify.alert("This project is not currently locked by speech service request!", function(){});
             return false;
         }
 
@@ -913,10 +971,15 @@ var Project = (function (window, document, $, undefined) {
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"], function(){});
+			    alertify.alert("UNLOCKPROJECT ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("UNLOCKPROJECT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User is trying to logout
@@ -939,41 +1002,45 @@ var Project = (function (window, document, $, undefined) {
 
 		    // Logout application was successful
 		    if(xmlhttp.status==200) {
-            	localStorage.setItem("username", '');
-                localStorage.setItem("token", '');
-                localStorage.setItem("role", '');
-            	localStorage.removeItem("username");
-            	localStorage.removeItem("token");
-            	localStorage.removeItem("role");
+               var items = ["username", "token", "home", "role"];
+                for(var ndx = 0; ndx < items.length; items++) {
+        	        localStorage.setItem(items[ndx], '');
+        	        localStorage.removeItem(items[ndx]);
+                }
                 document.body.className = 'vbox viewport';
         		window.location.assign(HOME_URL);
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LOGOUT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOGOUT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Automatically create segments
     module.diarize = function() {
        if(selected == -1) {
-            alertify.alert("No project selected!", function(){});
+            alertify.alert("Please select a project to create tasks automatically!", function(){});
             return false;
         }
         var obj = projects["projects"][selected];
 
         if(obj["audiofile"] == undefined) {
-            alertify.alert("No audio uploaded!", function(){});
+            alertify.alert("Please upload audio before trying to create tasks!", function(){});
             return false;
         }
 
         if(obj["jobid"] != null) {
-            alertify.alert("Project is locked!", function(){});
+            alertify.alert("This project has been locked by a speech service request!", function(){});
             return false;
         }
 
         if(obj["assigned"] == "Y") {
-            alertify.alert("Project has been assigned already!", function(){});
+            alertify.alert("This project has been assigned already!", function(){});
             return false;
         }
 
@@ -1000,10 +1067,15 @@ var Project = (function (window, document, $, undefined) {
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("DIARIZEAUDIO ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("DIARIZEAUDIO Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User wants to change their password
@@ -1047,7 +1119,7 @@ var Project = (function (window, document, $, undefined) {
         }
 
         if(password != repassword) {
-            alertify.alert("Passwords do not match!", function(){});
+            alertify.alert("The passwords do not match!", function(){});
             document.body.className = 'vbox viewport';
             return false;
         }
@@ -1073,10 +1145,15 @@ var Project = (function (window, document, $, undefined) {
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("CHANGEPASSWORD ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("CHANGEPASSWORD Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User cancelled password update

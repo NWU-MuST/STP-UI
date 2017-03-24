@@ -39,7 +39,7 @@ var Tasks = (function (window, document, $, undefined) {
         editors = JSON.parse(localStorage.getItem("editors"));
         languages = JSON.parse(localStorage.getItem("languages"));
 
-       get_audio();
+        get_audio();
     }
 
     // User needs to register therefore forward them to the registration page
@@ -48,7 +48,7 @@ var Tasks = (function (window, document, $, undefined) {
             alertify.confirm('There are unsaved changes to the tasks. Leave anyway?',
                 function() {
                     cleanandgo();
-            }, function() {});
+            }, function() {"Going Home canceled"});
         } else {
             cleanandgo();
         }
@@ -69,10 +69,10 @@ var Tasks = (function (window, document, $, undefined) {
     // Return to the projects
     module.projects = function() {
         if(segments_dirty) {
-            alertify.confirm('There are unsaved changes to the tasks. Leave anyway?',
+            alertify.confirm('There are unsaved changes to the current tasks. Leave anyway?',
                 function() {
                     backtoproject(); 
-             }, function() {alertify.error('Cancel');});
+             }, function() {alertify.error('Returning to projects canceled');});
         } else {
             backtoproject(); 
         }
@@ -109,17 +109,21 @@ var Tasks = (function (window, document, $, undefined) {
 
 		    // Logout application was successful
 		    if(xmlhttp.status==200) {
-            	localStorage.setItem("username", '');
-                localStorage.setItem("token", '');
-                localStorage.setItem("role", '');
-            	localStorage.removeItem("username");
-            	localStorage.removeItem("token");
-            	localStorage.removeItem("role");
+                var items = ["username", "token", "home", "role", "projects", "editors", "languages"];
+                for(var ndx = 0; ndx < items.length; items++) {
+	                localStorage.setItem(items[ndx], '');
+	                localStorage.removeItem(items[ndx]);
+                }
         		window.location.assign(HOME_URL);
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LOGOUT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOGOUT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User is trying to logout
@@ -149,9 +153,14 @@ var Tasks = (function (window, document, $, undefined) {
                     extract_regions();
                 }
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LOADPROJECT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOADPROJECT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // Convert tasks to region segments
@@ -352,12 +361,12 @@ var Tasks = (function (window, document, $, undefined) {
 
     // Remove all regions
     module.remove_regions = function() {
-        alertify.confirm('Are you sure you want to remove all regions?',
+        alertify.confirm('Are you sure you want to remove all defined regions?',
             function() {
                 wavesurfer.clearRegions();
                 var gh = document.getElementById('segments');
                 gh.innerHTML = "";
-            }, function() {alertify.error("Cancel")});
+            }, function() {alertify.error("Remove segments canceled")});
     }
 
     // New region added
@@ -555,9 +564,14 @@ var Tasks = (function (window, document, $, undefined) {
                 alertify.success("Editor tasks saved!");
                 segments_dirty = false;
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("SAVEPROJECT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("SAVEPROJECT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     return module;

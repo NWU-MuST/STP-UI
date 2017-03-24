@@ -59,6 +59,7 @@ var APP_EREASSIGNTASK = EBASE_URL + "/reassigntask";
 var APP_ELISTLANGUAGES = EBASE_URL + "/listlanguages";
 var APP_ESPEECHSUBSYSTEMS = EBASE_URL + "/speechsubsystems";
 var APP_EBUILDMASTER = EBASE_URL + "/buildmaster";
+var APP_ECHANGEPASSWORD = EBASE_URL + "/changepassword";
 
 // ROLES
 var ADMIN_INTF = "Administrator";
@@ -68,18 +69,13 @@ var PROJECT_ROLE = "project";
 var EDITOR_INTF = "Editor";
 var EDITOR_ROLE = "editor";
 
-// EDITOR WAVESURFER
-var ALIGNMENT_DURATION_MAX = 120.0;
-var RECOGNITION_DURATION_MAX = 120.0;
-var MIN_AUDIO_ZOOM = 5.0;
-
-// Other urls
-var LOGIN_URL = "/~ntkleynhans/2016/speechui/login/index.html";
-var PROJECT_URL = "/~ntkleynhans/2016/speechui/projects/index.html";
-var TASK_URL = "/~ntkleynhans/2016/speechui/tasks/index.html";
-var EDITOR_URL = "/~ntkleynhans/2016/speechui/editor/index.html";
-var JOB_URL = "/~ntkleynhans/2016/speechui/jobs/index.html";
+// URLS
+var LOGIN_URL = "/speechui/login/index.html";
+var PROJECT_URL = "/speechui/projects/index.html";
+var TASK_URL = "/speechui/tasks/index.html";
+var EDITOR_URL = "/speechui/editor/index.html";
+var JOB_URL = "/speechui/jobs/index.html";
 var CHROME_URL = "https://www.google.com/chrome/browser/desktop/";
-var ADMIN_URL = "/~ntkleynhans/2016/speechui/admin/index.html";
-var HOME_URL = "/~ntkleynhans/2016/speechui/home/index.html";
+var ADMIN_URL = "/speechui/admin/index.html";
+var HOME_URL = "/speechui/home/index.html";
 

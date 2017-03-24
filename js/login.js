@@ -32,10 +32,11 @@ var Login = (function (window, document, $, undefined) {
     module.home = function() {
         alertify.confirm('Redirecting to the Home page. Leave anyway?',
             function() {
-	        localStorage.setItem("username", '');
-	        localStorage.setItem("token", '');
-	        localStorage.setItem("home", '');
-            localStorage.setItem("role", '');
+                var items = ["username", "token", "home", "role"];
+                for(var ndx = 0; ndx < items.length; items++) {
+        	        localStorage.setItem(items[ndx], '');
+        	        localStorage.removeItem(items[ndx]);
+                }
 	        window.location.assign(HOME_URL);
         }, function(){});
     }
@@ -82,7 +83,7 @@ var Login = (function (window, document, $, undefined) {
             NOW_ROLE = EDITOR_ROLE;
             localStorage.setItem("interface", JOB_URL);
         } else {
-            alertify.alert("Unknown role:" + role + "\nRedirecting you to the Home page...", function(){});
+            alertify.alert("LOGIN ERROR Unknown role:" + role + "\nRedirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
@@ -115,10 +116,15 @@ var Login = (function (window, document, $, undefined) {
                 document.body.className = 'vbox viewport';
 			    window.location.assign(localStorage.getItem("interface"));
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LOGIN ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
                 document.body.className = 'vbox viewport';
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOGIN Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     // User is trying to logout (i.e. remove token) with provided username and password
@@ -157,7 +163,7 @@ var Login = (function (window, document, $, undefined) {
         } else if (role === EDITOR_INTF) {
             APP_LOGOUT2 = APP_ELOGOUT2;
         } else {
-            alertify.alert("Unknown role:" + role + "\nGoing Home...", function(){});
+            alertify.alert("LOGOUT ERROR Unknown role:" + role + "\nRedirecting you back to the Home page...", function(){});
 		    window.location.assign(HOME_URL);
         }
 
@@ -179,11 +185,16 @@ var Login = (function (window, document, $, undefined) {
 
 		    // Login application was successful
 		    if(xmlhttp.status==200) {
-                alertify.success("User token removed from application server.", function(){});
+                alertify.success("User token has been removed from application server", function(){});
 		    } else { // Something unexpected happened
-			    alertify.alert("ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+			    alertify.alert("LOGOUT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
 		    }
 	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("LOGOUT Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
     }
 
     return module;
