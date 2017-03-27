@@ -329,44 +329,47 @@ var Project = (function (window, document, $, undefined) {
     function display_createdprojects(data) {
         var cps = document.getElementById("created");
         var data = data["projects"];
-
-        var cpdisplay = [];
-        for (var i = 0, len = data.length; i < len; i++) {
-            var obj = data[i];
-            cpdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["projectstatus"]]);
-        }
-
-        // Sort projects by time
-        cpdisplay.sort(function(a, b){
-            return a[cpsort+1] > b[cpsort+1] ? 1 : -1;
-        });
-
-        var context;
-        context = "<table class='project'>";
-        context += "<tr> <th onclick='Project.csortselect(0)'>Project Name</th> <th onclick='Project.csortselect(1)'>Project Manager</th> <th onclick='Project.csortselect(2)'>Collator</th>";
-        context += "<th onclick='Project.csortselect(3)'>Category</th> <th onclick='Project.csortselect(4)'>Date</th> <th onclick='Project.csortselect(5)'>Project Status</th> <th onclick='Project.csortselect(6)'>Error Status</th> </tr>";
-        for (var i = 0, len = cpdisplay.length; i < len; i++) {
-            var obj = data[cpdisplay[i][0]];
-            context += "<tr><td>" + obj["projectname"] + "</td>";
-            var projman = "Not Selected";
-            if(users.hasOwnProperty(obj["projectmanager"])) {
-                projman = users[obj["projectmanager"]]["name"] + " " + users[obj["projectmanager"]]["surname"];
+        if(data.length > 0) {
+            var cpdisplay = [];
+            for (var i = 0, len = data.length; i < len; i++) {
+                var obj = data[i];
+                cpdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["projectstatus"]]);
             }
-            context += "<td>" + projman + "</td>";
-            var collator = "Not Selected";
-            if(users.hasOwnProperty(obj["collator"])) {
-                collator = users[obj["collator"]]["name"] + " " + users[obj["collator"]]["surname"];
+
+            // Sort projects by time
+            cpdisplay.sort(function(a, b){
+                return a[cpsort+1] > b[cpsort+1] ? 1 : -1;
+            });
+
+            var context;
+            context = "<table class='project'>";
+            context += "<tr> <th onclick='Project.csortselect(0)'>Project Name</th> <th onclick='Project.csortselect(1)'>Project Manager</th> <th onclick='Project.csortselect(2)'>Collator</th>";
+            context += "<th onclick='Project.csortselect(3)'>Category</th> <th onclick='Project.csortselect(4)'>Date</th> <th onclick='Project.csortselect(5)'>Project Status</th> <th onclick='Project.csortselect(6)'>Error Status</th> </tr>";
+            for (var i = 0, len = cpdisplay.length; i < len; i++) {
+                var obj = data[cpdisplay[i][0]];
+                context += "<tr><td>" + obj["projectname"] + "</td>";
+                var projman = "Not Selected";
+                if(users.hasOwnProperty(obj["projectmanager"])) {
+                    projman = users[obj["projectmanager"]]["name"] + " " + users[obj["projectmanager"]]["surname"];
+                }
+                context += "<td>" + projman + "</td>";
+                var collator = "Not Selected";
+                if(users.hasOwnProperty(obj["collator"])) {
+                    collator = users[obj["collator"]]["name"] + " " + users[obj["collator"]]["surname"];
+                }
+                context += "<td>" + collator + "</td>";
+                context += "<td>" + obj["category"] + "</td>";
+                var d = new Date();
+                d.setTime(parseFloat(obj["creation"])*1000.0);
+                context += "<td>" + d.toDateString() + "</td>";
+                context += "<td>" + obj["projectstatus"] + "</td>";
+                context += "<td> " + obj["errstatus"] + " </td></tr>";
             }
-            context += "<td>" + collator + "</td>";
-            context += "<td>" + obj["category"] + "</td>";
-            var d = new Date();
-            d.setTime(parseFloat(obj["creation"])*1000.0);
-            context += "<td>" + d.toDateString() + "</td>";
-            context += "<td>" + obj["projectstatus"] + "</td>";
-            context += "<td> " + obj["errstatus"] + " </td></tr>";
+            context += "</table>";
+            cps.innerHTML = context;
+        } else {
+            cps.innerHTML = "<p>No projects</p>";
         }
-        context += "</table>";
-        cps.innerHTML = context;
         document.body.className = 'vbox viewport';
     }
 

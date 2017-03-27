@@ -60,6 +60,7 @@ var APP_ELISTLANGUAGES = EBASE_URL + "/listlanguages";
 var APP_ESPEECHSUBSYSTEMS = EBASE_URL + "/speechsubsystems";
 var APP_EBUILDMASTER = EBASE_URL + "/buildmaster";
 var APP_ECHANGEPASSWORD = EBASE_URL + "/changepassword";
+var APP_EUNLOCKTASK = EBASE_URL + "/unlocktask";
 
 // ROLES
 var ADMIN_INTF = "Administrator";

@@ -273,57 +273,60 @@ var Jobs = (function (window, document, $, undefined) {
     var edisplay;
     function display_editor(data) {
         var js = document.getElementById("jobspace");
-
-        edisplay = [];
-        for (var i = 0, len = data.length; i < len; i++) {
-            var obj = data[i];
-            edisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["speaker"], parseFloat(obj["creation"]), parseFloat(obj["modified"]), parseFloat(obj["completed"]), obj["errstatus"]]);
-        }
-
-        // Sort projects by time
-        edisplay.sort(function(a, b){
-            return a[esort+1] > b[esort+1] ? 1 : -1;
-        });
-
-        var context;
-        var oldprojectname = "";
-        context = "<table class='project'>";
-        context += "<tr> <th onclick='Jobs.sortselect(1)'>Task ID</th> <th onclick='Jobs.sortselect(2)'>Category</th> <th onclick='Jobs.sortselect(3)'>Editing</th> <th onclick='Jobs.sortselect(4)'>Speaker</th>";
-        context += "<th onclick='Jobs.sortselect(5)'>Created</th> <th onclick='Jobs.sortselect(6)'>Modified</th> <th onclick='Jobs.sortselect(7)'>Completed</th> <th onclick='Jobs.sortselect(8)'> Error Status</th> </tr>";
-        for (var i = 0, len = edisplay.length; i < len; i++) {
-            var obj = data[edisplay[i][0]];
-
-            if(oldprojectname != obj["projectname"]) { 
-                context += "<tr><td bgcolor='#CCCCCC' colspan='8' onclick='Jobs.sortselect(0)'>Project Name: " + obj["projectname"] + "</td></tr>";
-                oldprojectname = obj["projectname"];
+        if(data.length > 0) {
+            edisplay = [];
+            for (var i = 0, len = data.length; i < len; i++) {
+                var obj = data[i];
+                edisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["speaker"], parseFloat(obj["creation"]), parseFloat(obj["modified"]), parseFloat(obj["completed"]), obj["errstatus"]]);
             }
 
-            context += "<tr onclick='Jobs.editor_selected("+ edisplay[i][0] +")'><td>" + obj["taskid"] + "</td>";
-            context += "<td>" + obj["category"] + "</td>";
-            var editing = "Missing Editor";
-            if(users.hasOwnProperty(obj["editing"])) {
-                editing = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
-            }
-            context += "<td>" + editing + "</td>";
-            context += "<td>" + obj["speaker"] + "</td>";
+            // Sort projects by time
+            edisplay.sort(function(a, b){
+                return a[esort+1] > b[esort+1] ? 1 : -1;
+            });
 
-            var d = new Date();
-            d.setTime(parseFloat(obj["creation"])*1000.0);
-            context += "<td>" + d.toDateString() + "</td>";
-            var d = new Date();
-            d.setTime(parseFloat(obj["modified"])*1000.0);
-            context += "<td>" + d.toDateString() + "</td>";
-            if(obj["completed"] != null) {
+            var context;
+            var oldprojectname = "";
+            context = "<table class='project'>";
+            context += "<tr> <th onclick='Jobs.sortselect(1)'>Task ID</th> <th onclick='Jobs.sortselect(2)'>Category</th> <th onclick='Jobs.sortselect(3)'>Editing</th> <th onclick='Jobs.sortselect(4)'>Speaker</th>";
+            context += "<th onclick='Jobs.sortselect(5)'>Created</th> <th onclick='Jobs.sortselect(6)'>Modified</th> <th onclick='Jobs.sortselect(7)'>Completed</th> <th onclick='Jobs.sortselect(8)'> Error Status</th> </tr>";
+            for (var i = 0, len = edisplay.length; i < len; i++) {
+                var obj = data[edisplay[i][0]];
+
+                if(oldprojectname != obj["projectname"]) { 
+                    context += "<tr><td bgcolor='#CCCCCC' colspan='8' onclick='Jobs.sortselect(0)'>Project Name: " + obj["projectname"] + "</td></tr>";
+                    oldprojectname = obj["projectname"];
+                }
+
+                context += "<tr onclick='Jobs.editor_selected("+ edisplay[i][0] +")'><td>" + obj["taskid"] + "</td>";
+                context += "<td>" + obj["category"] + "</td>";
+                var editing = "Missing Editor";
+                if(users.hasOwnProperty(obj["editing"])) {
+                    editing = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
+                }
+                context += "<td>" + editing + "</td>";
+                context += "<td>" + obj["speaker"] + "</td>";
+
                 var d = new Date();
-                d.setTime(parseFloat(obj["completed"])*1000.0);
+                d.setTime(parseFloat(obj["creation"])*1000.0);
                 context += "<td>" + d.toDateString() + "</td>";
-            } else { 
-                context += "<td>Not completed</td>";
+                var d = new Date();
+                d.setTime(parseFloat(obj["modified"])*1000.0);
+                context += "<td>" + d.toDateString() + "</td>";
+                if(obj["completed"] != null) {
+                    var d = new Date();
+                    d.setTime(parseFloat(obj["completed"])*1000.0);
+                    context += "<td>" + d.toDateString() + "</td>";
+                } else { 
+                    context += "<td>Not completed</td>";
+                }
+                context += "<td> " + obj["errstatus"] + " </td></tr>";
             }
-            context += "<td> " + obj["errstatus"] + " </td></tr>";
+            context += "</table>";
+            js.innerHTML = context;
+        } else {
+            js.innerHTML = "<p>No editing jobs</p>";
         }
-        context += "</table>";
-        js.innerHTML = context;
         document.body.className = 'vbox viewport';
     }
 
@@ -339,57 +342,61 @@ var Jobs = (function (window, document, $, undefined) {
     function display_collator(data) {
         var cs = document.getElementById("collatorspace");
 
-        cdisplay = [];
-        for (var i = 0, len = data.length; i < len; i++) {
-            var obj = data[i];
-            cdisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["speaker"], parseFloat(obj["creation"]), parseFloat(obj["modified"]), parseFloat(obj["completed"]), obj["errstatus"]]);
-        }
-
-        // Sort projects by time
-        cdisplay.sort(function(a, b){
-            return a[esort+1] > b[esort+1] ? 1 : -1;
-        });
-
-        var context;
-        var oldprojectname = "";
-        context = "<table class='project'>";
-        context += "<tr> <th onclick='Jobs.csortselect(1)'>Task ID</th> <th onclick='Jobs.csortselect(2)'>Category</th> <th onclick='Jobs.csortselect(3)'>Editing</th> <th onclick='Jobs.csortselect(4)'>Speaker</th>";
-        context += "<th onclick='Jobs.csortselect(5)'>Created</th> <th onclick='Jobs.csortselect(6)'>Modified</th> <th onclick='Jobs.csortselect(7)'>Completed</th> <th onclick='Jobs.csortselect(8)'> Error Status</th> </tr>";
-        for (var i = 0, len = cdisplay.length; i < len; i++) {
-            var obj = data[cdisplay[i][0]];
-
-            if(oldprojectname != obj["projectname"]) { 
-                context += "<tr><td bgcolor='#CCCCCC' colspan='6' onclick='Jobs.sortselect(0)'>Project Name: " + obj["projectname"] + "</td>";
-                context += "<td bgcolor='#CCCCCC' colspan='2'><button onclick='Jobs.masterfile("+ cdisplay[i][0] +")'>Master Document</button></td></tr>";
-                oldprojectname = obj["projectname"];
+        if(data.length > 0) {
+            cdisplay = [];
+            for (var i = 0, len = data.length; i < len; i++) {
+                var obj = data[i];
+                cdisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["speaker"], parseFloat(obj["creation"]), parseFloat(obj["modified"]), parseFloat(obj["completed"]), obj["errstatus"]]);
             }
 
-            context += "<tr onclick='Jobs.collator_selected("+ cdisplay[i][0] +")'><td>" + obj["taskid"] + "</td>";
-            context += "<td>" + obj["category"] + "</td>";
-            var editing = "Missing Editor";
-            if(users.hasOwnProperty(obj["editing"])) {
-                editing = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
-            }
-            context += "<td>" + editing + "</td>";
-            context += "<td>" + obj["speaker"] + "</td>";
+            // Sort projects by time
+            cdisplay.sort(function(a, b){
+                return a[esort+1] > b[esort+1] ? 1 : -1;
+            });
 
-            var d = new Date();
-            d.setTime(parseFloat(obj["creation"])*1000.0);
-            context += "<td>" + d.toDateString() + "</td>";
-            var d = new Date();
-            d.setTime(parseFloat(obj["modified"])*1000.0);
-            context += "<td>" + d.toDateString() + "</td>";
-            if(obj["completed"] != null) {
+            var context;
+            var oldprojectname = "";
+            context = "<table class='project'>";
+            context += "<tr> <th onclick='Jobs.csortselect(1)'>Task ID</th> <th onclick='Jobs.csortselect(2)'>Category</th> <th onclick='Jobs.csortselect(3)'>Editing</th> <th onclick='Jobs.csortselect(4)'>Speaker</th>";
+            context += "<th onclick='Jobs.csortselect(5)'>Created</th> <th onclick='Jobs.csortselect(6)'>Modified</th> <th onclick='Jobs.csortselect(7)'>Completed</th> <th onclick='Jobs.csortselect(8)'> Error Status</th> </tr>";
+            for (var i = 0, len = cdisplay.length; i < len; i++) {
+                var obj = data[cdisplay[i][0]];
+
+                if(oldprojectname != obj["projectname"]) { 
+                    context += "<tr><td bgcolor='#CCCCCC' colspan='6' onclick='Jobs.sortselect(0)'>Project Name: " + obj["projectname"] + "</td>";
+                    context += "<td bgcolor='#CCCCCC' colspan='2'><button onclick='Jobs.masterfile("+ cdisplay[i][0] +")'>Master Document</button></td></tr>";
+                    oldprojectname = obj["projectname"];
+                }
+
+                context += "<tr onclick='Jobs.collator_selected("+ cdisplay[i][0] +")'><td>" + obj["taskid"] + "</td>";
+                context += "<td>" + obj["category"] + "</td>";
+                var editing = "Missing Editor";
+                if(users.hasOwnProperty(obj["editing"])) {
+                    editing = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
+                }
+                context += "<td>" + editing + "</td>";
+                context += "<td>" + obj["speaker"] + "</td>";
+
                 var d = new Date();
-                d.setTime(parseFloat(obj["completed"])*1000.0);
+                d.setTime(parseFloat(obj["creation"])*1000.0);
                 context += "<td>" + d.toDateString() + "</td>";
-            } else { 
-                context += "<td>Not completed</td>";
+                var d = new Date();
+                d.setTime(parseFloat(obj["modified"])*1000.0);
+                context += "<td>" + d.toDateString() + "</td>";
+                if(obj["completed"] != null) {
+                    var d = new Date();
+                    d.setTime(parseFloat(obj["completed"])*1000.0);
+                    context += "<td>" + d.toDateString() + "</td>";
+                } else { 
+                    context += "<td>Not completed</td>";
+                }
+                context += "<td> " + obj["errstatus"] + " </td></tr>";
             }
-            context += "<td> " + obj["errstatus"] + " </td></tr>";
+            context += "</table>";
+            cs.innerHTML = context;
+        } else {
+            cs.innerHTML = "<p>No collating jobs</p>";
         }
-        context += "</table>";
-        cs.innerHTML = context;
         document.body.className = 'vbox viewport';
     }
 
@@ -778,7 +785,7 @@ var Jobs = (function (window, document, $, undefined) {
 	    var data = {};
 	    data['token'] = localStorage.getItem("token");
         data["password"] = password;
-	    appserver_send(APP_PCHANGEPASSWORD, data, update_password_callback);
+	    appserver_send(APP_ECHANGEPASSWORD, data, update_password_callback);
     }
 
     // Callback for server response

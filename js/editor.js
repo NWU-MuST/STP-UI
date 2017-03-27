@@ -56,6 +56,7 @@ var Editor = (function (window, document, $, undefined) {
         job = JSON.parse(localStorage.getItem("job"));
         localStorage.setItem("projectid", job["projectid"]);
         localStorage.setItem("taskid", job["taskid"]);
+        speech_service_language = job["language"];
         languages = job["languages"];
         diarize_sub = job["diarize_sub"];
         recognize_sub = job["recognize_sub"];
@@ -402,11 +403,11 @@ var Editor = (function (window, document, $, undefined) {
         	appserver_send(APP_EDIARIZE, data, speech_service_callback);
         }
         else if(name == "recognize") {
-            data["langauge"] = speech_service_langauge;
+            data["language"] = speech_service_language;
         	appserver_send(APP_ERECOGNIZE, data, speech_service_callback);
         }
         else if(name == "align") {
-            data["langauge"] = speech_service_langauge;
+            data["language"] = speech_service_language;
             appserver_send(APP_EALIGN, data, speech_service_callback);
         } else {
             alertify.alert("Unknown requested speech service: " + name + "!", function(){});
