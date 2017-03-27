@@ -517,13 +517,13 @@ var Jobs = (function (window, document, $, undefined) {
             return false;
         }
 
+        var obj = editing[eselected];
         if(obj["editing"] != localStorage.username) {
 		    alertify.alert("You do not have ownership of the selected job!", function(){});
             return false;
         }
 
         document.body.className = 'vbox viewport waiting';
-        var obj = editing[eselected];
         var data = {};
 	    data["token"] = localStorage.token;
         data["projectid"] = obj["projectid"];
