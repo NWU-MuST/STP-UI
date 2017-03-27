@@ -9,6 +9,7 @@ var Jobs = (function (window, document, $, undefined) {
     var diarize_sub;
     var recognize_sub;
     var align_sub;
+    var notset = ["null", null, undefined];
 
     // Make sure user is using chrome
     function check_browser() {
@@ -484,6 +485,11 @@ var Jobs = (function (window, document, $, undefined) {
             obj = collating[cselected];
         }
 
+       if(notset.indexOf(obj["jobid"]) == -1) {
+            alertify.alert("This job is waiting for a requested speech service to finish!", function(){});
+            return false;
+        }
+
         if(obj["editing"] == localStorage.username) {
             obj["readOnly"] = false;
         } else {
@@ -520,6 +526,11 @@ var Jobs = (function (window, document, $, undefined) {
         var obj = editing[eselected];
         if(obj["editing"] != localStorage.username) {
 		    alertify.alert("You do not have ownership of the selected job!", function(){});
+            return false;
+        }
+
+       if(notset.indexOf(obj["jobid"]) == -1) {
+            alertify.alert("This job is waiting for a requested speech service to finish!", function(){});
             return false;
         }
 
@@ -563,6 +574,11 @@ var Jobs = (function (window, document, $, undefined) {
         var obj = collating[cselected];
         if(obj["editing"] != localStorage.username) {
 		    alertify.alert("You do not have ownership of the collating job!", function(){});
+            return false;
+        }
+
+       if(notset.indexOf(obj["jobid"]) == -1) {
+            alertify.alert("This job is waiting for a requested speech service to finish!", function(){});
             return false;
         }
 
@@ -657,6 +673,11 @@ var Jobs = (function (window, document, $, undefined) {
             obj = editing[eselected]
         } else {
             obj = collating[cselected];
+        }
+
+       if(notset.indexOf(obj["jobid"]) !== -1) {
+            alertify.alert("This job is not locked by a requested speech service!", function(){});
+            return false;
         }
 
         if(obj["editing"] != localStorage.username) {
