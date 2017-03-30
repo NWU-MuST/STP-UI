@@ -204,7 +204,7 @@ var Tasks = (function (window, document, $, undefined) {
             waveColor: '#00FF00',
             scrollParent: true,
             fillParent: false,
-            minPxPerSec: 100,
+            minPxPerSec: 10,
             height: waveform_height,
             pixelRatio: 1
         });
@@ -218,6 +218,8 @@ var Tasks = (function (window, document, $, undefined) {
 
             timeline.init({
                 wavesurfer: wavesurfer,
+                primaryLabelInterval: 1,
+                secondaryLabelInterval: 1,
                 container: "#waveform_timeline"
             });
 

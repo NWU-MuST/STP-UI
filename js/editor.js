@@ -154,7 +154,7 @@ var Editor = (function (window, document, $, undefined) {
 		    progressColor: 'purple',
 		    scrollParent: true,
 		    fillParent: false,
-		    minPxPerSec: 100,
+		    minPxPerSec: 10,
 		    height: waveform_height,
 		    pixelRatio: 1
 	    });
@@ -164,6 +164,8 @@ var Editor = (function (window, document, $, undefined) {
 
 		    timeline.init({
 		        wavesurfer: wavesurfer,
+                primaryLabelInterval: 1,
+                secondaryLabelInterval: 1,
 		        container: "#waveform_timeline"
 		    });
 
