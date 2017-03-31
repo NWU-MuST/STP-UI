@@ -301,8 +301,8 @@ var Project = (function (window, document, $, undefined) {
 
             var context;
             context = "<table class='project'>";
-            if(notset.indexOf(obj["jobid"]) !== -1) {
-                context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;">';
+            if(notset.indexOf(obj["jobid"]) === -1) {
+                context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #FF0000;">';
             } else {
                 context += "<tr>";
             }
@@ -444,7 +444,7 @@ var Project = (function (window, document, $, undefined) {
         context += "<tr><td><label>Project Error Status: </label></td><td>" + normnull(obj["errstatus"], "No Error") + "</td></tr>";
 
         if(notset.indexOf(obj["jobid"]) === -1) {
-            context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;"><td><label>Project Lock Status: </label></td><td> Locked </td></tr>';
+            context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;"><td><label>Project Lock Status: </label></td><td> Locked </td></tr>';
         } else {
             context += "<tr><td><label>Project Lock Status: </label></td><td> Not Locked </td></tr>";
         }

@@ -277,8 +277,9 @@ var Tasks = (function (window, document, $, undefined) {
         chtml += '<label>Zoom factor:</label><input type="text" id="zoomFactor" value="20"/></td>';
 
         chtml += '<td><button onclick="Tasks.delete_region()">Delete Region</button>';
-        chtml += '<button onclick="Tasks.remove_regions()">Remove All Regions</button></td></tr></table>';
+        chtml += '<button onclick="Tasks.remove_regions()">Remove All Regions</button></td></tr><hr>';
 
+        shtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
         gh.innerHTML = chtml;
     }
 
@@ -533,14 +534,15 @@ var Tasks = (function (window, document, $, undefined) {
         });
 
         // Adjust times so all regions are contigious
-        all_tasks[0]['start'] = 0.0;
-        for(var ndx = 0; ndx < all_tasks.length-1; ndx++) {
-            now = all_tasks[ndx];
-            next = all_tasks[ndx+1];
-            now['end'] = next['start'];
+        if(all_task.length > 0) {
+            all_tasks[0]['start'] = 0.0;
+            for(var ndx = 0; ndx < all_tasks.length-1; ndx++) {
+                now = all_tasks[ndx];
+                next = all_tasks[ndx+1];
+                now['end'] = next['start'];
+            }
+            all_tasks[all_tasks.length-1]['end'] = project['audiodur'];
         }
-        all_tasks[all_tasks.length-1]['end'] = project['audiodur'];
-
         // Create app server payload
         data['token'] = localStorage.getItem('token');
         data['projectid'] = project['projectid'];

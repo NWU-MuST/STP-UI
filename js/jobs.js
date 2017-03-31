@@ -299,8 +299,8 @@ var Jobs = (function (window, document, $, undefined) {
             var oldprojectname = "";
             context = "<table class='project'>";
 
-            if(notset.indexOf(obj["jobid"]) !== -1) {
-                context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;">';
+            if(notset.indexOf(obj["jobid"]) === -1) {
+                context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
             } else {
                 context += "<tr>";
             }
@@ -375,8 +375,8 @@ var Jobs = (function (window, document, $, undefined) {
             var context;
             var oldprojectname = "";
             context = "<table class='project'>";
-            if(notset.indexOf(obj["jobid"]) !== -1) {
-                context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;">';
+            if(notset.indexOf(obj["jobid"]) === -1) {
+                context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
             } else {
                 context += "<tr>";
             }
