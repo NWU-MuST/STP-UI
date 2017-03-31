@@ -441,7 +441,7 @@ var Tasks = (function (window, document, $, undefined) {
           shtml += '<td><input type="text" oninput="Tasks.assign_speaker(this.id,this.value)" maxlength="32" id="spk_' + key +'" name="spk_' + key + '"/></td></tr>'
       }
       //shtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
-        shtml += '</table>;
+        shtml += '</table>';
 
       region_backup = arr;
       gh.innerHTML = shtml;
