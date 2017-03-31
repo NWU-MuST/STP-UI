@@ -39,6 +39,15 @@ var Jobs = (function (window, document, $, undefined) {
         setTimeout(function() { get_speechsubsystems("align", align_sub); }, 500);
     }
 
+    // Return the value if not null or return a string
+    function normnull(value, string) {
+        if(notset.indexOf(value) === -1) {
+            return value;
+        } else {
+            return string;
+        }
+    }
+
     // Redirect the user to the homepage
     module.home = function() {
         alertify.confirm('Going to redirect to the Home page. Leave anyway?',
@@ -289,7 +298,14 @@ var Jobs = (function (window, document, $, undefined) {
             var context;
             var oldprojectname = "";
             context = "<table class='project'>";
-            context += "<tr> <th onclick='Jobs.sortselect(1)'>Task ID</th> <th onclick='Jobs.sortselect(2)'>Category</th> <th onclick='Jobs.sortselect(3)'>Editing</th> <th onclick='Jobs.sortselect(4)'>Speaker</th>";
+
+            if(notset.indexOf(obj["jobid"]) !== -1) {
+                context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;">';
+            } else {
+                context += "<tr>";
+            }
+
+            context += "<th onclick='Jobs.sortselect(1)'>Task ID</th> <th onclick='Jobs.sortselect(2)'>Category</th> <th onclick='Jobs.sortselect(3)'>Editing</th> <th onclick='Jobs.sortselect(4)'>Speaker</th>";
             context += "<th onclick='Jobs.sortselect(5)'>Created</th> <th onclick='Jobs.sortselect(6)'>Modified</th> <th onclick='Jobs.sortselect(7)'>Completed</th> <th onclick='Jobs.sortselect(8)'> Error Status</th> </tr>";
             for (var i = 0, len = edisplay.length; i < len; i++) {
                 var obj = data[edisplay[i][0]];
@@ -314,6 +330,7 @@ var Jobs = (function (window, document, $, undefined) {
                 var d = new Date();
                 d.setTime(parseFloat(obj["modified"])*1000.0);
                 context += "<td>" + d.toDateString() + "</td>";
+
                 if(obj["completed"] != null) {
                     var d = new Date();
                     d.setTime(parseFloat(obj["completed"])*1000.0);
@@ -321,7 +338,7 @@ var Jobs = (function (window, document, $, undefined) {
                 } else { 
                     context += "<td>Not completed</td>";
                 }
-                context += "<td> " + obj["errstatus"] + " </td></tr>";
+                context += "<td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
             }
             context += "</table>";
             js.innerHTML = context;
@@ -358,7 +375,12 @@ var Jobs = (function (window, document, $, undefined) {
             var context;
             var oldprojectname = "";
             context = "<table class='project'>";
-            context += "<tr> <th onclick='Jobs.csortselect(1)'>Task ID</th> <th onclick='Jobs.csortselect(2)'>Category</th> <th onclick='Jobs.csortselect(3)'>Editing</th> <th onclick='Jobs.csortselect(4)'>Speaker</th>";
+            if(notset.indexOf(obj["jobid"]) !== -1) {
+                context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;">';
+            } else {
+                context += "<tr>";
+            }
+            context += "<th onclick='Jobs.csortselect(1)'>Task ID</th> <th onclick='Jobs.csortselect(2)'>Category</th> <th onclick='Jobs.csortselect(3)'>Editing</th> <th onclick='Jobs.csortselect(4)'>Speaker</th>";
             context += "<th onclick='Jobs.csortselect(5)'>Created</th> <th onclick='Jobs.csortselect(6)'>Modified</th> <th onclick='Jobs.csortselect(7)'>Completed</th> <th onclick='Jobs.csortselect(8)'> Error Status</th> </tr>";
             for (var i = 0, len = cdisplay.length; i < len; i++) {
                 var obj = data[cdisplay[i][0]];
@@ -391,7 +413,7 @@ var Jobs = (function (window, document, $, undefined) {
                 } else { 
                     context += "<td>Not completed</td>";
                 }
-                context += "<td> " + obj["errstatus"] + " </td></tr>";
+                context += "<td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
             }
             context += "</table>";
             cs.innerHTML = context;
@@ -428,7 +450,7 @@ var Jobs = (function (window, document, $, undefined) {
         } else { 
             context += "<tr><td><label>Job Completion:</label></td> <td>Not completed</td></tr>";
         }
-        context += "<tr><td><label>Job Error Status:</label></td> <td> " + obj["errstatus"] + " </td></tr>";
+        context += "<tr><td><label>Job Error Status:</label></td> <td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
         context += '</table></fieldset><br><hr><br> <button onclick="Jobs.edit_job(0)">Edit Job </button> <button onclick="Jobs.job_done()">Set Job Done </button>';
         context += '<button onclick="Jobs.clearerror_job(0)">Clear Job Error</button> <button onclick="Jobs.unlock_job(0)">Unlock Job</button> ';
         context += '&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button>';
@@ -464,7 +486,7 @@ var Jobs = (function (window, document, $, undefined) {
         } else { 
             context += "<tr><td><label>Job Completion:</label></td> <td>Not completed</td></tr>";
         }
-        context += "<tr><td><label>Job Error Status:</label></td> <td> " + obj["errstatus"] + " </td></tr>";
+        context += "<tr><td><label>Job Error Status:</label></td> <td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
         context += '</table></fieldset><br><hr><br> <button onclick="Jobs.edit_job(1)">Edit Job </button> <button onclick="Jobs.reassign_job()">Re-assign Job </button>';
         context += '<button onclick="Jobs.clearerror_job(1)">Clear Job Error</button> <button onclick="Jobs.unlock_job(1)">Unlock Job</button> ';
         context += '&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button>';

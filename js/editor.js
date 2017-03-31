@@ -289,6 +289,7 @@ var Editor = (function (window, document, $, undefined) {
 
 	    wavesurfer.zoom(waveform_width_pixel / seconds);
     }
+    module.audio_zoom_change = function(seconds) { audio_zoom_change(seconds); };
 
     // Adjust waveform playback rate
     function audio_rate_change(seconds) {
@@ -304,6 +305,7 @@ var Editor = (function (window, document, $, undefined) {
 
 	    wavesurfer.setPlaybackRate(seconds);
     }
+    module.audio_rate_change = function(seconds) { audio_rate_change(seconds); };
 
     // User clicked on some text; adjust the position in the stream
     function text_clicked(event) {

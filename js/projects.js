@@ -43,6 +43,15 @@ var Project = (function (window, document, $, undefined) {
         }
     }
 
+    // Return the value if not null or return a string
+    function normnull(value, string) {
+        if(notset.indexOf(value) === -1) {
+            return value;
+        } else {
+            return string;
+        }
+    }
+
     // Redirect the user to the homepage
     module.home = function() {
         alertify.confirm('You will be redirected to the Home page. Leave anyway?',
@@ -278,42 +287,52 @@ var Project = (function (window, document, $, undefined) {
         var ps = document.getElementById("projectspace");
         var data = data["projects"];
 
-        pdisplay = [];
-        for (var i = 0, len = data.length; i < len; i++) {
-            var obj = data[i];
-            pdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["projectstatus"]]);
-        }
-
-        // Sort projects by time
-        pdisplay.sort(function(a, b){
-            return a[psort+1] > b[psort+1] ? 1 : -1;
-        });
-
-        var context;
-        context = "<table class='project'>";
-        context += "<tr> <th onclick='Project.sortselect(0)'>Project Name</th> <th onclick='Project.sortselect(1)'>Project Manager</th> <th onclick='Project.sortselect(2)'>Collator</th>";
-        context += "<th onclick='Project.sortselect(3)'>Category</th> <th onclick='Project.sortselect(4)'>Date</th> <th onclick='Project.sortselect(5)'>Project Status</th> <th onclick='Project.sortselect(6)'>Error Status</th> </tr>";
-        for (var i = 0, len = pdisplay.length; i < len; i++) {
-            var obj = data[pdisplay[i][0]];
-            context += "<tr onclick='Project.project_selected("+ pdisplay[i][0] +")'><td>" + obj["projectname"] + "</td>";
-            var projman = "Not Selected";
-            if(users.hasOwnProperty(obj["projectmanager"])) {
-                projman = users[obj["projectmanager"]]["name"] + " " + users[obj["projectmanager"]]["surname"];
+        if(data.length > 0) {
+            pdisplay = [];
+            for (var i = 0, len = data.length; i < len; i++) {
+                var obj = data[i];
+                pdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["projectstatus"]]);
             }
-            context += "<td>" + projman + "</td>";
-            var collator = "Not Selected";
-            if(users.hasOwnProperty(obj["collator"])) {
-                collator = users[obj["collator"]]["name"] + " " + users[obj["collator"]]["surname"];
+
+            // Sort projects by time
+            pdisplay.sort(function(a, b){
+                return a[psort+1] > b[psort+1] ? 1 : -1;
+            });
+
+            var context;
+            context = "<table class='project'>";
+            if(notset.indexOf(obj["jobid"]) !== -1) {
+                context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;">';
+            } else {
+                context += "<tr>";
             }
-            context += "<td>" + collator + "</td>";
-            context += "<td>" + obj["category"] + "</td>";
-            var d = new Date();
-            d.setTime(parseFloat(obj["creation"])*1000.0);
-            context += "<td>" + d.toDateString() + "</td>";
-            context += "<td>" + obj["projectstatus"] + "</td>";
-            context += "<td> " + obj["errstatus"] + " </td></tr>";
+            context += "<th onclick='Project.sortselect(0)'>Project Name</th> <th onclick='Project.sortselect(1)'>Project Manager</th> <th onclick='Project.sortselect(2)'>Collator</th>";
+            context += "<th onclick='Project.sortselect(3)'>Category</th> <th onclick='Project.sortselect(4)'>Date</th> <th onclick='Project.sortselect(5)'>Project Status</th> <th onclick='Project.sortselect(6)'>Error Status</th> </tr>";
+
+            for (var i = 0, len = pdisplay.length; i < len; i++) {
+                var obj = data[pdisplay[i][0]];
+                context += "<tr onclick='Project.project_selected("+ pdisplay[i][0] +")'><td>" + obj["projectname"] + "</td>";
+                var projman = "Not Selected";
+                if(users.hasOwnProperty(obj["projectmanager"])) {
+                    projman = users[obj["projectmanager"]]["name"] + " " + users[obj["projectmanager"]]["surname"];
+                }
+                context += "<td>" + projman + "</td>";
+                var collator = "Not Selected";
+                if(users.hasOwnProperty(obj["collator"])) {
+                    collator = users[obj["collator"]]["name"] + " " + users[obj["collator"]]["surname"];
+                }
+                context += "<td>" + collator + "</td>";
+                context += "<td>" + obj["category"] + "</td>";
+                var d = new Date();
+                d.setTime(parseFloat(obj["creation"])*1000.0);
+                context += "<td>" + d.toDateString() + "</td>";
+                context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
+                context += "<td> " + normnull(obj["errstatus"], "No error") + " </td></tr>";
+            }
+            context += "</table>";
+        } else {
+            context = "<p>No projects</p>";
         }
-        context += "</table>";
         ps.innerHTML = context;
         document.body.className = 'vbox viewport';
     }
@@ -362,8 +381,8 @@ var Project = (function (window, document, $, undefined) {
                 var d = new Date();
                 d.setTime(parseFloat(obj["creation"])*1000.0);
                 context += "<td>" + d.toDateString() + "</td>";
-                context += "<td>" + obj["projectstatus"] + "</td>";
-                context += "<td> " + obj["errstatus"] + " </td></tr>";
+                context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
+                context += "<td> " + normnull(obj["errstatus"], "No error") + " </td></tr>";
             }
             context += "</table>";
             cps.innerHTML = context;
@@ -422,8 +441,13 @@ var Project = (function (window, document, $, undefined) {
 
         //context += "<tr><td><label>Project Status: </label></td><td>" + obj["projectstatus"] + "</td></tr>";
         context += "<tr><td><label>Assigned: </label></td><td>" + obj["assigned"] + "</td></tr>";
-        context += "<tr><td><label>Project Error Status: </label></td><td>" + obj["errstatus"] + "</td></tr>";
+        context += "<tr><td><label>Project Error Status: </label></td><td>" + normnull(obj["errstatus"], "No Error") + "</td></tr>";
 
+        if(notset.indexOf(obj["jobid"]) === -1) {
+            context += '<tr style="outline: none; border-color: #9ecaed; box-shadow: 0 0 10px #9ecaed;"><td><label>Project Lock Status: </label></td><td> Locked </td></tr>';
+        } else {
+            context += "<tr><td><label>Project Lock Status: </label></td><td> Not Locked </td></tr>";
+        }
         context += "<tr><td><label>Audio: </label></td>";
         if(obj["audiofile"] == undefined) {
             context += '<td><input type="file" onchange="Project.upload_audio()"></td></tr>';
@@ -1024,6 +1048,12 @@ var Project = (function (window, document, $, undefined) {
         }
     }
 
+    function isInt(value) {
+        return !isNaN(value) && 
+            parseInt(Number(value)) == value && 
+            !isNaN(parseInt(value, 10));
+    }
+
     // Automatically create segments
     module.diarize = function() {
        if(selected == -1) {
@@ -1047,9 +1077,30 @@ var Project = (function (window, document, $, undefined) {
             return false;
         }
 
+        var segmentno = 0;
+        alertify.prompt("How many segments would you like to create? Please enter an integer:", 0,
+            function(evt, value ){
+                segmentno = value;
+                alertify.success('Number of segments set to ' + value);
+            },
+            function(){
+                alertify.error('Cancel');
+        });
+
+        if(isInt(segmentno) === false) {
+            alertify.alert("You must provide an integer for the number of segments!", function(){});
+            return false;
+        }
+
+        if(segmentno == 0) {
+            alertify.alert("You must specify the number of segments for diarization!", function(){});
+            return false;
+        }
+
 	    var data = {};
 	    data["token"] = localStorage.token;
         data["projectid"] = obj["projectid"];
+        data["segmetno"] = segmentno;
 	    appserver_send(APP_PDIARIZEAUDIO, data, diarize_callback);
     }
 

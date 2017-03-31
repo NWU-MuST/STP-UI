@@ -33,6 +33,9 @@
     </nav>
 
     <article style="overflow-y:auto;">
+        <div> <p> Please press the "Refresh" button periodically to refresh the project details </p>
+            <button onclick="Project.get_all_projects()">Refresh</button>
+         </div>
         <div class="tab">
           <button id="defproject" class="tablinks" onclick="Project.openProject(event, 'projectspace')">Owned Projects</button>
           <button class="tablinks" onclick="Project.openProject(event, 'created')">Created Projects</button>
