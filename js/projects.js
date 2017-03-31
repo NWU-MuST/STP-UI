@@ -1082,26 +1082,26 @@ var Project = (function (window, document, $, undefined) {
             function(evt, value ){
                 segmentno = value;
                 alertify.success('Number of segments set to ' + value);
+
+                if(isInt(segmentno) === false) {
+                    alertify.alert("You must provide an integer for the number of segments!", function(){});
+                    return false;
+                }
+
+                if(segmentno == 0) {
+                    alertify.alert("You must specify the number of segments for diarization!", function(){});
+                    return false;
+                }
+
+	            var data = {};
+	            data["token"] = localStorage.token;
+                data["projectid"] = obj["projectid"];
+                data["segmetno"] = segmentno;
+	            appserver_send(APP_PDIARIZEAUDIO, data, diarize_callback);
             },
             function(){
                 alertify.error('Cancel');
         });
-
-        if(isInt(segmentno) === false) {
-            alertify.alert("You must provide an integer for the number of segments!", function(){});
-            return false;
-        }
-
-        if(segmentno == 0) {
-            alertify.alert("You must specify the number of segments for diarization!", function(){});
-            return false;
-        }
-
-	    var data = {};
-	    data["token"] = localStorage.token;
-        data["projectid"] = obj["projectid"];
-        data["segmetno"] = segmentno;
-	    appserver_send(APP_PDIARIZEAUDIO, data, diarize_callback);
     }
 
     // Diarize callack
