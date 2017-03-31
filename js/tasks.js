@@ -535,7 +535,7 @@ var Tasks = (function (window, document, $, undefined) {
         });
 
         // Adjust times so all regions are contigious
-        if(all_task.length > 0) {
+        if(all_tasks.length > 0) {
             all_tasks[0]['start'] = 0.0;
             for(var ndx = 0; ndx < all_tasks.length-1; ndx++) {
                 now = all_tasks[ndx];
