@@ -10,7 +10,7 @@ CKEDITOR.plugins.add( 'inserttimemark',
 				var date = new Date(1970,0,1);
 				date.setSeconds(time);
 				var display_time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
-				editor.insertHtml('<br/> <p> <time type="mark" style="background-color: #AAAAAA;" datetime="' + time +'">' + display_time + '</time> </p> <br/>');
+				editor.insertHtml('<p><time type="mark" style="background-color: #AAAAAA;" datetime="' + time +'">' + display_time + '</time></p>');
 			}
 		});
 

@@ -301,17 +301,19 @@ var Project = (function (window, document, $, undefined) {
 
             var context;
             context = "<table class='project'>";
-            if(notset.indexOf(obj["jobid"]) === -1) {
-                context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #FF0000;">';
-            } else {
-                context += "<tr>";
-            }
-            context += "<th onclick='Project.sortselect(0)'>Project Name</th> <th onclick='Project.sortselect(1)'>Project Manager</th> <th onclick='Project.sortselect(2)'>Collator</th>";
+            context += "<tr><th onclick='Project.sortselect(0)'>Project Name</th> <th onclick='Project.sortselect(1)'>Project Manager</th> <th onclick='Project.sortselect(2)'>Collator</th>";
             context += "<th onclick='Project.sortselect(3)'>Category</th> <th onclick='Project.sortselect(4)'>Date</th> <th onclick='Project.sortselect(5)'>Project Status</th> <th onclick='Project.sortselect(6)'>Error Status</th> </tr>";
 
             for (var i = 0, len = pdisplay.length; i < len; i++) {
                 var obj = data[pdisplay[i][0]];
-                context += "<tr onclick='Project.project_selected("+ pdisplay[i][0] +")'><td>" + obj["projectname"] + "</td>";
+                context += "<tr onclick='Project.project_selected("+ pdisplay[i][0] +")'";
+                if(notset.indexOf(obj["jobid"]) === -1) {
+                    context += ' style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #FF0000;">';
+                } else {
+                    context += ">";
+                }
+                context += "<td>" + obj["projectname"] + "</td>";
+
                 var projman = "Not Selected";
                 if(users.hasOwnProperty(obj["projectmanager"])) {
                     projman = users[obj["projectmanager"]]["name"] + " " + users[obj["projectmanager"]]["surname"];

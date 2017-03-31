@@ -299,13 +299,7 @@ var Jobs = (function (window, document, $, undefined) {
             var oldprojectname = "";
             context = "<table class='project'>";
 
-            if(notset.indexOf(obj["jobid"]) === -1) {
-                context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
-            } else {
-                context += "<tr>";
-            }
-
-            context += "<th onclick='Jobs.sortselect(1)'>Task ID</th> <th onclick='Jobs.sortselect(2)'>Category</th> <th onclick='Jobs.sortselect(3)'>Editing</th> <th onclick='Jobs.sortselect(4)'>Speaker</th>";
+            context += "<tr><th onclick='Jobs.sortselect(1)'>Task ID</th> <th onclick='Jobs.sortselect(2)'>Category</th> <th onclick='Jobs.sortselect(3)'>Editing</th> <th onclick='Jobs.sortselect(4)'>Speaker</th>";
             context += "<th onclick='Jobs.sortselect(5)'>Created</th> <th onclick='Jobs.sortselect(6)'>Modified</th> <th onclick='Jobs.sortselect(7)'>Completed</th> <th onclick='Jobs.sortselect(8)'> Error Status</th> </tr>";
             for (var i = 0, len = edisplay.length; i < len; i++) {
                 var obj = data[edisplay[i][0]];
@@ -315,7 +309,14 @@ var Jobs = (function (window, document, $, undefined) {
                     oldprojectname = obj["projectname"];
                 }
 
-                context += "<tr onclick='Jobs.editor_selected("+ edisplay[i][0] +")'><td>" + obj["taskid"] + "</td>";
+                context += "<tr onclick='Jobs.editor_selected("+ edisplay[i][0] +")'";
+                if(notset.indexOf(obj["jobid"]) === -1) {
+                    context += ' style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
+                } else {
+                    context += ">";
+                }
+
+                context += "<td>" + obj["taskid"] + "</td>";
                 context += "<td>" + obj["category"] + "</td>";
                 var editing = "Missing Editor";
                 if(users.hasOwnProperty(obj["editing"])) {
@@ -375,12 +376,7 @@ var Jobs = (function (window, document, $, undefined) {
             var context;
             var oldprojectname = "";
             context = "<table class='project'>";
-            if(notset.indexOf(obj["jobid"]) === -1) {
-                context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
-            } else {
-                context += "<tr>";
-            }
-            context += "<th onclick='Jobs.csortselect(1)'>Task ID</th> <th onclick='Jobs.csortselect(2)'>Category</th> <th onclick='Jobs.csortselect(3)'>Editing</th> <th onclick='Jobs.csortselect(4)'>Speaker</th>";
+            context += "<tr><th onclick='Jobs.csortselect(1)'>Task ID</th> <th onclick='Jobs.csortselect(2)'>Category</th> <th onclick='Jobs.csortselect(3)'>Editing</th> <th onclick='Jobs.csortselect(4)'>Speaker</th>";
             context += "<th onclick='Jobs.csortselect(5)'>Created</th> <th onclick='Jobs.csortselect(6)'>Modified</th> <th onclick='Jobs.csortselect(7)'>Completed</th> <th onclick='Jobs.csortselect(8)'> Error Status</th> </tr>";
             for (var i = 0, len = cdisplay.length; i < len; i++) {
                 var obj = data[cdisplay[i][0]];
@@ -391,7 +387,13 @@ var Jobs = (function (window, document, $, undefined) {
                     oldprojectname = obj["projectname"];
                 }
 
-                context += "<tr onclick='Jobs.collator_selected("+ cdisplay[i][0] +")'><td>" + obj["taskid"] + "</td>";
+                context += "<tr onclick='Jobs.collator_selected("+ cdisplay[i][0] +")'";
+                if(notset.indexOf(obj["jobid"]) === -1) {
+                    context += ' style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
+                } else {
+                    context += ">";
+                }
+                context += "<td>" + obj["taskid"] + "</td>";
                 context += "<td>" + obj["category"] + "</td>";
                 var editing = "Missing Editor";
                 if(users.hasOwnProperty(obj["editing"])) {
@@ -434,6 +436,7 @@ var Jobs = (function (window, document, $, undefined) {
         var context;
         context = "<fieldset><legend>Job</legend><table class='project'>";
         context += "<tr><td><label>Project Name:</label></td> <td> " + obj["projectname"] + "</td> </tr>";
+        context += "<tr><td><label>Job ID:</label></td> <td> " + obj["taskid"] + "</td> </tr>";
         context += "<tr><td><label>Project Category:</label></td> <td> " + obj["category"] + "</td> </tr>";
         context += "<tr><td><label>Current Editor:</label></td> <td> " + obj["editing"] + "</td> </tr>";
         context += "<tr><td><label>Job Speaker:</label></td> <td> " + obj["speaker"] + "</td> </tr>";
@@ -469,6 +472,7 @@ var Jobs = (function (window, document, $, undefined) {
         var context;
         context = "<fieldset><legend>Job</legend><table class='project'>";
         context += "<tr><td><label>Project Name:</label></td> <td> " + obj["projectname"] + "</td> </tr>";
+        context += "<tr><td><label>Job ID:</label></td> <td> " + obj["taskid"] + "</td> </tr>";
         context += "<tr><td><label>Project Category:</label></td> <td> " + obj["category"] + "</td> </tr>";
         context += "<tr><td><label>Current Editor:</label></td> <td> " + obj["editing"] + "</td> </tr>";
         context += "<tr><td><label>Language:</label></td> <td> " + obj["language"] + "</td> </tr>";
