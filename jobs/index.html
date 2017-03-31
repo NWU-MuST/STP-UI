@@ -24,14 +24,14 @@
     <nav>
         <ul>
             <li><a onClick="Jobs.home(); return false;" href="#">Home</a></li>
-            <li><a onClick="Jobs.get_jobs(); return false;" href="#">Jobs</a></li>
+            <li><a onClick="Jobs.get_jobs(); return false;" href="#">Refresh Jobs</a></li>
             <li><a onClick="Jobs.changepassword(); return false;" href="#">Update Password</a></li>
             <li><a onClick="Jobs.logout(); return false;" href="#">Logout</a></li>
         </ul>
     </nav>
 
     <article style="overflow-y:auto;">
-        <div> <p> Please press the "Refresh" button periodically to refresh the project details </p>
+        <div> Please press the "Refresh" button periodically to refresh the project details
             <button onclick="Project.get_all_projects()">Refresh</button>
          </div>
 

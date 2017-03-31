@@ -25,7 +25,7 @@
     <nav>
         <ul>
             <li><a onClick="Project.home(); return false;" href="#">Home</a></li>
-            <li><a onClick="Project.get_all_projects(); return false;" href="#">Projects</a></li>
+            <li><a onClick="Project.get_all_projects(); return false;" href="#">Refresh Projects</a></li>
             <li><a onClick="Project.new_project(); return false;" href="#">Create Project</a></li>
             <li><a onClick="Project.changepassword(); return false;" href="#">Update Password</a></li>
             <li><a onClick="Project.logout(); return false;" href="#">Logout</a></li>
@@ -33,7 +33,7 @@
     </nav>
 
     <article style="overflow-y:auto;">
-        <div> <p> Please press the "Refresh" button periodically to refresh the project details </p>
+        <div> Please press the "Refresh" button periodically to refresh the project details
             <button onclick="Project.get_all_projects()">Refresh</button>
          </div>
         <div class="tab">
