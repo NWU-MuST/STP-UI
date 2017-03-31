@@ -279,7 +279,7 @@ var Tasks = (function (window, document, $, undefined) {
         chtml += '<td><button onclick="Tasks.delete_region()">Delete Region</button>';
         chtml += '<button onclick="Tasks.remove_regions()">Remove All Regions</button></td></tr><hr>';
 
-        shtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
+        chtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
         gh.innerHTML = chtml;
     }
 
@@ -440,7 +440,8 @@ var Tasks = (function (window, document, $, undefined) {
           shtml += '</select></td>';
           shtml += '<td><input type="text" oninput="Tasks.assign_speaker(this.id,this.value)" maxlength="32" id="spk_' + key +'" name="spk_' + key + '"/></td></tr>'
       }
-      shtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
+      //shtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
+        shtml += '</table>;
 
       region_backup = arr;
       gh.innerHTML = shtml;
