@@ -426,13 +426,14 @@ var Editor = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.alert("Speech service request successful.\nClosing down editor and locking the job.", function(){});
-			    localStorage.setItem("taskid", '');
-			    localStorage.setItem("projectid", '');
-			    localStorage.removeItem("taskid");
-			    localStorage.removeItem("projectid");
-                document.body.className = 'vbox viewport';
-                window.location.assign(JOB_URL);
+                alertify.alert("Speech service request successful.\nClosing down editor and locking the job.", function(){
+			        localStorage.setItem("taskid", '');
+			        localStorage.setItem("projectid", '');
+			        localStorage.removeItem("taskid");
+			        localStorage.removeItem("projectid");
+                    document.body.className = 'vbox viewport';
+                    window.location.assign(JOB_URL);
+                });
 		    } else { // Something unexpected happened
 			    alertify.alert("SPEECHSERVICE ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';

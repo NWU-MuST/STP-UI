@@ -38,8 +38,7 @@ var Project = (function (window, document, $, undefined) {
 
         // User logged on using a temporary password
         if(localStorage.templogin === true) {
-            alertify.alert("You need to change your password now!\nIf you do not, you will not be able to login once you leave this session.", function(){});
-            changepassword();
+            alertify.alert("You need to change your password now!\nIf you do not, you will not be able to login once you leave this session.", function(){changepassword();});
         }
     }
 
@@ -544,7 +543,7 @@ var Project = (function (window, document, $, undefined) {
         }
 
         if(obj["jobid"] !== null) {
-            alertify.alert("This project has been locked but a speech service request and is waiting for process to finish!", function(){});
+            alertify.alert("This project has been locked by a speech service request and is waiting for process to finish!", function(){});
             return false;
         }
 
@@ -568,7 +567,7 @@ var Project = (function (window, document, $, undefined) {
         }*/
 
         if(obj["jobid"] !== null) {
-            alertify.alert("This project has been locked but a speech service request and is waiting for process to finish!", function(){});
+            alertify.alert("This project has been locked by a speech service request and is waiting for process to finish!", function(){});
             return false;
         }
 
@@ -625,7 +624,7 @@ var Project = (function (window, document, $, undefined) {
 
         var obj = projects["projects"][selected];
         if(notset.indexOf(obj["jobid"]) == -1) {
-            alertify.alert("This project has been locked but a speech service request and is waiting for process to finish!", function(){});
+            alertify.alert("This project has been locked by a speech service request and is waiting for process to finish!", function(){});
             return false;
         }
 
@@ -686,8 +685,7 @@ var Project = (function (window, document, $, undefined) {
         reader.addEventListener("load", function () {
             // Check if audio is OGG Vorbis
             if(file.type != "audio/ogg") {
-                alertify.alert("Only Vorbis OGG audio file format supported. Please convert your audio file before uploading!", function(){});
-                return false;
+                alertify.alert("Only Vorbis OGG audio file format supported. Please convert your audio file before uploading!", function(){return false;});
             }
             // Stop user from uploading file larger than 50 Mb
             /*if(file.size > (50*1024*1024)) {
@@ -838,7 +836,7 @@ var Project = (function (window, document, $, undefined) {
         var cat = e.options[e.selectedIndex].value;
         var cattext = e.options[e.selectedIndex].text;
         if(cat === "null") {
-            alertify.alert("Please select project category", function(){});
+            alertify.alert("Please select a project category", function(){});
             return false;
         }
 
