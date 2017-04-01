@@ -1096,7 +1096,7 @@ var Project = (function (window, document, $, undefined) {
 	            var data = {};
 	            data["token"] = localStorage.token;
                 data["projectid"] = obj["projectid"];
-                data["segmetno"] = segmentno;
+                data["segmentno"] = segmentno;
 	            appserver_send(APP_PDIARIZEAUDIO, data, diarize_callback);
             },
             function(){
