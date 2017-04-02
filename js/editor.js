@@ -94,7 +94,7 @@ var Editor = (function (window, document, $, undefined) {
 			    { name: 'timealignment', items : ['Audio Zoom', 'Audio Rate']},
 			    { name: 'timealignment', items : ['Time Mark']},
 			    { name: 'format', items : ['RemoveMustFormat']},
-			    { name: 'speechservives', items : ['sphlang', 'Diarize Audio', 'Recognize Audio', 'Align Audio']},
+			    { name: 'speechservives', items : ['sphlang', 'Create Audio Segments', 'Generate a transcription', 'Align Audio and Text']},
 			    { name: 'tools', items : [ 'Close Document', 'Clear Error', 'Source' ] }
 		    ]
 	    });
