@@ -10,9 +10,9 @@ CKEDITOR.plugins.add( 'alignaudio',
 			}
 		});
 
-		editor.ui.addButton( 'Align Audio',
+		editor.ui.addButton( 'Align Audio and Text',
 		{
-			label: 'Align Audio',
+			label: 'Align Audio and Text',
 			command: 'align_audio',
 			icon: this.path + 'images/align.png'
 		} );

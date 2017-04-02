@@ -10,9 +10,9 @@ CKEDITOR.plugins.add( 'recognizeaudio',
 			}
 		});
 
-		editor.ui.addButton( 'Recognize Audio',
+		editor.ui.addButton( 'Generate a transcription',
 		{
-			label: 'Recognize Audio',
+			label: 'Generate a transcription',
 			command: 'recognize_audio',
 			icon: this.path + 'images/recognize.png'
 		} );

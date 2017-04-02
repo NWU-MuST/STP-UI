@@ -10,9 +10,9 @@ CKEDITOR.plugins.add( 'diarizeaudio',
 			}
 		});
 
-		editor.ui.addButton( 'Diarize Audio',
+		editor.ui.addButton( 'Create Audio Segments',
 		{
-			label: 'Diarize Audio',
+			label: 'Create Audio Segments',
 			command: 'diarize_audio',
 			icon: this.path + 'images/diarize.png'
 		} );
