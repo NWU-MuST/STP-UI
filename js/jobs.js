@@ -702,7 +702,7 @@ var Jobs = (function (window, document, $, undefined) {
         }
 
        if(notset.indexOf(obj["jobid"]) !== -1) {
-            alertify.alert("This job is not locked by a requested speech service!", function(){});
+            alertify.alert("This project is not currently locked by speech service request!", function(){});
             return false;
         }
 

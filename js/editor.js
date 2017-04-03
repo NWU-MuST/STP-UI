@@ -99,7 +99,7 @@ var Editor = (function (window, document, $, undefined) {
 		    ]
 	    });
 
-        CKEDITOR.config.removePlugins = 'scayt';
+        CKEDITOR.config.removePlugins = 'scayt,dragdrop,basket';
         CKEDITOR.config.disableNativeSpellChecker = true;
         CKEDITOR.config.scayt_autoStartup = false;
 

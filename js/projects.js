@@ -542,6 +542,11 @@ var Project = (function (window, document, $, undefined) {
             return false;
         }
 
+        if(notset.indexOf(obj["audiofile"]) !== -1) {
+            alertify.alert("Please upload an OGG Vorbis, single channel audio file!", function(){});
+            return false;
+        }
+
         if(obj["jobid"] !== null) {
             alertify.alert("This project has been locked by a speech service request and is waiting for process to finish!", function(){});
             return false;
@@ -628,8 +633,8 @@ var Project = (function (window, document, $, undefined) {
             return false;
         }
 
-        if(obj["audiofile"] == undefined) {
-            alertify.alert("Please upload audio and create tasks before assigning tasks!", function(){});
+        if(notset.indexOf(obj["audiofile"]) !== -1) {
+            alertify.alert("Please upload an audio file and create tasks before assigning tasks!", function(){});
             return false;
         }
 
@@ -1062,8 +1067,8 @@ var Project = (function (window, document, $, undefined) {
         }
         var obj = projects["projects"][selected];
 
-        if(obj["audiofile"] == undefined) {
-            alertify.alert("Please upload audio before trying to create tasks!", function(){});
+        if(notset.indexOf(obj["audiofile"]) !== -1) {
+            alertify.alert("Please upload an audio file before trying to create tasks!", function(){});
             return false;
         }
 
