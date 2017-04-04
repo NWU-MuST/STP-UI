@@ -34,15 +34,16 @@ var Login = (function (window, document, $, undefined) {
 
         help_message += "<h2>Input boxes</h2>";
         help_message += "<p><b>Username</b> -- your username<br>";
-        help_message += "<b>Password</b> -- your password<br></p><br>";
+        help_message += "<b>Password</b> -- your password<br></p>";
 
         help_message += "<h2>Buttons</h2>";
         help_message += "<p><b>Log on</b> -- after providing credentials: click on this button to log on.<br>";
-        help_message += "<b>Log off</b> -- after providing credentials: you can use this button to remove a token that prevents you from logging in.";
-        help_message += "This happens when you try to login and the system says there is a conflict error. After removing the token you will be able to login.<br>";
+        help_message += "<b>Log out</b> -- after providing credentials: you can use this button to remove a token that prevents you from logging in.";
+        help_message += "This happens when you try to login and the system says there is a <strong>ConflictError</strong>. After removing the token you will be able to login.</p>";
 
         help_message += "<h2>Navigation</h2>";
-        help_message += "<b>Home</b> -- clicking on Home will return you to the Home page.</p>";
+        help_message += "<p><b>Home</b> -- clicking on Home will return you to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides the message.</p>";
     }
 
     // Redirect the user to the homepage

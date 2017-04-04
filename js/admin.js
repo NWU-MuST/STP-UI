@@ -6,6 +6,8 @@ var Admin = (function (window, document, $, undefined) {
 
     $(document).on( 'ready', check_browser );
 
+    var help_message = "";
+
     // Make sure user is using chrome
     function check_browser() {
         document.body.className = 'vbox viewport';
@@ -121,6 +123,19 @@ var Admin = (function (window, document, $, undefined) {
     function populate_users(data) {
 	    var adsp = document.getElementById("adminspace");
 
+        help_message = "<h1>Administration Page</h1><hr>";
+        help_message += "<p>Manage users -- add new user, delete existing users and view a user's information.</p>";
+        help_message += "<h2>User list table</h2>";
+        help_message += "<p>This table shows a list of registered users.";
+        help_message += "You can click on a user's row to access more information pertaining to that user.
+        help_message += "Clicking on the table headings will sort the list by that heading.</p>";
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Users</b> -- refresh the user's display list.<br>";
+        help_message += "<b>Add User</b> -- add a user to the system.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides the message.</p>";
+
         udisplay = [];
         var i = 0;
         for (var usrn in data) {
@@ -158,6 +173,23 @@ var Admin = (function (window, document, $, undefined) {
         var obj = users[udisplay[i][2]];
         selected = i;
 
+        help_message = "<h1>Administration Page</h1><hr>";
+        help_message += "<p>User's information display</p>";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Go Back</b> -- return you to the main Adminstration page<br>";
+        help_message += "<b>Delete User</b> -- remove user from the system.<br>";
+        help_message += "<b>Reset Password</b> -- reset the user's password. An email containing the new temporay password will be sent to the user's email address.";
+        help_message += "<strong>The user can only use this password once and must change after logging in.</strong>";
+        help_message += "The user can change their password once logged in the <strong>Project Manager</strong> or <strong>Editor</strong> interfaces.</p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Users</b> -- refresh the user's display list.<br>";
+        help_message += "<b>Add User</b> -- add a user to the system.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides the message.</p>";
+
         var context;
         context = "<fieldset><legend>User</legend><table class='project'>";
         context += "<tr><td><label>Name: </label></td><td>" + obj["name"] + "</td></tr>";
@@ -165,7 +197,7 @@ var Admin = (function (window, document, $, undefined) {
         context += "<tr><td><label>Username: </label></td><td>" + udisplay[i][2] + "</td></tr>";
         context += "<tr><td><label>Email: </label></td><td>" + obj["email"] + "</td></tr>";
         context += "<tr><td><label>Role: </label></td><td>" + obj["role"] + "</td></tr>";
-        context += '<tr><td><button onclick="Admin.deluser()">Delete</button></td><td style="text-align: right;"><button onclick="Admin.resetpassword()">Reset Password</button></td><button onclick="Admin.goback()">Go Back</button></td></tr></table></fieldset>';
+        context += '<tr><td><button onclick="Admin.deluser()">Delete User</button></td><td style="text-align: right;"><button onclick="Admin.resetpassword()">Reset Password</button></td><button onclick="Admin.goback()">Go Back</button></td></tr></table></fieldset>';
         adsp.innerHTML = context;
     }
 
@@ -180,6 +212,22 @@ var Admin = (function (window, document, $, undefined) {
         selected = -1;
         var adsp = document.getElementById("adminspace");
         adsp.innerHTML = "";
+
+        help_message = "<h1>Administration Page</h1><hr>";
+        help_message += "<p>Add a new user to the system. You need to fill in all the details:";
+        help_message += "<emph>name, surname, username, email and password</emph>. The <strong>username and <strong>email must be unique.";
+        help_message += "You must also select the user's role which can be a Project Manager, an Editor or both.</p>";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Add user</b> -- add a new user to the system after completing all the details.<br>";
+        help_message += "<b>Cancel</b> -- cancel the add user process.</p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Users</b> -- refresh the user's display list.<br>";
+        help_message += "<b>Add User</b> -- add a user to the system.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides the message.</p>";
 
         var context;
         context = "<fieldset><legend>New User</legend><table class='project'>";
@@ -378,6 +426,15 @@ var Admin = (function (window, document, $, undefined) {
         if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
             alertify.alert("RESTPASSWORD Network Error. Please check your connection and try again later!", function(){});
             document.body.className = 'vbox viewport';
+        }
+    }
+
+   // Return a help message for the context
+    module.help = function() {
+        if(help_message.length > 0) {
+            alertify.alert("Help", help_message, function(){});
+        } else {
+            alertify.alert("Help", "Sorry no help provided for this context!");
         }
     }
 
