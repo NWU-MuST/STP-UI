@@ -36,7 +36,7 @@ var Login = (function (window, document, $, undefined) {
         help_message += "<p><b>Username</b> -- your username<br>";
         help_message += "<b>Password</b> -- your password<br></p><br>";
 
-        help_message = "<h2>Buttons</h2>";
+        help_message += "<h2>Buttons</h2>";
         help_message += "<p><b>Log on</b> -- after providing credentials: click on this button to log on.<br>";
         help_message += "<b>Log off</b> -- after providing credentials: you can use this button to remove a token that prevents you from logging in.";
         help_message += "This happens when you try to login and the system says there is a conflict error. After removing the token you will be able to login.<br>";
