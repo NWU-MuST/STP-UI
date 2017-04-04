@@ -14,6 +14,7 @@ var Tasks = (function (window, document, $, undefined) {
     var color2 = 'rgba(0,0,255,0.5)';
     var colorflag;
     var segments_dirty = false;
+    var notset = ["null", null, undefined];
 
     // Make sure user is using chrome
     function check_browser() {
@@ -40,6 +41,34 @@ var Tasks = (function (window, document, $, undefined) {
         languages = JSON.parse(localStorage.getItem("languages"));
 
         get_audio();
+
+        help_message = "<h1>Project Manager Tasks Creation</h1><hr>";
+        help_message += "<p>This interface provides a means to create tasks for the editors. ";
+        help_message += "<p>You can do this by manually creating segments on the audio or by requesting a speech service to automatically perform the segmentation. ";
+        help_message += "<p>To manually create task you must drag regions on audio waveform using your mouse. You shift the regions around by dragging them left or right. ";
+        help_message += "<p>You can change the size of the segments by dragging the endpoints.</p>";
+
+        help_message += "<p>Each region that is created will produce a task information row that will appear at the bottom of the buttons. ";
+        help_message += "<p>You must complete all information: select an <b>Editor</b>, select a <b>Language</b> and provide a <b>Speaker Name</b>.</p>";
+
+        help_message += "<p><b>You must save all changes periodically using the <em>Save Project Tasks</em> button</p>";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Play</b> -- play audio.<br>";
+        help_message += "<b>Pause</b> -- pause playback.<br>";
+        help_message += "<b>Stop</b> -- stop playback.<br>";
+        help_message += "<b>Zoom in</b> -- zoom into audio.<br>";
+        help_message += "<b>Zoom out</b> -- zoom out of audio.<br>";
+        help_message += "<b>Delete region</b> -- delete a selected region. <strong>You must select a region.</strong>.<br>";
+        help_message += "<b>Delete region</b> -- delete all regions.<br>";
+        help_message += "<b>Save Project Tasks</b> -- save all tasks to the server.<br>";
+        help_message += "<b>Automatically Create Segments</b> -- request a speech service to automatically create editor tasks.<b>This will lock the project and return you to the Projects Page.</b></p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Back to Projects</b> -- return back to the project page.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
     }
 
     // User needs to register therefore forward them to the registration page
@@ -279,7 +308,7 @@ var Tasks = (function (window, document, $, undefined) {
         chtml += '<td><button onclick="Tasks.delete_region()">Delete Region</button>';
         chtml += '<button onclick="Tasks.remove_regions()">Remove All Regions</button></td></tr><hr>';
 
-        chtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
+        chtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button><button onclick="Tasks.diarize()">Automatically Create Segments</button>';
         gh.innerHTML = chtml;
     }
 
@@ -576,6 +605,78 @@ var Tasks = (function (window, document, $, undefined) {
         if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
             alertify.alert("SAVEPROJECT Network Error. Please check your connection and try again later!", function(){});
             document.body.className = 'vbox viewport';
+        }
+    }
+
+    // Automatically create segments
+    module.diarize = function() {
+        if(notset.indexOf(project["audiofile"]) !== -1) {
+            alertify.alert("Please upload an audio file before trying to create tasks!", function(){});
+            return false;
+        }
+
+        var segmentno = 0;
+        alertify.prompt("How many segments would you like to create? Please enter an integer:", 0,
+            function(evt, value ){
+                segmentno = value;
+                alertify.success('Number of segments set to ' + value);
+
+                if(isInt(segmentno) === false) {
+                    alertify.alert("You must provide an integer for the number of segments!", function(){});
+                    return false;
+                }
+
+                if(segmentno == 0) {
+                    alertify.alert("You must specify the number of segments for diarization!", function(){});
+                    return false;
+                }
+
+	            var data = {};
+	            data["token"] = localStorage.token;
+                data["projectid"] = project["projectid"];
+                data["segmentno"] = segmentno;
+	            appserver_send(APP_PDIARIZEAUDIO, data, diarize_callback);
+            },
+            function(){
+                alertify.error('Cancel');
+        });
+    }
+
+    // Diarize callack
+    function diarize_callback(xmlhttp) {
+	    // No running server detection
+	    if ((xmlhttp.status==503)) {
+		    alertify.alert("Application server unavailable", function(){});
+	    }
+
+	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
+		    var response_data = JSON.parse(xmlhttp.responseText);
+
+		    // Logout application was successful
+		    if(xmlhttp.status==200) {
+                alertify.alert('This project will be locked! Returning you to the Project Page.',
+                    function() {
+                        backtoproject();
+                        document.body.className = 'vbox viewport';
+                });
+		    } else { // Something unexpected happened
+			    alertify.alert("DIARIZEAUDIO ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
+                document.body.className = 'vbox viewport';
+		    }
+	    }
+
+        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
+            alertify.alert("DIARIZEAUDIO Network Error. Please check your connection and try again later!", function(){});
+            document.body.className = 'vbox viewport';
+        }
+    }
+
+  // Return a help message for the context
+    module.help = function() {
+        if(help_message.length > 0) {
+            alertify.alert("Help", help_message, function(){});
+        } else {
+            alertify.alert("Help", "Sorry no help provided for this context!");
         }
     }
 

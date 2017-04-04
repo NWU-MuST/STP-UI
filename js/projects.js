@@ -95,9 +95,9 @@ var Project = (function (window, document, $, undefined) {
             help_message += "To access the project's information, click on a table row. ";
             help_message += "Clicking on the table headings will sort the list by that heading.</p>";
             help_message += "<h2>Project Workflow</h2>";
-            help_message += "<p>A typical project creation process is as follows: ";
-            help_message += "Create a new project<br>";
-            help_message += "Upload an OGG Vorbis audio file (1 channel, 16kHz)<br>";
+            help_message += "<p>A typical project creation process is as follows:<br>";
+            help_message += "Create a new project.<br>";
+            help_message += "Upload an OGG Vorbis audio file (1 channel, 16kHz).br>";
             help_message += "Create tasks -- split the audio into regions that are allocated to editors.<br>";
             help_message += "Assign tasks -- once the tasks have been created, assign them to the editors<br></p>";
 
@@ -518,7 +518,7 @@ var Project = (function (window, document, $, undefined) {
             context += "<tr><td><label>Audio Duration: </label></td><td> " + result + "</td></tr>";
         }
 
-        context += '</table></fieldset><br><hr><br><button onclick="Project.task_project()">Create/Edit Tasks</button> <button onclick="Project.diarize()">Create Project Tasks (Auto)</button> &nbsp;&nbsp;';
+        context += '</table></fieldset><br><hr><br><button onclick="Project.task_project()">Create/Edit Tasks</button> &nbsp;&nbsp;';
         context += '<button onclick="Project.assign_tasks()">Assign Tasks</button> <button onclick="Project.update_project()">Update Project</button> <button onclick="Project.delete_project()">Delete Project</button> &nbsp;&nbsp;';
         context += '<button onclick="Project.clearerror_project()">Clear Project Error</button> <button onclick="Project.unlock_project()">Unlock Project</button> ';
         context += '&nbsp;&nbsp;<button onclick="Project.goback()">Go Back</button>';
@@ -1131,84 +1131,6 @@ var Project = (function (window, document, $, undefined) {
         return !isNaN(value) && 
             parseInt(Number(value)) == value && 
             !isNaN(parseInt(value, 10));
-    }
-
-    // Automatically create segments
-    module.diarize = function() {
-       if(selected == -1) {
-            alertify.alert("Please select a project to create tasks automatically!", function(){});
-            return false;
-        }
-        var obj = projects["projects"][selected];
-
-        if(notset.indexOf(obj["audiofile"]) !== -1) {
-            alertify.alert("Please upload an audio file before trying to create tasks!", function(){});
-            return false;
-        }
-
-        if(obj["jobid"] != null) {
-            alertify.alert("This project has been locked by a speech service request!", function(){});
-            return false;
-        }
-
-        if(obj["assigned"] == "Y") {
-            alertify.alert("This project has been assigned already!", function(){});
-            return false;
-        }
-
-        var segmentno = 0;
-        alertify.prompt("How many segments would you like to create? Please enter an integer:", 0,
-            function(evt, value ){
-                segmentno = value;
-                alertify.success('Number of segments set to ' + value);
-
-                if(isInt(segmentno) === false) {
-                    alertify.alert("You must provide an integer for the number of segments!", function(){});
-                    return false;
-                }
-
-                if(segmentno == 0) {
-                    alertify.alert("You must specify the number of segments for diarization!", function(){});
-                    return false;
-                }
-
-	            var data = {};
-	            data["token"] = localStorage.token;
-                data["projectid"] = obj["projectid"];
-                data["segmentno"] = segmentno;
-	            appserver_send(APP_PDIARIZEAUDIO, data, diarize_callback);
-            },
-            function(){
-                alertify.error('Cancel');
-        });
-    }
-
-    // Diarize callack
-    function diarize_callback(xmlhttp) {
-	    // No running server detection
-	    if ((xmlhttp.status==503)) {
-		    alertify.alert("Application server unavailable", function(){});
-	    }
-
-	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
-		    var response_data = JSON.parse(xmlhttp.responseText);
-
-		    // Logout application was successful
-		    if(xmlhttp.status==200) {
-                alertify.success("Automatically creating tasks!");
-                alertify.success("Project Locked!");
-                get_projects();
-                document.body.className = 'vbox viewport';
-		    } else { // Something unexpected happened
-			    alertify.alert("DIARIZEAUDIO ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
-                document.body.className = 'vbox viewport';
-		    }
-	    }
-
-        if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
-            alertify.alert("DIARIZEAUDIO Network Error. Please check your connection and try again later!", function(){});
-            document.body.className = 'vbox viewport';
-        }
     }
 
     // User wants to change their password
