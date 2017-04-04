@@ -46,10 +46,10 @@ var Tasks = (function (window, document, $, undefined) {
         help_message += "<p>This interface provides a means to create tasks for the editors. ";
         help_message += "<p>You can do this by manually creating segments on the audio or by requesting a speech service to automatically perform the segmentation. ";
         help_message += "<p>To manually create task you must drag regions on audio waveform using your mouse. You shift the regions around by dragging them left or right. ";
-        help_message += "<p>You can change the size of the segments by dragging the endpoints.</p>";
+        help_message += "<p>You can change the size of the segments by dragging the endpoints.</p><br>";
 
         help_message += "<p>Each region that is created will produce a task information row that will appear at the bottom of the buttons. ";
-        help_message += "<p>You must complete all information: select an <b>Editor</b>, select a <b>Language</b> and provide a <b>Speaker Name</b>.</p>";
+        help_message += "<p>You must complete all information: select an <b>Editor</b>, select a <b>Language</b> and provide a <b>Speaker Name</b>.</p><br>";
 
         help_message += "<p><b>You must save all changes periodically using the <em>Save Project Tasks</em> button</p>";
 
@@ -59,10 +59,10 @@ var Tasks = (function (window, document, $, undefined) {
         help_message += "<b>Stop</b> -- stop playback.<br>";
         help_message += "<b>Zoom in</b> -- zoom into audio.<br>";
         help_message += "<b>Zoom out</b> -- zoom out of audio.<br>";
-        help_message += "<b>Delete region</b> -- delete a selected region. <strong>You must select a region.</strong>.<br>";
+        help_message += "<b>Delete region</b> -- delete a selected region. <strong>You must select a region</strong>.<br>";
         help_message += "<b>Delete region</b> -- delete all regions.<br>";
         help_message += "<b>Save Project Tasks</b> -- save all tasks to the server.<br>";
-        help_message += "<b>Automatically Create Segments</b> -- request a speech service to automatically create editor tasks.<b>This will lock the project and return you to the Projects Page.</b></p>";
+        help_message += "<b>Automatically Create Segments</b> -- request a speech service to automatically create editor tasks. <b>This will lock the project and return you to the Projects Page.</b></p>";
 
         help_message += "<h2>Navigation</h2>";
         help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
