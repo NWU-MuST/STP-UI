@@ -96,10 +96,10 @@ var Project = (function (window, document, $, undefined) {
             help_message += "Clicking on the table headings will sort the list by that heading.</p>";
             help_message += "<h2>Project Workflow</h2>";
             help_message += "<p>A typical project creation process is as follows: ";
-            help_message += "<ul><li>Create a new project</li>";
-            help_message += "<li>Upload an OGG Vorbis audio file (1 channel, 16kHz)</li>";
-            help_message += "<li>Create tasks -- split the audio into regions that are allocated to editors.</li>";
-            help_message += "<li>Assign tasks -- once the tasks have been created, assign them to the editors</li></ul></p>";
+            help_message += "Create a new project<br>";
+            help_message += "Upload an OGG Vorbis audio file (1 channel, 16kHz)<br>";
+            help_message += "Create tasks -- split the audio into regions that are allocated to editors.<br>";
+            help_message += "Assign tasks -- once the tasks have been created, assign them to the editors<br></p>";
 
             help_message += "<h2>Buttons</h2>";
             help_message += "<p><b>Refresh</b> -- refresh the project list.</p>";
