@@ -6,6 +6,8 @@ var Login = (function (window, document, $, undefined) {
 
     $(document).on( 'ready', check_browser );
 
+    var help_message = "";
+
     // Make sure user is using chrome
     function check_browser() {
 	    var is_chrome = /chrome/.test( navigator.userAgent.toLowerCase() );
@@ -26,6 +28,21 @@ var Login = (function (window, document, $, undefined) {
 
 	    var role = document.getElementById("role");
         role.innerHTML = localStorage.getItem("role");
+
+        help_message = "<h1>Login Page</h1><hr>";
+        help_message += "<p>Provide login credentials to proceed to chosen interface or remove a session token from application server.</p>";
+
+        help_message = "<h2>Input boxes</h2>";
+        help_message += "<p><b>Username</b> -- your username<br>";
+        help_message += "<b>Password</b> -- your password<br></p><br>";
+
+        help_message = "<h2>Buttons</h2>";
+        help_message += "<p><b>Log on</b> -- after providing credentials: click on this button to log on.<br>";
+        help_message += "<b>Log off</b> -- after providing credentials: you can use this button to remove a token that prevents you from logging in.";
+        help_message += "This happens when you try to login and the system says there is a conflict error. After removing the token you will be able to login.<br>";
+
+        help_message = "<h2>Navigation</h2>";
+        help_message += "<b>Home</b> -- clicking on Home will return you to the Home page.</p>";
     }
 
     // Redirect the user to the homepage
@@ -194,6 +211,15 @@ var Login = (function (window, document, $, undefined) {
         if ((xmlhttp.readyState==4) && (xmlhttp.status == 0)) {
             alertify.alert("LOGOUT Network Error. Please check your connection and try again later!", function(){});
             document.body.className = 'vbox viewport';
+        }
+    }
+
+   // Return a help message for the context
+    module.help = function() {
+        if(help_message.length > 0) {
+            alertify.alert("Help", help_message, function(){});
+        } else {
+            alertify.alert("Help", "Sorry no help provided for this context!");
         }
     }
 

@@ -23,11 +23,11 @@ var Home = (function (window, document, $, undefined) {
         localStorage.setItem("role", "");
         localStorage.removeItem("role");
 
-        help_message = "<h1>Home Page</h1>";
+        help_message = "<h1>Home Page</h1><hr>";
         help_message += "<p>Click on a button to proceed to a login screen.</p>";
-        help_message += "<b>Administration</b> -- user administration interface";
-        help_message += "<b>Project Manager</b> -- project management interface";
-        help_message += "<b>Editor</b> -- editor interface";
+        help_message += "<p><b>Administration</b> -- user administration interface<br>";
+        help_message += "<b>Project Manager</b> -- project management interface<br>";
+        help_message += "<b>Editor</b> -- editor interface</p>";
     }
 
     // Goto to administration
@@ -54,7 +54,7 @@ var Home = (function (window, document, $, undefined) {
     // Return a help message for the context
     module.help = function() {
         if(help_message.length > 0) {
-            alertify.alert("Help", message, function(){});
+            alertify.alert("Help", help_message, function(){});
         } else {
             alertify.alert("Help", "Sorry no help provided for this context!");
         }
