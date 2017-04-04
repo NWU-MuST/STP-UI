@@ -1127,13 +1127,7 @@ var Project = (function (window, document, $, undefined) {
         }
     }
 
-    function isInt(value) {
-        return !isNaN(value) && 
-            parseInt(Number(value)) == value && 
-            !isNaN(parseInt(value, 10));
-    }
-
-    // User wants to change their password
+     // User wants to change their password
     function changepassword() {
         document.getElementById("defproject").click();
 

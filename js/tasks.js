@@ -51,7 +51,7 @@ var Tasks = (function (window, document, $, undefined) {
         help_message += "<p>Each region that is created will produce a task information row that will appear at the bottom of the buttons. ";
         help_message += "<p>You must complete all information: select an <b>Editor</b>, select a <b>Language</b> and provide a <b>Speaker Name</b>.</p><br>";
 
-        help_message += "<p><b>You must save all changes periodically using the <em>Save Project Tasks</em> button</p>";
+        help_message += "<p><b>You must save all changes periodically using the <em>Save Project Tasks</em> button</b>.</p>";
 
         help_message += "<h2>Buttons</h2>";
         help_message += "<p><b>Play</b> -- play audio.<br>";
@@ -606,6 +606,12 @@ var Tasks = (function (window, document, $, undefined) {
             alertify.alert("SAVEPROJECT Network Error. Please check your connection and try again later!", function(){});
             document.body.className = 'vbox viewport';
         }
+    }
+
+   function isInt(value) {
+        return !isNaN(value) && 
+            parseInt(Number(value)) == value && 
+            !isNaN(parseInt(value, 10));
     }
 
     // Automatically create segments
