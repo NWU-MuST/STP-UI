@@ -127,7 +127,7 @@ var Admin = (function (window, document, $, undefined) {
         help_message += "<p>Manage users -- add new user, delete existing users and view a user's information.</p>";
         help_message += "<h2>User list table</h2>";
         help_message += "<p>This table shows a list of registered users.";
-        help_message += "You can click on a user's row to access more information pertaining to that user.";
+        help_message += "You can click on a user's row to access more information pertaining to that user. ";
         help_message += "Clicking on the table headings will sort the list by that heading.</p>";
         help_message += "<h2>Navigation</h2>";
         help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
@@ -179,8 +179,8 @@ var Admin = (function (window, document, $, undefined) {
         help_message += "<h2>Buttons</h2>";
         help_message += "<p><b>Go Back</b> -- return you to the main Adminstration page<br>";
         help_message += "<b>Delete User</b> -- remove user from the system.<br>";
-        help_message += "<b>Reset Password</b> -- reset the user's password. An email containing the new temporay password will be sent to the user's email address.";
-        help_message += "<strong>The user can only use this password once and must change after logging in.</strong>";
+        help_message += "<b>Reset Password</b> -- reset the user's password. An email containing the new temporay password will be sent to the user's email address. ";
+        help_message += "<strong>The user can only use this password once and must change after logging in.</strong> ";
         help_message += "The user can change their password once logged in the <strong>Project Manager</strong> or <strong>Editor</strong> interfaces.</p>";
 
         help_message += "<h2>Navigation</h2>";
@@ -214,8 +214,8 @@ var Admin = (function (window, document, $, undefined) {
         adsp.innerHTML = "";
 
         help_message = "<h1>Administration Page</h1><hr>";
-        help_message += "<p>Add a new user to the system. You need to fill in all the details:";
-        help_message += "<emph>name, surname, username, email and password</emph>. The <strong>username and <strong>email must be unique.";
+        help_message += "<p>Add a new user to the system. You need to fill in all the details: ";
+        help_message += "<em>name, surname, username, email and password</em>. The <strong>username and </strong>email must be unique. ";
         help_message += "You must also select the user's role which can be a Project Manager, an Editor or both.</p>";
 
         help_message += "<h2>Buttons</h2>";

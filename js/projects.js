@@ -8,6 +8,7 @@ var Project = (function (window, document, $, undefined) {
 
     var project_status = ["Created", "In Progress", "Completed"];
     var notset = ["null", null, undefined];
+    var help_message = "";
 
     // Make sure user is using chrome
     function check_browser() {
@@ -286,6 +287,30 @@ var Project = (function (window, document, $, undefined) {
         var ps = document.getElementById("projectspace");
         var data = data["projects"];
 
+        help_message = "<h1>Project Manager Page</h1><hr>";
+        help_message += "<p>Manage projects</p>";
+        help_message += "<h2>Project list table</h2>";
+        help_message += "<p>This table shows a list <strong>owned projects</strong> and <strong>created projects</strong>. ";
+        help_message += "You can change between these project types by clicking on the corresponding tabs.  ";
+        help_message += "To access the project's information, click on a table row. ";
+        help_message += "Clicking on the table headings will sort the list by that heading.</p>";
+        help_message += "<h2>Project Workflow</h2>";
+        help_message += "<p>A typical project creation process is as follows: ";
+        help_message += "<ul><li>Create a new project</li>";
+        help_message += "<li>Upload an OGG Vorbis audio file (1 channel, 16kHz)</li>";
+        help_message += "<li>Create tasks -- split the audio into regions that are allocated to editors.</li>";
+        help_message += "<li>Assign tasks -- once the tasks have been created, assign them to the editors</li></ul></p>";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Refresh</b> -- refresh the project list.</p>";
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Projects</b> -- refresh the project list.<br>";
+        help_message += "<b>Create Project</b> -- create a new project.<br>";
+        help_message += "<b>Update Password</b> -- update your password.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
+
         if(data.length > 0) {
             pdisplay = [];
             for (var i = 0, len = data.length; i < len; i++) {
@@ -349,6 +374,10 @@ var Project = (function (window, document, $, undefined) {
     function display_createdprojects(data) {
         var cps = document.getElementById("created");
         var data = data["projects"];
+
+        help_message = "<h1>Project Manager Page</h1><hr>";
+        help_message += "<p>A display of created projects. You do not have access to these projects.</p>";
+
         if(data.length > 0) {
             var cpdisplay = [];
             for (var i = 0, len = data.length; i < len; i++) {
@@ -382,7 +411,7 @@ var Project = (function (window, document, $, undefined) {
                 var d = new Date();
                 d.setTime(parseFloat(obj["creation"])*1000.0);
                 context += "<td>" + d.toDateString() + "</td>";
-                context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
+                //context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
                 context += "<td> " + normnull(obj["errstatus"], "No error") + " </td></tr>";
             }
             context += "</table>";
@@ -400,6 +429,32 @@ var Project = (function (window, document, $, undefined) {
         ps.innerHTML = "";
         var obj = projects["projects"][i];
         selected = i;
+
+        help_message = "<h1>Project Manager Page</h1><hr>";
+        help_message += "<p>A displayed of the selected project's information.</p>";
+        help_message += "<h2>Project information</h2>";
+        help_message += "<p>This project view shows all the project information. ";
+        help_message += "You can click on the project-related buttons, located after the project information, to perform certain actions on the projects. ";
+        help_message += "Once you have upload audio, the next step is to create tasks. After creating tasks you can assign them to the editors. ";
+        help_message += "Once assigned, you cannot access the project tasks. In this project state you can only update project information. </p>";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
+        help_message += "<b>Create/Edit Tasks</b> -- create tasks or edit existing tasks for editors by splitting up the audio.<br>";
+        help_message += "<b>Assign Tasks</b> -- assign create editor tasks to the editors. <strong>Once you have pressed the assign button you CANNOT edit created tasks.</strong><br>";
+        help_message += "<b>Update Project info</b> -- update the information of a project that has been assigned. You can only change <strong>Project Manager, Project Category and Collators</strong>.<br>";
+        help_message += "<b>Delete Project</b> -- delete the project and remove all editor tasks.<br>";
+        help_message += "<b>Clear Project Error</b> -- clear a project error so you can access the project. This may occur when a requested speech service terminated incorrectly.<br>";
+        help_message += "<b>Unlock Project</b> -- unlock a project that has been locked by a requested speech service. The project will be highlighted red when locked.<br>";
+        help_message += "<b>Go Back</b> -- return to the project list view.</p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Projects</b> -- refresh the project list.<br>";
+        help_message += "<b>Create Project</b> -- create a new project.<br>";
+        help_message += "<b>Update Password</b> -- update your password.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
 
         var context;
         context = "<fieldset><legend>Project</legend><table class='project'>";
@@ -433,12 +488,12 @@ var Project = (function (window, document, $, undefined) {
         d.setTime(parseFloat(obj["creation"])*1000.0);
         context += "<tr><td><label>Creation Date: </label></td><td>" + d + "</td></tr>";
 
-        context += "<tr><td><label>Project Status: </label></td><td> <select id='statussel' onchange='Project.assign_status(this.id,this.value)'>";
+        /*context += "<tr><td><label>Project Status: </label></td><td> <select id='statussel' onchange='Project.assign_status(this.id,this.value)'>";
         context += '<option value="null">Project Status...</option>';
         for(var i = 0; i < project_status.length; i++) {
             context += '<option value="' + project_status[i] + '">' + project_status[i] + '</option>';
         }
-        context += '</select></td></tr>';
+        context += '</select></td></tr>';*/
 
         //context += "<tr><td><label>Project Status: </label></td><td>" + obj["projectstatus"] + "</td></tr>";
         context += "<tr><td><label>Assigned: </label></td><td>" + obj["assigned"] + "</td></tr>";
@@ -460,7 +515,7 @@ var Project = (function (window, document, $, undefined) {
             context += "<tr><td><label>Audio Duration: </label></td><td> " + result + "</td></tr>";
         }
 
-        context += '</table></fieldset><br><hr><br><button onclick="Project.task_project()">Create Project Tasks (Manual)</button> <button onclick="Project.diarize()">Create Project Tasks (Auto)</button> &nbsp;&nbsp;';
+        context += '</table></fieldset><br><hr><br><button onclick="Project.task_project()">Create/Edit Tasks</button> <button onclick="Project.diarize()">Create Project Tasks (Auto)</button> &nbsp;&nbsp;';
         context += '<button onclick="Project.assign_tasks()">Assign Tasks</button> <button onclick="Project.update_project()">Update Project</button> <button onclick="Project.delete_project()">Delete Project</button> &nbsp;&nbsp;';
         context += '<button onclick="Project.clearerror_project()">Clear Project Error</button> <button onclick="Project.unlock_project()">Unlock Project</button> ';
         context += '&nbsp;&nbsp;<button onclick="Project.goback()">Go Back</button>';
@@ -792,6 +847,22 @@ var Project = (function (window, document, $, undefined) {
     module.new_project = function() {
         var ps = document.getElementById("projectspace");
         ps.innerHTML = "";
+
+        help_message = "<h1>Project Manager Page</h1><hr>";
+        help_message += "<p>Create a new project.</p>";
+        help_message += "<h2>New Project</h2>";
+        help_message += "<p>Provide a <strong>Project Name</strong>, select a <strong>Project Manager</strong> and select a <strong>Project Category</strong>.</p> ";
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
+        help_message += "<b>Create Project</b> -- create a new project.<br>";
+        help_message += "<b>Cancel</b> -- cancel project creation process.</p>";
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Projects</b> -- refresh the project list.<br>";
+        help_message += "<b>Create Project</b> -- create a new project.<br>";
+        help_message += "<b>Update Password</b> -- update your password.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
 
         var context;
         context = "<fieldset><legend>New Project</legend><table class='project'>";
@@ -1144,6 +1215,25 @@ var Project = (function (window, document, $, undefined) {
         var ps = document.getElementById("projectspace");
         ps.innerHTML = "";
 
+        help_message = "<h1>Project Manager Page</h1><hr>";
+        help_message += "<p>Update your password.</p>";
+        help_message += "<h2>Update Password</h2>";
+        help_message += "<p>You can update your password at any stage using the update password interface. ";
+        help_message += "<strong>You have to change your password if the administrator resets your password</strong>.</p> ";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
+        help_message += "<b>Update Password</b> -- update your password once you have typed the new password twice.<br>";
+        help_message += "<b>Cancel</b> -- cancel the update password process.</p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Projects</b> -- refresh the project list.<br>";
+        help_message += "<b>Create Project</b> -- create a new project.<br>";
+        help_message += "<b>Update Password</b> -- update your password.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
+
         var context;
         context = "<fieldset><legend>New Password</legend><table class='project'>";
         context += "<tr><td style='text-align: left;'><label>Password: </label></td>";
@@ -1152,7 +1242,7 @@ var Project = (function (window, document, $, undefined) {
         context += '<td><input id="repassword" name="repassword" placeholder="" type="password" maxlength="32"/></td></tr>';
         context += '</select></td></tr>';
 
-        context += '<tr><td><button onclick="Project.update_password()">Update</button></td>';
+        context += '<tr><td><button onclick="Project.update_password()">Update Password</button></td>';
         context += '<td style="text-align: right;"><button onclick="Project.password_cancel()">Cancel</button></td></tr></table></fieldset>';
         ps.innerHTML = context;
 
@@ -1218,6 +1308,15 @@ var Project = (function (window, document, $, undefined) {
     // User cancelled password update
     module.password_cancel = function() {
         display_projects(projects);
+    }
+
+  // Return a help message for the context
+    module.help = function() {
+        if(help_message.length > 0) {
+            alertify.alert("Help", help_message, function(){});
+        } else {
+            alertify.alert("Help", "Sorry no help provided for this context!");
+        }
     }
 
     return module;
