@@ -85,6 +85,36 @@ var Project = (function (window, document, $, undefined) {
         // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(projectName).style.display = "block";
         evt.currentTarget.className += " active";
+
+        if(projectName == "projectspace") {
+            help_message = "<h1>Project Manager Page</h1><hr>";
+            help_message += "<p>Manage projects</p>";
+            help_message += "<h2>Project list table</h2>";
+            help_message += "<p>This table shows a list <strong>owned projects</strong> and <strong>created projects</strong>. ";
+            help_message += "You can change between these project types by clicking on the corresponding tabs.  ";
+            help_message += "To access the project's information, click on a table row. ";
+            help_message += "Clicking on the table headings will sort the list by that heading.</p>";
+            help_message += "<h2>Project Workflow</h2>";
+            help_message += "<p>A typical project creation process is as follows: ";
+            help_message += "<ul><li>Create a new project</li>";
+            help_message += "<li>Upload an OGG Vorbis audio file (1 channel, 16kHz)</li>";
+            help_message += "<li>Create tasks -- split the audio into regions that are allocated to editors.</li>";
+            help_message += "<li>Assign tasks -- once the tasks have been created, assign them to the editors</li></ul></p>";
+
+            help_message += "<h2>Buttons</h2>";
+            help_message += "<p><b>Refresh</b> -- refresh the project list.</p>";
+            help_message += "<h2>Navigation</h2>";
+            help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+            help_message += "<b>Refresh Projects</b> -- refresh the project list.<br>";
+            help_message += "<b>Create Project</b> -- create a new project.<br>";
+            help_message += "<b>Update Password</b> -- update your password.<br>";
+            help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+            help_message += "<b>Help</b> -- provides this message.</p>";
+
+        } else {
+            help_message = "<h1>Project Manager Page</h1><hr>";
+            help_message += "<p>A display of created projects. You do not have access to these projects.</p>";
+        }
     }
 
     // Get a list of categories from the app server
@@ -287,30 +317,6 @@ var Project = (function (window, document, $, undefined) {
         var ps = document.getElementById("projectspace");
         var data = data["projects"];
 
-        help_message = "<h1>Project Manager Page</h1><hr>";
-        help_message += "<p>Manage projects</p>";
-        help_message += "<h2>Project list table</h2>";
-        help_message += "<p>This table shows a list <strong>owned projects</strong> and <strong>created projects</strong>. ";
-        help_message += "You can change between these project types by clicking on the corresponding tabs.  ";
-        help_message += "To access the project's information, click on a table row. ";
-        help_message += "Clicking on the table headings will sort the list by that heading.</p>";
-        help_message += "<h2>Project Workflow</h2>";
-        help_message += "<p>A typical project creation process is as follows: ";
-        help_message += "<ul><li>Create a new project</li>";
-        help_message += "<li>Upload an OGG Vorbis audio file (1 channel, 16kHz)</li>";
-        help_message += "<li>Create tasks -- split the audio into regions that are allocated to editors.</li>";
-        help_message += "<li>Assign tasks -- once the tasks have been created, assign them to the editors</li></ul></p>";
-
-        help_message += "<h2>Buttons</h2>";
-        help_message += "<p><b>Refresh</b> -- refresh the project list.</p>";
-        help_message += "<h2>Navigation</h2>";
-        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
-        help_message += "<b>Refresh Projects</b> -- refresh the project list.<br>";
-        help_message += "<b>Create Project</b> -- create a new project.<br>";
-        help_message += "<b>Update Password</b> -- update your password.<br>";
-        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
-        help_message += "<b>Help</b> -- provides this message.</p>";
-
         if(data.length > 0) {
             pdisplay = [];
             for (var i = 0, len = data.length; i < len; i++) {
@@ -374,9 +380,6 @@ var Project = (function (window, document, $, undefined) {
     function display_createdprojects(data) {
         var cps = document.getElementById("created");
         var data = data["projects"];
-
-        help_message = "<h1>Project Manager Page</h1><hr>";
-        help_message += "<p>A display of created projects. You do not have access to these projects.</p>";
 
         if(data.length > 0) {
             var cpdisplay = [];
