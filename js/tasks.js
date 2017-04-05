@@ -41,7 +41,7 @@ var Tasks = (function (window, document, $, undefined) {
         languages = JSON.parse(localStorage.getItem("languages"));
 
         var gh = document.getElementById('controls');
-        gh.innerHTML = 'Loading audio.. <img src="/speechui/static/loading.gif" width="30" height="30">';
+        gh.innerHTML = 'Loading audio.. <img src="/speechui/static/loading.gif" width="50" height="50">';
 
         get_audio();
 

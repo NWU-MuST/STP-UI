@@ -83,7 +83,7 @@ var Jobs = (function (window, document, $, undefined) {
         document.getElementById(jobName).style.display = "block";
         evt.currentTarget.className += " active";
 
-      if(projectName == "jobspace") {
+      if(jobName == "jobspace") {
             help_message = "<h1>Jobs Page</h1><hr>";
             help_message += "<h2>Editing jobs</h2>";
             help_message += "<p>This table shows a list <strong>Editing Jobs</strong> and <strong>Collator Jobs</strong>. ";
