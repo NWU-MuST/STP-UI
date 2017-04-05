@@ -443,7 +443,8 @@ var Tasks = (function (window, document, $, undefined) {
       arr.sort();
 
       colorflag = true;
-      shtml = '<br><table class="project"><tr><th>Time</th><th>Editor</th><th>Language</th><th>Speaker</th></tr>';
+      shtml = '<br>You must select an Editor, select a langauge and enter a speaker name for each task, then save the information, before assigning the project.';
+      shtml += '<br><table class="project"><tr><th>Time</th><th>Editor</th><th>Language</th><th>Speaker</th></tr>';
       for(var key in arr) {
           var region = arr[key];
             // Alternate region color
