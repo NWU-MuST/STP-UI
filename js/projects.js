@@ -321,7 +321,7 @@ var Project = (function (window, document, $, undefined) {
             pdisplay = [];
             for (var i = 0, len = data.length; i < len; i++) {
                 var obj = data[i];
-                pdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["projectstatus"]]);
+                pdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["errstatus"]]);
             }
 
             // Sort projects by time
@@ -332,7 +332,7 @@ var Project = (function (window, document, $, undefined) {
             var context;
             context = "<table class='project'>";
             context += "<tr><th onclick='Project.sortselect(0)'>Project Name</th> <th onclick='Project.sortselect(1)'>Project Manager</th> <th onclick='Project.sortselect(2)'>Collator</th>";
-            context += "<th onclick='Project.sortselect(3)'>Category</th> <th onclick='Project.sortselect(4)'>Date</th> <th onclick='Project.sortselect(5)'>Project Status</th> <th onclick='Project.sortselect(6)'>Error Status</th> </tr>";
+            context += "<th onclick='Project.sortselect(3)'>Category</th> <th onclick='Project.sortselect(4)'>Date</th> <th onclick='Project.sortselect(5)'>Error Status</th> </tr>";
 
             for (var i = 0, len = pdisplay.length; i < len; i++) {
                 var obj = data[pdisplay[i][0]];
@@ -358,7 +358,7 @@ var Project = (function (window, document, $, undefined) {
                 var d = new Date();
                 d.setTime(parseFloat(obj["creation"])*1000.0);
                 context += "<td>" + d.toDateString() + "</td>";
-                context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
+                //context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
                 context += "<td> " + normnull(obj["errstatus"], "No error") + " </td></tr>";
             }
             context += "</table>";
