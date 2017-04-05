@@ -108,6 +108,7 @@ var Editor = (function (window, document, $, undefined) {
 		    // insert code to run after editor is ready
             ck_ev = ev;
             ev.editor.setReadOnly(true);
+            alertify.error("Editor disabled till audio loaded...");
     	    load_text();
 		    load_audio();
 
