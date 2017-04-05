@@ -444,7 +444,8 @@ var Tasks = (function (window, document, $, undefined) {
 
       colorflag = true;
       shtml = '<br>You must select an Editor, select a langauge and enter a speaker name for each task, then save the information, before assigning the project.';
-      shtml += '<br><table class="project"><tr><th>Time</th><th>Editor</th><th>Language</th><th>Speaker</th></tr>';
+      shtml += '<br><table class="project"><tr><th>Task ID</th><th>Time</th><th>Editor</th><th>Language</th><th>Speaker</th></tr>';
+      var ndx = 0;
       for(var key in arr) {
           var region = arr[key];
             // Alternate region color
@@ -456,7 +457,7 @@ var Tasks = (function (window, document, $, undefined) {
                 region.color = color2;
             }
 
-          shtml += '<tr ><td>'+ region.formatTime(region.start, region.end) +'</td>';
+          shtml += '<tr ><td> ' + ndx + ' </td> <td>'+ region.formatTime(region.start, region.end) +'</td>';
           shtml += '<td ><select id="editor_'+ key +'" onchange="Tasks.assign_editor(this.id,this.value)">';
            shtml += '<option value="null">Editor...</option>';
           for(var edit in editors) {
@@ -471,7 +472,8 @@ var Tasks = (function (window, document, $, undefined) {
             shtml += '<option value="'+ languages[i] +'">'+ languages[i] +'</option>';
           }
           shtml += '</select></td>';
-          shtml += '<td><input type="text" oninput="Tasks.assign_speaker(this.id,this.value)" maxlength="32" id="spk_' + key +'" name="spk_' + key + '"/></td></tr>'
+          shtml += '<td><input type="text" oninput="Tasks.assign_speaker(this.id,this.value)" maxlength="32" id="spk_' + key +'" name="spk_' + key + '"/></td></tr>';
+          ndx += 1;
       }
       //shtml += '</table><br><button onclick="Tasks.save_tasks()">Save Project Tasks</button>';
         shtml += '</table>';
