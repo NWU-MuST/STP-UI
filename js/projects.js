@@ -97,7 +97,7 @@ var Project = (function (window, document, $, undefined) {
             help_message += "<h2>Project Workflow</h2>";
             help_message += "<p>A typical project creation process is as follows:<br>";
             help_message += "Create a new project.<br>";
-            help_message += "Upload an OGG Vorbis audio file (1 channel, 16kHz).br>";
+            help_message += "Upload an OGG Vorbis audio file (1 channel, 16kHz).<br>";
             help_message += "Create tasks -- split the audio into regions that are allocated to editors.<br>";
             help_message += "Assign tasks -- once the tasks have been created, assign them to the editors<br></p>";
 
@@ -385,7 +385,7 @@ var Project = (function (window, document, $, undefined) {
             var cpdisplay = [];
             for (var i = 0, len = data.length; i < len; i++) {
                 var obj = data[i];
-                cpdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["projectstatus"]]);
+                cpdisplay.push([i, obj["projectname"], obj["projectmanager"], obj["collator"], obj["category"], parseFloat(obj["creation"]), obj["errstatus"]]);
             }
 
             // Sort projects by time
@@ -396,7 +396,7 @@ var Project = (function (window, document, $, undefined) {
             var context;
             context = "<table class='project'>";
             context += "<tr> <th onclick='Project.csortselect(0)'>Project Name</th> <th onclick='Project.csortselect(1)'>Project Manager</th> <th onclick='Project.csortselect(2)'>Collator</th>";
-            context += "<th onclick='Project.csortselect(3)'>Category</th> <th onclick='Project.csortselect(4)'>Date</th> <th onclick='Project.csortselect(5)'>Project Status</th> <th onclick='Project.csortselect(6)'>Error Status</th> </tr>";
+            context += "<th onclick='Project.csortselect(3)'>Category</th> <th onclick='Project.csortselect(4)'>Date</th> <th onclick='Project.csortselect(5)'>Error Status</th> </tr>";
             for (var i = 0, len = cpdisplay.length; i < len; i++) {
                 var obj = data[cpdisplay[i][0]];
                 context += "<tr><td>" + obj["projectname"] + "</td>";
@@ -850,6 +850,8 @@ var Project = (function (window, document, $, undefined) {
     module.new_project = function() {
         var ps = document.getElementById("projectspace");
         ps.innerHTML = "";
+
+        document.getElementById("defproject").click();
 
         help_message = "<h1>Project Manager Page</h1><hr>";
         help_message += "<p>Create a new project.</p>";

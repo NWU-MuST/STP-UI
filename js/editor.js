@@ -66,7 +66,7 @@ var Editor = (function (window, document, $, undefined) {
 	    init_editor();
 	    wavesurfer = null;
     }
-
+    var ck_ev = null;
     // Get CKEditor ready
     function init_editor() {
 	    var editor_height = Math.round(window.innerHeight * editor_height_constant);
@@ -106,6 +106,8 @@ var Editor = (function (window, document, $, undefined) {
 
 	    CKEDITOR.on("instanceReady", function(ev) {
 		    // insert code to run after editor is ready
+            ck_ev = ev;
+            ev.editor.setReadOnly(true);
     	    load_text();
 		    load_audio();
 
@@ -115,11 +117,6 @@ var Editor = (function (window, document, $, undefined) {
 				    module.save();
 			    }
 		    });
-
-            if(job["readOnly"] === true) {
-                ev.editor.setReadOnly(true);
-                alertify.success("Editor in Read-Only mode");
-            }
 
             nanospell.ckeditor('trans_editor',{ 
                 dictionary : "af,en_uk,tn,zu",  // 24 free international dictionaries  
@@ -169,13 +166,20 @@ var Editor = (function (window, document, $, undefined) {
 		        container: "#waveform_timeline"
 		    });
 
-		    if(wavesurfer.getDuration() < 20.0) {
-			    audio_zoom_change(wavesurfer.getDuration());
-		    } else {
-			    audio_zoom_change(20.0);
-		    }
+		    //if(wavesurfer.getDuration() < 20.0) {
+			audio_zoom_change(wavesurfer.getDuration());
+		    //} else {
+			//    audio_zoom_change(20.0);
+		    //}
 
             module.wavesurfer = wavesurfer;
+
+            if(job["readOnly"] === true) {
+                alertify.success("Editor in Read-Only mode");
+            } else {
+                ck_ev.editor.setReadOnly(false);
+            }
+
 	    });
 
 	    if(audio_url != null) {

@@ -10,6 +10,7 @@ var Jobs = (function (window, document, $, undefined) {
     var recognize_sub;
     var align_sub;
     var notset = ["null", null, undefined];
+    var help_message = "";
 
     // Make sure user is using chrome
     function check_browser() {
@@ -81,6 +82,54 @@ var Jobs = (function (window, document, $, undefined) {
         // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(jobName).style.display = "block";
         evt.currentTarget.className += " active";
+
+      if(projectName == "jobspace") {
+            help_message = "<h1>Jobs Page</h1><hr>";
+            help_message += "<h2>Editing jobs</h2>";
+            help_message += "<p>This table shows a list <strong>Editing Jobs</strong> and <strong>Collator Jobs</strong>. ";
+            help_message += "You can change between these editing types by clicking on the corresponding tabs.  ";
+            help_message += "To access the editing jobs's information, click on a table row. ";
+            help_message += "Clicking on the table headings will sort the job list by that heading.</p>";
+            help_message += "<h2>Editor Workflow</h2>";
+            help_message += "<p>A typical editor workflow is as follows:<br>";
+            help_message += "Select a job and transcribe the associated audio.<br>";
+            help_message += "When the transcription effort is completed, click on the <b>Job Done</b> button.<br>";
+            help_message += "After marking a job as done, you can still view your transcription but it will be read only. </p>";
+
+            help_message += "<h2>Buttons</h2>";
+            help_message += "<p><b>Refresh</b> -- refresh the editing and collating jobs list.</p>";
+            help_message += "<h2>Navigation</h2>";
+            help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+            help_message += "<b>Refresh Jobs</b> -- refresh the editing and collating jobs list.<br>";
+            help_message += "<b>Update Password</b> -- update your password.<br>";
+            help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+            help_message += "<b>Help</b> -- provides this message.</p>";
+
+        } else {
+            help_message = "<h1>Jobs Page</h1><hr>";
+            help_message += "<h2>Collator jobs</h2>";
+            help_message += "<p>This table shows a list <strong>Editing Jobs</strong> and <strong>Collator Jobs</strong>. ";
+            help_message += "You can change between these editing types by clicking on the corresponding tabs.  ";
+            help_message += "To access a collator jobs's information, click on a table row. ";
+            help_message += "Clicking on the table headings will sort the job list by that heading.</p>";
+            help_message += "<h2>Collating Workflow</h2>";
+            help_message += "<p>A typical collating workflow is as follows:<br>";
+            help_message += "Wait for an editor to mark that their job is done.<br>";
+            help_message += "Review the transcription and if needed you can re-assign the job back to the editor to re-transcribe.<br>";
+            help_message += "At any stage the collator can download a master document by clicking on Master Document button. <br>";
+            help_message += "A master document is a document that contains a collection of all the transcriptions.</p>";
+
+            help_message += "<h2>Buttons</h2>";
+            help_message += "<p><b>Refresh</b> -- refresh the editing and collating jobs list.<br>";
+            help_message += "<b>Master Document</b> -- download a master document that contains all the transcriptions from the defined jobs.</p>";
+
+            help_message += "<h2>Navigation</h2>";
+            help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+            help_message += "<b>Refresh Jobs</b> -- refresh the editing and collating jobs list.<br>";
+            help_message += "<b>Update Password</b> -- update your password.<br>";
+            help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+            help_message += "<b>Help</b> -- provides this message.</p>";
+        }
     }
 
     // Get assigned tasks
@@ -433,12 +482,37 @@ var Jobs = (function (window, document, $, undefined) {
         var obj = editing[i];
         eselected = i;
 
+        help_message = "<h1>Editor Page</h1><hr>";
+        help_message += "<p>A displayed of the selected editing job's information.</p>";
+        help_message += "<h2>Editing Job Information</h2>";
+        help_message += "<p>This view shows all the editing job's information. ";
+        help_message += "You can click on the job-related buttons, located after the job information, to perform certain actions on the job. ";
+        help_message += "The first step is to edit the job which means transcribing the audio. You can edit and save iteratively. ";
+        help_message += "Once the transcribing has been completed you can mark the job as complete by clicking on the <b>Set Job Done button</b>.";
+        help_message += "The Collator will review your transcription and could reassign the job back to you for further editing. </p>";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
+        help_message += "<b>Edit Job</b> -- edit the currently selected job. This action will transfer you to an editor.<br>";
+        help_message += "<b>Set Job Done</b> -- mark the transcription job as complete. This will transfer the ownership of the job to the Collator. You will only have read-only rights to the transcription. <br>";
+        help_message += "<b>Clear Project Error</b> -- clear a job error so you can access the job. This may occur when a requested speech service terminated incorrectly.<br>";
+        help_message += "<b>Unlock Project</b> -- unlock a job that has been locked by a requested speech service. The job will be highlighted red when locked.<br>";
+        help_message += "<b>Go Back</b> -- return to the project list view.</p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Jobs</b> -- refresh the editing and collating jobs list.<br>";
+        help_message += "<b>Update Password</b> -- update your password.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
+
         var context;
         context = "<fieldset><legend>Job</legend><table class='project'>";
         context += "<tr><td><label>Project Name:</label></td> <td> " + obj["projectname"] + "</td> </tr>";
         context += "<tr><td><label>Job ID:</label></td> <td> " + obj["taskid"] + "</td> </tr>";
         context += "<tr><td><label>Project Category:</label></td> <td> " + obj["category"] + "</td> </tr>";
         context += "<tr><td><label>Current Editor:</label></td> <td> " + obj["editing"] + "</td> </tr>";
+        context += "<tr><td><label>Language:</label></td> <td> " + obj["language"] + "</td> </tr>";
         context += "<tr><td><label>Job Speaker:</label></td> <td> " + obj["speaker"] + "</td> </tr>";
         var d = new Date();
         d.setTime(parseFloat(obj["creation"])*1000.0);
@@ -468,6 +542,30 @@ var Jobs = (function (window, document, $, undefined) {
         cs.innerHTML = "";
         var obj = collating[i];
         cselected = i;
+
+        help_message = "<h1>Editor Page</h1><hr>";
+        help_message += "<p>A displayed of the selected collator job's information.</p>";
+        help_message += "<h2>Collator Job Information</h2>";
+        help_message += "<p>This view shows all the collator job's information. ";
+        help_message += "You can click on the job-related buttons, located after the job information, to perform certain actions on the job. ";
+        help_message += "The first step is to edit the job which means transcribing the audio. You can edit and save iteratively. ";
+        help_message += "Once the transcribing has been completed you can mark the job as complete by clicking on the <b>Set Job Done button</b>.";
+        help_message += "The Collator will review your transcription and could reassign the job back to you for further editing. </p>";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
+        help_message += "<b>Edit Job</b> -- edit the currently selected job. This action will transfer you to an editor.<br>";
+        help_message += "<b>Re-assign Job</b> -- transfer ownership of the job back to editor. They must re-work the transcription. <br>";
+        help_message += "<b>Clear Project Error</b> -- clear a job error so you can access the job. This may occur when a requested speech service terminated incorrectly.<br>";
+        help_message += "<b>Unlock Project</b> -- unlock a job that has been locked by a requested speech service. The job will be highlighted red when locked.<br>";
+        help_message += "<b>Go Back</b> -- return to the project list view.</p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Jobs</b> -- refresh the editing and collating jobs list.<br>";
+        help_message += "<b>Update Password</b> -- update your password.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
 
         var context;
         context = "<fieldset><legend>Job</legend><table class='project'>";
@@ -516,6 +614,11 @@ var Jobs = (function (window, document, $, undefined) {
             return false;
         }
 
+       if(notset.indexOf(obj["errstatus"]) == -1) {
+            alertify.alert("Job has an error! Please clear the error first.", function(){});
+            return false;
+        }
+
         if(obj["editing"] == localStorage.username) {
             obj["readOnly"] = false;
         } else {
@@ -557,6 +660,11 @@ var Jobs = (function (window, document, $, undefined) {
 
        if(notset.indexOf(obj["jobid"]) == -1) {
             alertify.alert("This job is waiting for a requested speech service to finish!", function(){});
+            return false;
+        }
+
+       if(notset.indexOf(obj["errstatus"]) == -1) {
+            alertify.alert("Job has an error! Please clear the error first.", function(){});
             return false;
         }
 
@@ -605,6 +713,11 @@ var Jobs = (function (window, document, $, undefined) {
 
        if(notset.indexOf(obj["jobid"]) == -1) {
             alertify.alert("This job is waiting for a requested speech service to finish!", function(){});
+            return false;
+        }
+
+       if(notset.indexOf(obj["errstatus"]) == -1) {
+            alertify.alert("Job has an error! Please clear the error first.", function(){});
             return false;
         }
 
@@ -701,7 +814,12 @@ var Jobs = (function (window, document, $, undefined) {
             obj = collating[cselected];
         }
 
-       if(notset.indexOf(obj["jobid"]) !== -1) {
+        if(notset.indexOf(obj["errstatus"]) == -1) {
+            alertify.alert("Job has an error! Please clear the error first.", function(){});
+            return false;
+        }
+
+        if(notset.indexOf(obj["jobid"]) !== -1) {
             alertify.alert("This project is not currently locked by speech service request!", function(){});
             return false;
         }
@@ -790,6 +908,24 @@ var Jobs = (function (window, document, $, undefined) {
         var ps = document.getElementById("jobspace");
         ps.innerHTML = "";
 
+        help_message = "<h1>Editor Page</h1><hr>";
+        help_message += "<p>Update your password.</p>";
+        help_message += "<h2>Update Password</h2>";
+        help_message += "<p>You can update your password at any stage using the update password interface. ";
+        help_message += "<strong>You have to change your password if the administrator resets your password</strong>.</p> ";
+
+        help_message += "<h2>Buttons</h2>";
+        help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
+        help_message += "<b>Update Password</b> -- update your password once you have typed the new password twice.<br>";
+        help_message += "<b>Cancel</b> -- cancel the update password process.</p>";
+
+        help_message += "<h2>Navigation</h2>";
+        help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
+        help_message += "<b>Refresh Jobs</b> -- refresh the editing and collating jobs list.<br>";
+        help_message += "<b>Update Password</b> -- update your password.<br>";
+        help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
+        help_message += "<b>Help</b> -- provides this message.</p>";
+
         var context;
         context = "<fieldset><legend>New Password</legend><table class='project'>";
         context += "<tr><td style='text-align: left;'><label>Password: </label></td>";
@@ -798,7 +934,7 @@ var Jobs = (function (window, document, $, undefined) {
         context += '<td><input id="repassword" name="repassword" placeholder="" type="password" maxlength="32"/></td></tr>';
         context += '</select></td></tr>';
 
-        context += '<tr><td><button onclick="Jobs.update_password()">Update</button></td>';
+        context += '<tr><td><button onclick="Jobs.update_password()">Update Password</button></td>';
         context += '<td style="text-align: right;"><button onclick="Jobs.password_cancel()">Cancel</button></td></tr></table></fieldset>';
         ps.innerHTML = context;
 
@@ -863,6 +999,15 @@ var Jobs = (function (window, document, $, undefined) {
     // User cancelled password update
     module.password_cancel = function() {
         display_editor(editing);
+    }
+
+  // Return a help message for the context
+    module.help = function() {
+        if(help_message.length > 0) {
+            alertify.alert("Help", help_message, function(){});
+        } else {
+            alertify.alert("Help", "Sorry no help provided for this context!");
+        }
     }
 
     return module;

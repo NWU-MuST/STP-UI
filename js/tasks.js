@@ -40,6 +40,9 @@ var Tasks = (function (window, document, $, undefined) {
         editors = JSON.parse(localStorage.getItem("editors"));
         languages = JSON.parse(localStorage.getItem("languages"));
 
+        var gh = document.getElementById('controls');
+        gh.innerHTML = 'Loading audio.. <img src="/speechui/static/loading.gif" width="30" height="30">';
+
         get_audio();
 
         help_message = "<h1>Project Manager Tasks Creation</h1><hr>";
@@ -257,6 +260,7 @@ var Tasks = (function (window, document, $, undefined) {
             audio_zoom_change(wavesurfer.getDuration());
 
             loadproject();
+            add_controls();
         });
 
         wavesurfer.on('seek', region_click);
@@ -281,7 +285,6 @@ var Tasks = (function (window, document, $, undefined) {
     function load_wavesurfer(audio_url) {
        destory_wavesurfer();
        init_wavesurfer(audio_url);
-       add_controls();
     }
 
     // Adjust waveform zoom
