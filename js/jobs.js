@@ -181,7 +181,7 @@ var Jobs = (function (window, document, $, undefined) {
 	    appserver_send(APP_ELISTLANGUAGES, data, languages_callback);
     }
 
-    // Get jobs application server response
+    // Get languages application server response
     var languages;
     function languages_callback(xmlhttp) {
 	    if ((xmlhttp.status==503)) {

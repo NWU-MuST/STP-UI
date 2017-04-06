@@ -103,6 +103,30 @@ var Editor = (function (window, document, $, undefined) {
         CKEDITOR.config.disableNativeSpellChecker = true;
         CKEDITOR.config.scayt_autoStartup = false;
 
+        var lang = "en_uk";
+        switch(speech_service_language) {
+            case "Afrikaans":
+                lang = "af";
+                break;
+            case "English":
+                lang = "en_uk";
+                break;
+            case "isiZulu":
+                lang = "zu";
+                break;
+            case "Setswana":
+                lang = "tn";
+                break;
+            default:
+                lang = "en_uk";
+                break;
+        }
+        alertify.success("Spell checker set to " + speech_service_language);
+
+        nanospell.ckeditor('trans_editor',{ 
+            dictionary : lang,  // 24 free international dictionaries  
+            server : "php"      // can be php, asp, asp.net or java
+        });
 
 	    CKEDITOR.on("instanceReady", function(ev) {
 		    // insert code to run after editor is ready
@@ -118,12 +142,7 @@ var Editor = (function (window, document, $, undefined) {
 				    module.save();
 			    }
 		    });
-
-            nanospell.ckeditor('trans_editor',{ 
-                dictionary : "af,en_uk,tn,zu",  // 24 free international dictionaries  
-                server : "php"      // can be php, asp, asp.net or java
-            });
-	    });
+   	    });
     }
 
     // Add event to check if user has clicked on the editor text area
