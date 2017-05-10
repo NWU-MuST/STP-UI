@@ -44,6 +44,14 @@ var Login = (function (window, document, $, undefined) {
         help_message += "<h2>Navigation</h2>";
         help_message += "<p><b>Home</b> -- clicking on Home will return you to the Home page.<br>";
         help_message += "<b>Help</b> -- provides the message.</p>";
+
+        document.getElementById("password")
+            .addEventListener("keyup", function(event) {
+            event.preventDefault();
+            if (event.keyCode == 13) {
+                document.getElementById("dologin").click();
+            }
+        });
     }
 
     // Redirect the user to the homepage

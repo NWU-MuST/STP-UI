@@ -68,6 +68,7 @@ var Admin = (function (window, document, $, undefined) {
         	        localStorage.setItem(items[ndx], '');
         	        localStorage.removeItem(items[ndx]);
                 }
+                document.body.className = 'vbox viewport';
         		window.location.assign(HOME_URL);
 		    } else { // Something unexpected happened
 			    alertify.alert("LOGOUT ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
@@ -80,8 +81,22 @@ var Admin = (function (window, document, $, undefined) {
         }
     }
 
+    // Add filter results input
+    function addfilter() {
+   	    var fil = document.getElementById("filteruser");
+        fil.innerHTML = '<input type="text" id="myInput" onkeyup="Admin.filterusers()" placeholder="Filter users by name, surname, username or full name..." title="Type in a name, surname, username or full name">';
+    }
+
+    // Remove filter results input
+    function removefilter() {
+   	    var fil = document.getElementById("filteruser");
+        fil.innerHTML = "";
+    }
+
     // Get a list of registered users
     function listusers() {
+        addfilter();
+
         document.body.className = 'waiting';
 	    var data = {};
 	    data['token'] = localStorage.getItem("token");
@@ -111,11 +126,39 @@ var Admin = (function (window, document, $, undefined) {
 	    }
     }
 
-    // Selected a column to sort by
-    var asort = 0;
-    module.sortselect = function(tag) {
-        asort = tag;
+    // Filter list as user types
+    module.filterusers = function() {
         populate_users(users);
+    }
+
+    // Do a search for sub string in name, surname and username
+    function searchcheck(name, surname, username) {
+        var input, filter;
+        input = document.getElementById("myInput");
+        if(input === undefined) {
+            return false;
+        }
+
+        filter = input.value.toUpperCase();
+
+        if (name.toUpperCase().indexOf(filter) > -1) {
+            return true;
+        }
+
+        if (surname.toUpperCase().indexOf(filter) > -1) {
+            return true;
+        }
+
+        if (username.toUpperCase().indexOf(filter) > -1) {
+            return true;
+        }
+
+        var fullname = name + " " + surname;
+        if (fullname.toUpperCase().indexOf(filter) > -1) {
+            return true;
+        }
+
+        return false;
     }
 
     // Populate the users on the UI
@@ -139,26 +182,28 @@ var Admin = (function (window, document, $, undefined) {
         udisplay = [];
         var i = 0;
         for (var usrn in data) {
-            udisplay.push([data[usrn]["name"], data[usrn]["surname"], usrn, data[usrn]["email"], data[usrn]["role"]]);
+            udisplay.push([data[usrn]["name"], data[usrn]["surname"], usrn]);
             i++;
         }
 
         // Sort information by what user clicks
         udisplay.sort(function(a,b){
-            return a[asort] > b[asort] ? 1 : -1;
+            return a[0] > b[0] ? 1 : -1;
         });
 
         var context;
         context = "<table class='project'>";
-        context += "<tr> <th onclick='Admin.sortselect(0)'>Name</th> <th onclick='Admin.sortselect(1)'>Surname</th> <th onclick='Admin.sortselect(2)'>Username</th>";
-        context += "<th onclick='Admin.sortselect(3)'>Email</th> <th onclick='Admin.sortselect(4)'>Role</th> </tr>";
+        context += "<tr><th> PERSON</th> </tr>";
         for (var i = 0, len = udisplay.length; i < len; i++) {
             var obj = data[udisplay[i][2]];
-            context += "<tr onclick='Admin.user_selected("+ i +")'><td>" + obj["name"] + "</td>";
-            context += "<td> " + obj["surname"] + "</td>";
-            context += "<td> " + udisplay[i][2] + "</td>";
-            context += "<td> " + obj["email"] + "</td>";
-            context += "<td> " + obj["role"] + "</td></tr>";
+            var result = searchcheck(obj["name"], obj["surname"], udisplay[i][2]);
+            if(result === true) {
+                context += "<tr onclick='Admin.user_selected("+ i +")'><td>" + "<strong class='book-title'>" + obj["name"] + " " + obj["surname"];
+                context += "</strong><span class='text-offset'> " + udisplay[i][2] + "</span></td><tr>";
+            } else { 
+                context += "<tr style='display: none;' onclick='Admin.user_selected("+ i +")'><td>" + "<strong class='book-title'>" + obj["name"] + " " + obj["surname"];
+                context += "</strong><span class='text-offset'> " + udisplay[i][2] + "</span></td><tr>";
+            }
         }
         context += "</table>";
         adsp.innerHTML = context;
@@ -168,6 +213,7 @@ var Admin = (function (window, document, $, undefined) {
     // User selected a user and set selected variable
     var selected;
     module.user_selected = function(i) {
+        removefilter();
         var adsp = document.getElementById("adminspace");
         adsp.innerHTML = "";
         var obj = users[udisplay[i][2]];
@@ -191,18 +237,19 @@ var Admin = (function (window, document, $, undefined) {
         help_message += "<b>Help</b> -- provides the message.</p>";
 
         var context;
-        context = "<fieldset><legend>User</legend><table class='project'>";
-        context += "<tr><td><label>Name: </label></td><td>" + obj["name"] + "</td></tr>";
-        context += "<tr><td><label>Surname: </label></td><td>" + obj["surname"] + "</td></tr>";
-        context += "<tr><td><label>Username: </label></td><td>" + udisplay[i][2] + "</td></tr>";
-        context += "<tr><td><label>Email: </label></td><td>" + obj["email"] + "</td></tr>";
-        context += "<tr><td><label>Role: </label></td><td>" + obj["role"] + "</td></tr>";
-        context += '<tr><td><button onclick="Admin.deluser()">Delete User</button></td><td style="text-align: right;"><button onclick="Admin.resetpassword()">Reset Password</button></td><button onclick="Admin.goback()">Go Back</button></td></tr></table></fieldset>';
+        context = "<table class='project'>";
+        context += "<tr><th>" + obj["name"] + " " + obj["surname"] + "</th></tr>";
+        context += "<tr><td><strong class='book-title'> <img src='/speechui/static/user.jpg' width='5%' height='5%'> </strong><span class='text-offset'> " + udisplay[i][2] + "</span></td></tr>";
+        context += "<tr><td><strong class='book-title'> <img src='/speechui/static/email.png' width='5%' height='5%'> </strong><span class='text-offset'> " + obj["email"] + "</span></td></tr>";
+        context += "<tr><td><strong class='book-title'> <img src='/speechui/static/role.png' width='5%' height='5%'> </strong><span class='text-offset'> " + obj["role"].replace(";", " &amp; ") + "</span></td></tr>";
+        context += '<tr><td><button onclick="Admin.deluser()">Delete User</button><button onclick="Admin.resetpassword()">Reset Password</button><button onclick="Admin.goback()">Go Back</button></td></tr></table>';
+
         adsp.innerHTML = context;
     }
 
     // Go back to listing projects
     module.goback = function() {
+        addfilter();
         selected = -1;
         populate_users(users);
     }
@@ -210,6 +257,7 @@ var Admin = (function (window, document, $, undefined) {
     // Collect user information
     module.adduser = function() {
         selected = -1;
+        removefilter();
         var adsp = document.getElementById("adminspace");
         adsp.innerHTML = "";
 
@@ -230,7 +278,7 @@ var Admin = (function (window, document, $, undefined) {
         help_message += "<b>Help</b> -- provides the message.</p>";
 
         var context;
-        context = "<fieldset><legend>New User</legend><table class='project'>";
+        context = "<fieldset><table class='project'>";
         context += "<tr><td style='text-align: left;'><label>Name: </label></td>";
         context += '<td align="left"><input id="name" name="name" placeholder="" type="text" maxlength="32"/></td><td></td></tr>';
 
@@ -340,6 +388,7 @@ var Admin = (function (window, document, $, undefined) {
 
     // User cancelled adding new user - display current list
     module.adduser_cancel = function() {
+        addfilter();
         populate_users(users);
     }
 

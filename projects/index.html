@@ -31,14 +31,16 @@
             <li><a onClick="Project.logout(); return false;" href="#">Logout</a></li>
             <li><a onClick="Project.help(); return false;" href="#">Help</a></li>
         </ul>
+        <hr>
+        <div style="border-style: solid; border-width: 1px; border-color: #aaaaaa;">Please click on the <strong>Help</strong> button at any stage. It will provide some information specific to the interface context you are in.</div>
     </nav>
 
     <article style="overflow-y:auto;">
         <div> Please press the "Refresh" button periodically to refresh the project details
             <button onclick="Project.get_all_projects()">Refresh</button>
          </div>
-        <div>Please click on the <strong>Help</strong> button at any stage. It will provide some information specific to the interface context you are in.</div><br>
-        <div class="tab">
+        <div id="filterproject"></div>
+        <div id="projecttab" class="tab">
           <button id="defproject" class="tablinks" onclick="Project.openProject(event, 'projectspace')">Owned Projects</button>
           <button class="tablinks" onclick="Project.openProject(event, 'created')">Created Projects</button>
         </div>
@@ -51,7 +53,7 @@
     </article>
 </section>
 
-<footer> &#169; Department of Arts and Culture REPUBLIC OF SOUTH AFRICA / North-West University (NWU) </footer>
+<footer> &#169; North-West University (NWU) </footer>
 
 </body>
 </html>

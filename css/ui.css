@@ -6,7 +6,57 @@ header, footer, nav, article, aside {
     border-radius: 0.25em;
 }
 
-button { border-radius: 0.25em; padding: 0.25em;}
+/*button { border-radius: 0.25em; padding: 0.25em;}*/
+
+button {
+    background-color: white;
+    color: black;
+    border: 2px solid #555555;
+    padding: 8px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1em;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #555555;
+    color: white;
+}
+
+input {
+  font-size: 1em;
+  padding: 3px 5px 3px 10px;
+  border: 1px solid #ddd;
+  /*margin-bottom: 12px;*/
+}
+
+
+select {
+    width: 30%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.book-title {
+  color: #395870;
+  display: block;
+}
+
+.text-offset {
+  color: #7c7c80;
+  font-size: 0.9em;
+  /*padding: 5%;*/
+}
+
 /*
 Force full width & height.
 
@@ -96,25 +146,34 @@ html, body, .viewport {
 This could easily be alte#030A1A to flex proportionally with the page.
 */
 header{
-    height: 15%;
+    height: 10%;
     color: white;
     text-align: center;
-    background: #030A1A; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(left, #030A1A , #021F3D); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(right, #030A1A, #021F3D); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(right, #030A1A, #021F3D); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to right, #030A1A , #021F3D); /* Standard syntax (must be last) */
+    background: #307ee5;/*#030A1A; /* For browsers that do not support gradients */
+    /*background: -webkit-linear-gradient(left, #030A1A , #021F3D); /* For Safari 5.1 to 6.0 */
+    /*background: -o-linear-gradient(right, #030A1A, #021F3D); /* For Opera 11.1 to 12.0 */
+    /*background: -moz-linear-gradient(right, #030A1A, #021F3D); /* For Firefox 3.6 to 15 */
+    /*background: linear-gradient(to right, #030A1A , #021F3D); /* Standard syntax (must be last) */
+    background: -webkit-linear-gradient(left, #26a5b8 , #26a5b8); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #26a5b8, #26a5b8); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #26a5b8, #26a5b8); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #26a5b8, #26a5b8); /* Standard syntax (must be last) */
 }
 
 footer {
     height: 2%;
     color: white;
     text-align: left;
-    background: #030A1A; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(left, #030A1A , #021F3D); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(right, #030A1A, #021F3D); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(right, #030A1A, #021F3D); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to right, #030A1A , #021F3D); /* Standard syntax (must be last) */
+    background: #307ee5;/*#030A1A; /* For browsers that do not support gradients */
+    /*background: -webkit-linear-gradient(left, #030A1A , #021F3D); /* For Safari 5.1 to 6.0 */
+    /*background: -o-linear-gradient(right, #030A1A, #021F3D); /* For Opera 11.1 to 12.0 */
+    /*background: -moz-linear-gradient(right, #030A1A, #021F3D); /* For Firefox 3.6 to 15 */
+    /*background: linear-gradient(to right, #030A1A , #021F3D); /* Standard syntax (must be last) */
+    background: -webkit-linear-gradient(left, #c8baa0 , #c8baa0); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #c8baa0, #c8baa0); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #c8baa0, #c8baa0); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #c8baa0, #c8baa0); /* Standard syntax (must be last) */
+
 }
 
 .main {
@@ -143,6 +202,9 @@ article {
        -moz-flex: 6;
         -ms-flex: 6;
             flex: 6;
+  /*background-image: url("/speechui/static/beach_a.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;*/
 }
 
 aside, nav {
@@ -166,25 +228,27 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333333;
+    background-color: #c3c4be;
     display: block;
 }
 
 li {
     /*float: left;*/
     display: block;
+   -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
 }
 
 li a {
     display: block;
-    color: white;
+    color: black;
     text-align: left;
     padding: 16px;
     text-decoration: none;
 }
 
 li a:hover {
-    background-color: #111111;
+    background-color: #b2b3ad;
 }
 
 fieldset {
@@ -203,12 +267,20 @@ legend {
 .project {
     border-collapse: collapse;
     width: 100%;
+    font: 14px/1.4 Helvetica, Arial, sans-serif;
+}
+
+.project th {
+    /*font-size: 1.2em;
+    /*font-family: Verdana,sans-serif;*/
+    font: 14px/1.4 Helvetica, Arial, sans-serif;
 }
 
 .project td {
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    /*font-size: 0.9em;*/
 }
 
 .project tr:hover {
@@ -264,3 +336,36 @@ div.tab button.active {
     border-top: none;
 }
 
+#myInput {
+  background-image: url("/speechui/static/searchicon.png");
+  background-size: 2.5%;
+  background-repeat: no-repeat;
+  width: 95%;
+  font-size: 1em;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+
+dl {
+    margin-bottom: 1%;
+}
+ 
+dl dt {
+    background:#5f9be3;
+    color:#fff;
+    float:left; 
+    font-weight:bold; 
+    margin-right:1%; 
+    padding: 1%;  
+    width:25%; 
+}
+ 
+dl dd {
+    margin:1% 0; 
+    padding:1% 0;
+}
+
+dd {
+    background:#dddddd;
+}

@@ -241,9 +241,9 @@ var Tasks = (function (window, document, $, undefined) {
             pixelRatio: 1
         });
             //progressColor: 'purple',
-        wavesurfer.enableDragSelection({
-                color: 'rgba(255,0,0,0.5)'
-        });
+        //wavesurfer.enableDragSelection({
+        //        color: 'rgba(255,0,0,0.5)'
+        //});
 
         wavesurfer.on('ready', function () {
             timeline = Object.create(WaveSurfer.Timeline);
@@ -443,7 +443,7 @@ var Tasks = (function (window, document, $, undefined) {
       arr.sort();
 
       colorflag = true;
-      shtml = '<br>You must select an Editor, select a langauge and enter a speaker name for each task, then save the information, before assigning the project.';
+      shtml = '<br>You must select an Editor, select a language and enter a speaker name for each task, then save the information, before assigning the project.';
       shtml += '<br><table class="project"><tr><th>Task ID</th><th>Time</th><th>Editor</th><th>Language</th><th>Speaker</th></tr>';
       var ndx = 0;
       for(var key in arr) {

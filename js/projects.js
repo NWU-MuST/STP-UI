@@ -1,5 +1,5 @@
 // Project module
-
+//<div>Icons made by <a href="http://www.flaticon.com/authors/pixel-buddha" title="Pixel Buddha">Pixel Buddha</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 var Project = (function (window, document, $, undefined) {
 
     var module = {};
@@ -9,6 +9,7 @@ var Project = (function (window, document, $, undefined) {
     var project_status = ["Created", "In Progress", "Completed"];
     var notset = ["null", null, undefined];
     var help_message = "";
+    var active_project_view = null;
 
     // Make sure user is using chrome
     function check_browser() {
@@ -115,6 +116,42 @@ var Project = (function (window, document, $, undefined) {
             help_message = "<h1>Project Manager Page</h1><hr>";
             help_message += "<p>A display of created projects. You do not have access to these projects.</p>";
         }
+        active_project_view = projectName;
+    }
+
+  // Add filter results input
+    function addfilter() {
+   	    var fil = document.getElementById("filterproject");
+        var content = '<table style="border: none; width: 100%;"><tr><td>';
+        content += '<input type="text" id="myInput" style="background-size: 5%; width: 80%" onkeyup="Project.filterprojects();" placeholder="Filter projects by name, surname, username or full name..." title="Type in a name, surname, username or full name"/>';
+        content += '</td><td align="right"><label>Filter by Date:</label>&nbsp;<input type="date" id="myCal" onchange="Project.filterprojects();" /></td></tr></table>';
+        fil.innerHTML = content;
+    }
+
+    // Remove filter results input
+    function removefilter() {
+   	    var fil = document.getElementById("filterproject");
+        fil.innerHTML = "";
+    }
+
+    // show the project tab
+    function showprojecttab() {
+   	    var tab = document.getElementById("projecttab");
+        tab.style.display = "block";
+        tab.style.border = "1px solid #ccc";
+
+   	    var tab = document.getElementById("projectspace");
+        tab.style.borderTop = "none";
+    }
+
+    // hide the project tab
+    function hideprojecttab() {
+   	    var tab = document.getElementById("projecttab");
+        tab.style.display = "none";
+        tab.style.border = "none";
+
+   	    var tab = document.getElementById("projectspace");
+        tab.style.borderTop = "1px solid #ccc";
     }
 
     // Get a list of categories from the app server
@@ -232,6 +269,8 @@ var Project = (function (window, document, $, undefined) {
 
     // Get projects owned by this user
     function get_projects() {
+        addfilter();
+        showprojecttab();
         document.body.className = 'vbox viewport waiting';
 	    var data = {};
 	    data["token"] = localStorage.token;
@@ -304,11 +343,66 @@ var Project = (function (window, document, $, undefined) {
         }
     }
 
-    // Selected a column to sort by
-    var psort = 0;
-    module.sortselect = function(tag) {
-        psort = tag;
-        display_projects(projects);
+   // Filter list as user types
+    module.filterprojects = function() {
+        if(active_project_view == "projectspace") {
+            display_projects(projects);
+        } else {
+            display_createdprojects(created_projects);
+        }
+    }
+
+    // Zero pad a string
+    function pad(string, size) {
+        var s = string.toString();
+        while (s.length < (size || 2)) {s = "0" + s;}
+        return s;
+    }
+
+    // Do a search for sub string in name, surname and username
+    function searchcheck(obj, projman, collator) {
+        var input, filter, cal, select_date;
+        input = document.getElementById("myInput");
+        if(input === undefined) { return false; }
+        filter = input.value.toUpperCase();
+
+        select_date = document.getElementById("myCal");
+        if(select_date === undefined) { return false; }
+
+        var d = new Date();
+        d.setTime(parseFloat(obj["creation"])*1000.0);
+        function checksearchstring() {
+            // Search through project details
+            var items = ["projectname", "category", "errstatus"];
+            for(var ndx = 0; ndx < items.length; ndx++) {
+                if(notset.indexOf(obj[items[ndx]]) === -1) {
+                    if (obj[items[ndx]].toUpperCase().indexOf(filter) > -1) {
+                        return true;
+                    }
+                }
+            }
+
+            if (projman.toUpperCase().indexOf(filter) > -1) { return true; }
+
+            if (collator.toUpperCase().indexOf(filter) > -1) { return true; }
+
+            // Include string version of the date
+            var ds = d.toDateString();
+            if (ds.toUpperCase().indexOf(filter) > -1) { return true; }
+            return false;
+        }
+        var ssr = checksearchstring();
+
+        // User may be filtering by date picker
+        if(select_date.value.length > 0) {
+            projdate = d.getFullYear() + "-" + pad(d.getMonth()+1, 2) + "-" + pad(d.getDate(), 2);
+            if(projdate == select_date.value) {
+                if(ssr === true ) { return true;
+                } else { return false; }
+            } else { return false; }
+        }
+
+        return ssr;
     }
 
     // Display owned projects
@@ -325,41 +419,42 @@ var Project = (function (window, document, $, undefined) {
             }
 
             // Sort projects by time
-            pdisplay.sort(function(a, b){
-                return a[psort+1] > b[psort+1] ? 1 : -1;
-            });
+            pdisplay.sort(function(a, b) { return a[1] > b[1] ? 1 : -1; });
 
             var context;
             context = "<table class='project'>";
-            context += "<tr><th onclick='Project.sortselect(0)'>Project Name</th> <th onclick='Project.sortselect(1)'>Project Manager</th> <th onclick='Project.sortselect(2)'>Collator</th>";
-            context += "<th onclick='Project.sortselect(3)'>Category</th> <th onclick='Project.sortselect(4)'>Date</th> <th onclick='Project.sortselect(5)'>Error Status</th> </tr>";
-
+            context += "<tr><th>PROJECTS</th></tr>"
             for (var i = 0, len = pdisplay.length; i < len; i++) {
                 var obj = data[pdisplay[i][0]];
-                context += "<tr onclick='Project.project_selected("+ pdisplay[i][0] +")'";
-                if(notset.indexOf(obj["jobid"]) === -1) {
-                    context += ' style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #FF0000;">';
-                } else {
-                    context += ">";
-                }
-                context += "<td>" + obj["projectname"] + "</td>";
-
                 var projman = "Not Selected";
                 if(users.hasOwnProperty(obj["projectmanager"])) {
                     projman = users[obj["projectmanager"]]["name"] + " " + users[obj["projectmanager"]]["surname"];
                 }
-                context += "<td>" + projman + "</td>";
                 var collator = "Not Selected";
                 if(users.hasOwnProperty(obj["collator"])) {
                     collator = users[obj["collator"]]["name"] + " " + users[obj["collator"]]["surname"];
                 }
-                context += "<td>" + collator + "</td>";
-                context += "<td>" + obj["category"] + "</td>";
-                var d = new Date();
-                d.setTime(parseFloat(obj["creation"])*1000.0);
-                context += "<td>" + d.toDateString() + "</td>";
-                //context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
-                context += "<td> " + normnull(obj["errstatus"], "No error") + " </td></tr>";
+
+                var result = searchcheck(obj, projman, collator);
+                if(result === true) {
+                    context += "<tr onclick='Project.project_selected("+ pdisplay[i][0] +")'>";
+                } else {
+                    context += "<tr style='display: none;' onclick='Project.project_selected("+ pdisplay[i][0] +")'>";
+                }
+                context += "<td><strong style='color: #395870;'>" + obj["projectname"] + "</strong> <span class='text-offset' style='padding: none;'><table><tr>";
+
+                if(notset.indexOf(obj["jobid"]) === -1) {
+                    context += '<td><strong>This project is locked while a speech job is running</strong></td></tr></table></span></td></tr>';
+                } else if(notset.indexOf(obj["errstatus"]) === -1) {
+                    context += '<td style="color: red;">ERRSTATUS: <strong>' + obj["errstatus"] +'</strong></td></tr></table></span></td></tr>';
+                } else {
+                    context += "<td style='border: none;'> PROJECT MANAGER: <strong>" + projman + "</strong></td>";
+                    context += "<td style='border: none;'> COLLATOR: <strong>" + collator + "</strong></td>";
+                    context += "<td style='border: none;'> CATEGORY: <strong>" + obj["category"] + "</strong></td>";
+                    var d = new Date();
+                    d.setTime(parseFloat(obj["creation"])*1000.0);
+                    context += "<td style='border: none;'>CREATED: <strong>" + d.toDateString() + "</strong></td></tr></table></span></td></tr>";
+                }
             }
             context += "</table>";
         } else {
@@ -369,14 +464,8 @@ var Project = (function (window, document, $, undefined) {
         document.body.className = 'vbox viewport';
     }
 
-    // Selected a column to sort by
-    var cpsort = 0;
-    module.csortselect = function(tag) {
-        cpsort = tag;
-        display_createdprojects(created_projects);
-    }
-
     // Display created projects
+    var cpdisplay;
     function display_createdprojects(data) {
         var cps = document.getElementById("created");
         var data = data["projects"];
@@ -389,33 +478,35 @@ var Project = (function (window, document, $, undefined) {
             }
 
             // Sort projects by time
-            cpdisplay.sort(function(a, b){
-                return a[cpsort+1] > b[cpsort+1] ? 1 : -1;
-            });
+            cpdisplay.sort(function(a, b) { return a[1] > b[1] ? 1 : -1; });
 
             var context;
             context = "<table class='project'>";
-            context += "<tr> <th onclick='Project.csortselect(0)'>Project Name</th> <th onclick='Project.csortselect(1)'>Project Manager</th> <th onclick='Project.csortselect(2)'>Collator</th>";
-            context += "<th onclick='Project.csortselect(3)'>Category</th> <th onclick='Project.csortselect(4)'>Date</th> <th onclick='Project.csortselect(5)'>Error Status</th> </tr>";
+            context += "<tr><th>CREATED PROJECTS</th></tr>"
             for (var i = 0, len = cpdisplay.length; i < len; i++) {
                 var obj = data[cpdisplay[i][0]];
-                context += "<tr><td>" + obj["projectname"] + "</td>";
                 var projman = "Not Selected";
                 if(users.hasOwnProperty(obj["projectmanager"])) {
                     projman = users[obj["projectmanager"]]["name"] + " " + users[obj["projectmanager"]]["surname"];
                 }
-                context += "<td>" + projman + "</td>";
                 var collator = "Not Selected";
                 if(users.hasOwnProperty(obj["collator"])) {
                     collator = users[obj["collator"]]["name"] + " " + users[obj["collator"]]["surname"];
                 }
-                context += "<td>" + collator + "</td>";
-                context += "<td>" + obj["category"] + "</td>";
+
+                var result = searchcheck(obj, projman, collator);
+                if(result === true) {
+                    context += "<tr>";
+                } else {
+                    context += "<tr style='display: none;'>";
+                }
+                context += "<td><strong style='color: #395870;'>" + obj["projectname"] + "</strong> <span class='text-offset' style='padding: none;'><table><tr>";
+                context += "<td style='border: none;'> PROJECT MANAGER: <strong>" + projman + "</strong></td>";
+                context += "<td style='border: none;'> COLLATOR: <strong>" + collator + "</strong></td>";
+                context += "<td style='border: none;'> CATEGORY: <strong>" + obj["category"] + "</strong></td>";
                 var d = new Date();
                 d.setTime(parseFloat(obj["creation"])*1000.0);
-                context += "<td>" + d.toDateString() + "</td>";
-                //context += "<td>" + normnull(obj["projectstatus"], "Not completed") + "</td>";
-                context += "<td> " + normnull(obj["errstatus"], "No error") + " </td></tr>";
+                context += "<td style='border: none;'>CREATED: <strong>" + d.toDateString() + "</strong></td></tr></table></span></td></tr>";
             }
             context += "</table>";
             cps.innerHTML = context;
@@ -428,8 +519,6 @@ var Project = (function (window, document, $, undefined) {
     // User selected project and set selected variable
     var selected;
     module.project_selected = function(i) {
-        var ps = document.getElementById("projectspace");
-        ps.innerHTML = "";
         var obj = projects["projects"][i];
         selected = i;
 
@@ -459,116 +548,116 @@ var Project = (function (window, document, $, undefined) {
         help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
         help_message += "<b>Help</b> -- provides this message.</p>";
 
-        var context;
-        context = "<fieldset><legend>Project</legend><table class='project'>";
-        context += "<tr><td><label>Project Name: </label></td><td>" + obj["projectname"] + "</td></tr>";
+        removefilter();
+        hideprojecttab();
+        var content;
 
-        context += "<tr><td><label>Project Manager: </label></td><td> <select id='pjmsel' onchange='Project.assign_pjm(this.id,this.value)'>";
-        context += '<option value="null">Project Managers...</option>';
-        for(var key in projectmanagers) {
-            var tmp = projectmanagers[key]["name"] + " " + projectmanagers[key]["surname"];
-            context += '<option value="' + key + '">' + tmp + '</option>';
-        }
-        context += '</select></td></tr>';
-
-        context += '<tr><td><label>Project Category: </label></td><td><select id="csel" onchange="Project.assign_category(this.id,this.value)">';
-        context += '<option value="null">Categories...</option>';
-        for(var i = 0 ; i < categories.length; i++) {
-            var key = categories[i];
-            context += '<option value="' + key + '">' + key + '</option>';
-        }
-        context += '</select></td></tr>';
-
-        context += "<tr><td><label>Collators: </label></td><td> <select id='colsel' onchange='Project.assign_collator(this.id,this.value)'>";
-        context += '<option value="null">Collators...</option>';
-        for(var key in editors) {
-            var tmp = editors[key]["name"] + " " + editors[key]["surname"];
-            context += '<option value="' + key + '">' + tmp + '</option>';
-        }
-        context += '</select></td></tr>';
-
-        var d = new Date();
-        d.setTime(parseFloat(obj["creation"])*1000.0);
-        context += "<tr><td><label>Creation Date: </label></td><td>" + d + "</td></tr>";
-
-        /*context += "<tr><td><label>Project Status: </label></td><td> <select id='statussel' onchange='Project.assign_status(this.id,this.value)'>";
-        context += '<option value="null">Project Status...</option>';
-        for(var i = 0; i < project_status.length; i++) {
-            context += '<option value="' + project_status[i] + '">' + project_status[i] + '</option>';
-        }
-        context += '</select></td></tr>';*/
-
-        //context += "<tr><td><label>Project Status: </label></td><td>" + obj["projectstatus"] + "</td></tr>";
-        context += "<tr><td><label>Assigned: </label></td><td>" + obj["assigned"] + "</td></tr>";
-        context += "<tr><td><label>Project Error Status: </label></td><td>" + normnull(obj["errstatus"], "No Error") + "</td></tr>";
-
-        if(notset.indexOf(obj["jobid"]) === -1) {
-            context += '<tr style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;"><td><label>Project Lock Status: </label></td><td> Locked </td></tr>';
+        if(notset.indexOf(obj["errstatus"]) === -1) {
+            var ps = document.getElementById("projectspace");
+            ps.innerHTML = "";
+            content = "<dl>";
+            content += "<dt style='background: #ff0000;'>PROJECT ERROR STATUS:</dt><dd>" + obj["errstatus"] + "</dd>";
+            content += '<button onclick="Project.clearerror_project()">Clear Project Error</button>&nbsp;&nbsp;<button onclick="Project.goback()">Go Back</button></div>';
+            ps.innerHTML = content;
         } else {
-            context += "<tr><td><label>Project Lock Status: </label></td><td> Not Locked </td></tr>";
-        }
-        context += "<tr><td><label>Audio: </label></td>";
-        if(obj["audiofile"] == undefined) {
-            context += '<td><input type="file" onchange="Project.upload_audio()"></td></tr>';
-        } else {
-            context += "<td>Audio uploaded</td></tr>";
-            var date = new Date(null);
-            date.setSeconds(parseFloat(obj["audiodur"])); // specify value for SECONDS here
-            var result = date.toISOString().substr(11, 12);
-            context += "<tr><td><label>Audio Duration: </label></td><td> " + result + "</td></tr>";
-        }
+            if(obj["assigned"] != "Y") {
+                add_progress();
+                var ps = document.getElementById("step_prompt");
+                ps.innerHTML = "";
 
-        context += '</table></fieldset><br><hr><br><button onclick="Project.task_project()">Create/Edit Tasks</button> &nbsp;&nbsp;';
-        context += '<button onclick="Project.assign_tasks()">Assign Tasks</button> <button onclick="Project.update_project()">Update Project</button> <button onclick="Project.delete_project()">Delete Project</button> &nbsp;&nbsp;';
-        context += '<button onclick="Project.clearerror_project()">Clear Project Error</button> <button onclick="Project.unlock_project()">Unlock Project</button> ';
-        context += '&nbsp;&nbsp;<button onclick="Project.goback()">Go Back</button>';
-        ps.innerHTML = context;
-        document.body.className = 'vbox viewport';
+                content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 1: PROJECT NAME</th></tr>";
+                content += "<tr><td id='projectname'></td><td></td></tr></table>";
+                ps.innerHTML = content;
+                var step = document.getElementById("step1");
+                step.innerHTML = "<img src='/speechui/static/one_fill.png' width='30%' height='30%'>";
 
-        if(obj["projectmanager"] !== null) {
-            var gh = document.getElementById('pjmsel');
-            gh.value = obj["projectmanager"];
-        }
-        if(obj["category"] !== null) {
-            var gh = document.getElementById('csel');
-            gh.value = obj["category"];
-        }
-        if(obj["collator"] !== null) {
-            var gh = document.getElementById('colsel');
-            gh.value = obj["collator"];
-        }
-        if(obj["status"] !== null) {
-            var gh = document.getElementById('statussel');
-            gh.value = obj["projectstatus"];
-        }
-    }
+                content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 2: PROJECT MANAGER</th></tr>";
+                content += "<tr><td id='projectmanager'></td><td></td></tr></table>";
+                ps.innerHTML += content;
+                step = document.getElementById("step2");
+                step.innerHTML = "<img src='/speechui/static/two_fill.png' width='30%' height='30%'>";
 
-    var changes = false;
-    // User has assigned a project manager
-    module.assign_pjm = function(id, value) {
-        var obj = projects["projects"][selected];
-        obj["projectmanager"] = value;
-        changes = true;
-    }
+                content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 3: PROJECT CATEGORY</th></tr>";
+                content += "<tr><td id='projectcategory'></td><td></td></tr></table>";
+                ps.innerHTML += content;
+                step = document.getElementById("step3");
+                step.innerHTML = "<img src='/speechui/static/three_fill.png' width='30%' height='30%'>";
 
-    // User has assigned a category
-    module.assign_category = function(id, value) {
-        var obj = projects["projects"][selected];
-        obj["category"] = value;
-        changes = true;
+                if(obj["audiofile"] == undefined) {
+                    content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 4: PROJECT AUDIO</th></tr>";
+                    content += '<tr><td><input type="file" onchange="Project.check_audio()"></td>';
+                    content += "<td align='right'><button id='upload_btn' onclick='Project.upload_audio()'>Upload</button></td></tr></table>";
+                } else {
+                    content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 4: PROJECT AUDIO DURATION</th></tr>";
+                    content += "<tr><td id='projectaudio'></td><td></td></tr></table>";
+                    ps.innerHTML += content;
+                    step = document.getElementById("step4");
+                    step.innerHTML = "<img src='/speechui/static/four_fill.png' width='30%' height='30%'>";
+
+                    if(notset.indexOf(obj["jobid"]) === -1) {
+                        content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 5: PROJECT TASKS -- LOCKED</th></tr>";
+                        content += "<tr><td>PROJECT LOCKED BY RUNNING SPEECH PROCESS <button onclick='Project.unlock_project()'>Unlock Project</button></td><td></td></tr></table>";
+                    } else {
+                        content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 5: PROJECT TASKS</th></tr>";
+                        content += "<tr><td><button onclick='Project.task_project()'>Create/Edit Tasks</button></td><td></td></tr></table>";
+    
+                        content += "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 6: PROJECT COLLATOR ASSIGNMENT</th></tr><tr><td>";
+                        content += "<select id='colsel' onchange='Project.assign_collator(this.id,this.value)'>";
+                        content += '<option value="null">Collators...</option>';
+                        for(var key in editors) {
+                            var tmp = editors[key]["name"] + " " + editors[key]["surname"];
+                            content += '<option value="' + key + '">' + tmp + '</option>';
+                        }
+                        content += "</select></td><td><button onclick='Project.assign_tasks()'>Assign Tasks</button></td></tr></table>";
+                    }
+                }
+
+                content += '<div><button onclick="Project.delete_project()">Delete Project</button>&nbsp;&nbsp;<button onclick="Project.goback()">Go Back</button></div>';
+                ps.innerHTML += content;
+
+                var pe = document.getElementById("projectname");
+                pe.innerHTML = obj["projectname"];
+                pe = document.getElementById("projectmanager");
+                pe.innerHTML = projectmanagers[obj["projectmanager"]]["name"] + " " + projectmanagers[obj["projectmanager"]]["surname"];
+                pe = document.getElementById("projectcategory");
+                pe.innerHTML = obj["category"];
+
+                if(obj["audiofile"] == undefined) {
+                    document.getElementById("upload_btn").disabled = true;
+                } else {
+                    var date = new Date(null);
+                    date.setSeconds(parseFloat(obj["audiodur"])); // specify value for SECONDS here
+                    pe = document.getElementById("projectaudio");
+                    pe.innerHTML = date.toISOString().substr(11, 12);
+                }
+
+                if(obj["collator"] !== null) {
+                  var gh = document.getElementById('colsel');
+                  gh.value = obj["collator"];
+                }
+            } else {
+                var ps = document.getElementById("projectspace");
+                ps.innerHTML = "";
+                content = "<dl>";
+                content += "<dt>PROJECT NAME:</dt><dd>" + obj["projectname"] + "</dd>";
+                content += "<dt>PROJECT MANAGER:</dt><dd>" + projectmanagers[obj["projectmanager"]]["name"] + " " + projectmanagers[obj["projectmanager"]]["surname"] + "</dd>";
+                content += "<dt>PROJECT CATEGORY:</dt><dd>" + obj["category"] + "</dd>";
+                var date = new Date(null);
+                date.setSeconds(parseFloat(obj["audiodur"])); // specify value for SECONDS here
+                content += "<dt>PROJECT AUDIO DURATION:</dt><dd>" + date.toISOString().substr(11, 12) + "</dd>";
+                content += "<dt>PROJECT COLLATOR:</dt><dd>" + editors[obj["collator"]]["name"] + " " + editors[obj["collator"]]["surname"] + "</dd>";
+                content += "<dt>PROJECT ASSIGNED:</dt><dd> YES </dd></dl>";
+                content += '<div><button onclick="Project.delete_project()">Delete Project</button>&nbsp;&nbsp;<button onclick="Project.goback()">Go Back</button></div>';
+                ps.innerHTML = content;
+            }
+        }
     }
 
     // User has assigned a collator
+    var changes;
     module.assign_collator = function(id, value) {
         var obj = projects["projects"][selected];
         obj["collator"] = value;
-        changes = true;
-    }
-
-    // User has changed the projectstatus
-    module.assign_status = function(id, value) {
-        var obj = projects["projects"][selected];
-        obj["projectstatus"] = value;
         changes = true;
     }
 
@@ -579,9 +668,13 @@ var Project = (function (window, document, $, undefined) {
                 function() {
                 changes = false;
                 selected = -1;
+                addfilter();
+                showprojecttab();
                 display_projects(projects);
             }, function(){});
         } else {
+            addfilter();
+            showprojecttab();
             selected = -1;
             display_projects(projects);
         }
@@ -738,30 +831,47 @@ var Project = (function (window, document, $, undefined) {
         }
     }
 
-    // User wants to upload audio
+    // User has selected a file - check file type
     var audio_dur;
-    module.upload_audio = function() {
-        document.body.className = 'vbox viewport waiting';
+    var audio_file = null;
+    var audio_result = null;
+    module.check_audio = function() {
+        //document.body.className = 'vbox viewport waiting';
         var file = document.querySelector('input[type=file]').files[0];
         var reader = new FileReader();
 
         reader.addEventListener("load", function () {
-            // Check if audio is OGG Vorbis
-            if(file.type != "audio/ogg") {
-                alertify.alert("Only Vorbis OGG audio file format supported. Please convert your audio file before uploading!", function(){return false;});
-            }
-            // Stop user from uploading file larger than 50 Mb
-            /*if(file.size > (50*1024*1024)) {
-                alert("Audio file to large!");
-                return false;
-            }*/
-
-            save_audio(file, reader.result);
+            //save_audio(file, reader.result);
+            audio_file = file;
+            audio_result = reader.result;
+            document.getElementById("upload_btn").disabled = false;
         }, false);
 
         if (file) {
+            // Check if audio is OGG Vorbis
+            if(file.type != "audio/ogg") {
+                alertify.alert("Only Vorbis OGG audio file format supported. Please convert your audio file before uploading!", function(){});
+                audio_file = null;
+                audio_result = null;
+                return false;
+            }
+
+            // Stop user from uploading file larger than 100 Mb
+            if(file.size > (100*1024*1024)) {
+                alertify.alert("Audio file is too large -- check number of channels, sampling rate and encoding quality!", function(){});
+                audio_file = null;
+                audio_result = null;
+                return false;
+            }
+
             reader.readAsBinaryString(file);
         }
+    }
+
+    // User wants to upload an audio file
+    module.upload_audio = function() {
+        alertify.alert("Your audio file is going to be uploaded shortly. You will be returned to the project list after the upload has completed.", function(){});
+        save_audio(audio_file, audio_result);
     }
 
     // Push audio to application server
@@ -869,34 +979,110 @@ var Project = (function (window, document, $, undefined) {
         help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
         help_message += "<b>Help</b> -- provides this message.</p>";
 
-        var context;
-        context = "<fieldset><legend>New Project</legend><table class='project'>";
-        context += "<tr><td style='text-align: left;'><label>Project Name: </label></td>";
-        context += '<td><input id="projectname" name="projectname" placeholder="" type="text" maxlength="32"/></td></tr>';
-        context += '<tr><td style="text-align: left;"><label>Project Manager: </label></td><td><select id="projmansel">';
-        context += '<option value="null">Project Managers...</option>';
-        for(var key in projectmanagers) {
-            var tmp = projectmanagers[key]["name"] + " " + projectmanagers[key]["surname"];
-            context += '<option value="' + key + '">' + tmp + '</option>';
-        }
-        context += '</select></td></tr>';
+        removefilter();
+        hideprojecttab();
+        add_progress();
+        module.get_projectdetails('name');
+    }
 
-        context += '<tr><td style="text-align: left;"><label>Project Categories: </label><td><select id="catsel">';
-        context += '<option value="null">Categories...</option>';
-        for(var i = 0 ; i < categories.length; i++) {
-            var key = categories[i];
-            context += '<option value="' + key + '">' + key + '</option>';
-        }
-        context += '</select></td></tr>';
+    // Check project details and add steps progress
+    function add_progress() {
+        var ps = document.getElementById("projectspace");
+        var content = "";
 
-        context += '<tr><td><button onclick="Project.create_project()">Create Project</button></td>';
-        context += '<td style="text-align: right;"><button onclick="Project.project_cancel()">Cancel</button></td></tr></table></fieldset>';
-        ps.innerHTML = context;
+        // Project name -> project manager -> categories -> audio upload -> tasks -> assign
+        content = "<table style='border-collapse: collapse; border-spacing: 0;border: none; padding: 0;'><tr>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div id='step1'><img src='/speechui/static/one.png' width='30%' height='30%'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div><img src='/speechui/static/line.png'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div id='step2'><img src='/speechui/static/two.png' width='30%' height='30%'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div><img src='/speechui/static/line.png'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div id='step3'><img src='/speechui/static/three.png' width='30%' height='30%'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div><img src='/speechui/static/line.png'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div id='step4'><img src='/speechui/static/four.png' width='30%' height='30%'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div><img src='/speechui/static/line.png'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div id='step5'><img src='/speechui/static/five.png' width='30%' height='30%'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div><img src='/speechui/static/line.png'></div></td>";
+        content += "<td width='8%' style='text-align: center; border: none; padding: 0;'><div id='step6'><img src='/speechui/static/six.png' width='30%' height='30%'></div></td>";
+        content += "</tr></table><div id='step_prompt'></div>";
+        ps.innerHTML = content;
+    }
+
+    // Get the user to add the project details as needed in a step-by-step process
+    module.get_projectdetails = function(phase) {
+        var ps = document.getElementById("step_prompt");
+        var content;
+
+        if(phase == "name") {
+            ps.innerHTML = "";
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 1: PROJECT NAME</th></tr>";
+            content += "<tr><td><input type='text' id='projectname'/></td>";
+            content += "<td align='right'><button id='stepbutton1' onclick='Project.get_projectdetails(\"manager\")'>Next</button></td></tr></table>";
+            ps.innerHTML = content;
+        } else if(phase == "manager") {
+            var pn = document.getElementById("projectname");
+
+            if(pn.value.length == 0) {
+                alertify.alert("Please enter a project name!", function(){});
+                return false;
+            }
+            var projectname = pn.value;
+
+            var step = document.getElementById("step1");
+            step.innerHTML = "<img src='/speechui/static/one_fill.png' width='30%' height='30%'>";
+            $("#stepbutton1").remove();
+
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 2: PROJECT MANAGER</th></tr>";
+            content += '<tr><td><select id="projectmanager"><option value="null">Project Managers...</option>';
+            for(var key in projectmanagers) {
+                var tmp = projectmanagers[key]["name"] + " " + projectmanagers[key]["surname"];
+                content += '<option value="' + key + '">' + tmp + '</option>';
+            }
+            content += '</select></td>';
+            content += "<td align='right'><span id='stepbutton2'><button onclick='Project.get_projectdetails(\"category\")'>Next</button></span></td></tr></table>";
+            ps.innerHTML += content;
+            var pn = document.getElementById("projectname");
+            pn.value = projectname;
+        } else if(phase == "category") {
+            var pn = document.getElementById("projectname");
+            var pm = document.getElementById("projectmanager");
+
+            if(pm.value == "null") {
+                alertify.alert("Please enter a project manager!", function(){});
+                return false;
+            }
+            var projectname = pn.value;
+            var projectmanager = pm.value;
+
+            var step = document.getElementById("step2");
+            step.innerHTML = "<img src='/speechui/static/two_fill.png' width='30%' height='30%'>";
+            $("#stepbutton2").remove();
+
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 3: PROJECT CATEGORY</th></tr>";
+            content += '<tr><td><select id="projectcategory"><option value="null">Categories...</option>';
+            for(var i = 0 ; i < categories.length; i++) {
+                var key = categories[i];
+                content += '<option value="' + key + '">' + key + '</option>';
+            }
+            content += '</select></td>';
+            content += "<td align='right'><button id='stepbutton3' onclick='Project.get_projectdetails(\"create\")'>Next</button></td></tr></table>";
+            ps.innerHTML += content;
+            var pn = document.getElementById("projectname");
+            var pm = document.getElementById("projectmanager");
+            pn.value = projectname;
+            pm.value = projectmanager;
+        } else if(phase == "create") {
+            alertify.confirm("At this point we are going to create the project, refresh the projects, and return you to the project list after!\nIs all the project information correct?",
+                function() {
+                    module.create_project();
+                }, function(){"Project creation canceled"});
+         } else {
+           // Do nothing -- user has done something wrong
+         }
     }
 
     // Go ahead and create new project
     module.create_project = function() {
-	    projectname = document.getElementById("projectname").value;
+	    var projectname = document.getElementById("projectname").value;
 
 	    // Test if projectname set
 	    if(projectname == "") {
@@ -905,7 +1091,7 @@ var Project = (function (window, document, $, undefined) {
 	    }
 
         // Check project manager has been selected
-        var e = document.getElementById("projmansel");
+        var e = document.getElementById("projectmanager");
         var pjm = e.options[e.selectedIndex].value;
         if(pjm === "null") {
             alertify.alert("Please select a project manager!", function(){});
@@ -913,7 +1099,7 @@ var Project = (function (window, document, $, undefined) {
         }
 
         // Check project category has been selected
-        var e = document.getElementById("catsel");
+        var e = document.getElementById("projectcategory");
         var cat = e.options[e.selectedIndex].value;
         var cattext = e.options[e.selectedIndex].text;
         if(cat === "null") {
@@ -929,6 +1115,7 @@ var Project = (function (window, document, $, undefined) {
         data["category"] = cattext;
         data["projectstatus"] = "Created";
 	    appserver_send(APP_PCREATEPROJECT, data, create_projects_callback);
+        return true;
     }
 
     // Check create project application server response
@@ -1131,6 +1318,8 @@ var Project = (function (window, document, $, undefined) {
 
      // User wants to change their password
     function changepassword() {
+        removefilter();
+        hideprojecttab();
         document.getElementById("defproject").click();
 
         var ps = document.getElementById("projectspace");
@@ -1156,17 +1345,10 @@ var Project = (function (window, document, $, undefined) {
         help_message += "<b>Help</b> -- provides this message.</p>";
 
         var context;
-        context = "<fieldset><legend>New Password</legend><table class='project'>";
-        context += "<tr><td style='text-align: left;'><label>Password: </label></td>";
-        context += '<td><input id="password" name="password" placeholder="" type="password" maxlength="32"/></td></tr>';
-        context += "<tr><td style='text-align: left;'><label>Re-type Password: </label></td>";
-        context += '<td><input id="repassword" name="repassword" placeholder="" type="password" maxlength="32"/></td></tr>';
-        context += '</select></td></tr>';
-
-        context += '<tr><td><button onclick="Project.update_password()">Update Password</button></td>';
-        context += '<td style="text-align: right;"><button onclick="Project.password_cancel()">Cancel</button></td></tr></table></fieldset>';
+        context = '<dl><dt>PASSWORD: </dt><dd style="background: #ffffff;"><input id="password" name="password" placeholder="" type="password" maxlength="32"/></dd>';
+        context += '<dt>RE-TYPE PASSWORD: </dt><dd style="background: #ffffff;"><input id="repassword" name="repassword" placeholder="" type="password" maxlength="32"/></dd></dl>';
+        context += '<div><button onclick="Project.update_password()">Update Password</button> &nbsp;&nbsp;<button onclick="Project.password_cancel()">Cancel</button></div>';
         ps.innerHTML = context;
-
     }
     module.changepassword = function() { changepassword(); };
 
@@ -1228,6 +1410,8 @@ var Project = (function (window, document, $, undefined) {
 
     // User cancelled password update
     module.password_cancel = function() {
+        addfilter();
+        showprojecttab();
         display_projects(projects);
     }
 
