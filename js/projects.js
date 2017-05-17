@@ -94,7 +94,7 @@ var Project = (function (window, document, $, undefined) {
             help_message += "<p>This table shows a list <strong>owned projects</strong> and <strong>created projects</strong>. ";
             help_message += "You can change between these project types by clicking on the corresponding tabs.  ";
             help_message += "To access the project's information, click on a table row. ";
-            help_message += "Clicking on the table headings will sort the list by that heading.</p>";
+            help_message += "You can filter the projects, by typing text associated with the project or setting the filter date.</p>";
             help_message += "<h2>Project Workflow</h2>";
             help_message += "<p>A typical project creation process is as follows:<br>";
             help_message += "Create a new project.<br>";
@@ -123,7 +123,7 @@ var Project = (function (window, document, $, undefined) {
     function addfilter() {
    	    var fil = document.getElementById("filterproject");
         var content = '<table style="border: none; width: 100%;"><tr><td>';
-        content += '<input type="text" id="myInput" style="background-size: 5%; width: 80%" onkeyup="Project.filterprojects();" placeholder="Filter projects by name, surname, username or full name..." title="Type in a name, surname, username or full name"/>';
+        content += '<input type="text" id="myInput" style="background-size: 5%; width: 80%" onkeyup="Project.filterprojects();" placeholder="Filter projects by any displayed project text..." title="Type in a name, surname, username or full name"/>';
         content += '</td><td align="right"><label>Filter by Date:</label>&nbsp;<input type="date" id="myCal" onchange="Project.filterprojects();" /></td></tr></table>';
         fil.innerHTML = content;
     }
@@ -241,6 +241,7 @@ var Project = (function (window, document, $, undefined) {
                 alertify.success("Users loaded");
                 users = response_data;
                 filter_users();
+                document.body.className = 'vbox viewport';
 		    } else { 
 			    alertify.alert("LOADUSERS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
@@ -298,6 +299,7 @@ var Project = (function (window, document, $, undefined) {
                 projects = response_data;
                 display_projects(response_data);
                 document.getElementById("defproject").click();
+                document.body.className = 'vbox viewport';
 		    } else { 
 			    alertify.alert("LISTPROJECTS ERROR: " + response_data["message"], function(){});
                 document.body.className = 'vbox viewport';
@@ -526,15 +528,15 @@ var Project = (function (window, document, $, undefined) {
         help_message += "<p>A displayed of the selected project's information.</p>";
         help_message += "<h2>Project information</h2>";
         help_message += "<p>This project view shows all the project information. ";
-        help_message += "You can click on the project-related buttons, located after the project information, to perform certain actions on the projects. ";
-        help_message += "Once you have upload audio, the next step is to create tasks. After creating tasks you can assign them to the editors. ";
-        help_message += "Once assigned, you cannot access the project tasks. In this project state you can only update project information. </p>";
+        help_message += "You can click on the project-related buttons, depending on the project state, to perform certain actions on the projects. ";
+        help_message += "Once you have uploaded audio, the next step is to create tasks. After creating tasks you can assign them to the editors. ";
+        help_message += "Once assigned, you cannot access the project tasks. </p>";
 
         help_message += "<h2>Buttons</h2>";
         help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
         help_message += "<b>Create/Edit Tasks</b> -- create tasks or edit existing tasks for editors by splitting up the audio.<br>";
         help_message += "<b>Assign Tasks</b> -- assign create editor tasks to the editors. <strong>Once you have pressed the assign button you CANNOT edit created tasks.</strong><br>";
-        help_message += "<b>Update Project info</b> -- update the information of a project that has been assigned. You can only change <strong>Project Manager, Project Category and Collators</strong>.<br>";
+        //help_message += "<b>Update Project info</b> -- update the information of a project that has been assigned. You can only change <strong>Project Manager, Project Category and Collators</strong>.<br>";
         help_message += "<b>Delete Project</b> -- delete the project and remove all editor tasks.<br>";
         help_message += "<b>Clear Project Error</b> -- clear a project error so you can access the project. This may occur when a requested speech service terminated incorrectly.<br>";
         help_message += "<b>Unlock Project</b> -- unlock a project that has been locked by a requested speech service. The project will be highlighted red when locked.<br>";
@@ -966,7 +968,11 @@ var Project = (function (window, document, $, undefined) {
         help_message = "<h1>Project Manager Page</h1><hr>";
         help_message += "<p>Create a new project.</p>";
         help_message += "<h2>New Project</h2>";
-        help_message += "<p>Provide a <strong>Project Name</strong>, select a <strong>Project Manager</strong> and select a <strong>Project Category</strong>.</p> ";
+        help_message += "<p>Provide a <strong>Project Name</strong>, select a <strong>Project Manager</strong> and select a <strong>Project Category</strong>. ";
+        help_message += "An empty project will then be created an return you to the main project page. Next, you must select the project and upload project audio.";
+        help_message += "After uploading the audio you will be returned to main project page. At this stage you should create editing tasks.";
+        help_message += "Once done creating the editing tasks you can assign the tasks to the editors.</p>";
+
         help_message += "<h2>Buttons</h2>";
         help_message += "<p><b>Refresh</b> -- refresh the project list.<br>";
         help_message += "<b>Create Project</b> -- create a new project.<br>";
@@ -1015,7 +1021,7 @@ var Project = (function (window, document, $, undefined) {
         if(phase == "name") {
             ps.innerHTML = "";
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 1: PROJECT NAME</th></tr>";
-            content += "<tr><td><input type='text' id='projectname'/></td>";
+            content += "<tr><td><input type='text' name='projectname' placeholder='Enter a project name' id='projectname'/></td>";
             content += "<td align='right'><button id='stepbutton1' onclick='Project.get_projectdetails(\"manager\")'>Next</button></td></tr></table>";
             ps.innerHTML = content;
         } else if(phase == "manager") {
@@ -1345,8 +1351,8 @@ var Project = (function (window, document, $, undefined) {
         help_message += "<b>Help</b> -- provides this message.</p>";
 
         var context;
-        context = '<dl><dt>PASSWORD: </dt><dd style="background: #ffffff;"><input id="password" name="password" placeholder="" type="password" maxlength="32"/></dd>';
-        context += '<dt>RE-TYPE PASSWORD: </dt><dd style="background: #ffffff;"><input id="repassword" name="repassword" placeholder="" type="password" maxlength="32"/></dd></dl>';
+        context = '<dl><dt>PASSWORD: </dt><dd style="background: #ffffff;"><input id="password" name="password" placeholder="type password" type="password" maxlength="32"/></dd>';
+        context += '<dt>RE-TYPE PASSWORD: </dt><dd style="background: #ffffff;"><input id="repassword" name="repassword" placeholder="re-type password" type="password" maxlength="32"/></dd></dl>';
         context += '<div><button onclick="Project.update_password()">Update Password</button> &nbsp;&nbsp;<button onclick="Project.password_cancel()">Cancel</button></div>';
         ps.innerHTML = context;
     }

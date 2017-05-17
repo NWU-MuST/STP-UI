@@ -52,7 +52,7 @@ CKEDITOR.plugins.add( 'audio',
 		{
 			exec : function( editor )
 			{    
-				Editor.wavesurfer.skip(audio_skip_length);
+				Editor.wavesurfer.skip(Editor.get_audio_skip_length());
 			}
 		});
 
@@ -67,7 +67,7 @@ CKEDITOR.plugins.add( 'audio',
 		{
 			exec : function( editor )
 			{    
-				Editor.wavesurfer.skip(-audio_skip_length);
+				Editor.wavesurfer.skip(-Editor.get_audio_skip_length());
 			}
 		});
 

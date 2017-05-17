@@ -10,6 +10,8 @@ var Login = (function (window, document, $, undefined) {
 
     // Make sure user is using chrome
     function check_browser() {
+        document.body.className = 'vbox viewport';
+
 	    var is_chrome = /chrome/.test( navigator.userAgent.toLowerCase() );
 	    if((is_chrome == false) || (is_chrome == null)) {
 		    alertify.alert('Sorry you must use Chrome!', function(){});

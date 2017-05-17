@@ -13,7 +13,7 @@ var Editor = (function (window, document, $, undefined) {
 
     var wavesurfer = null;
     var timeline = null;
-    var editor_height_constant = 0.55;
+    var editor_height_constant = 0.50;
     var waveform_height_constant = 0.14;
     var waveform_width_pixel = null;
     var audio_skip_length = 5.0;
@@ -62,10 +62,21 @@ var Editor = (function (window, document, $, undefined) {
         recognize_sub = job["recognize_sub"];
         align_sub = job["align_sub"];
 
+        // Set job info
+        var ts = document.getElementById("taskinfo");
+        var content;
+        content = "<span style='padding: 1%;'><font color='#395870'>PROJECT NAME:</font> " + job["projectname"] + "</span>";
+        content += "<span style='padding: 1%;'><font color='#395870'>JOB ID:</font> " + job["taskid"] + "</span>";
+        content += "<span style='padding: 1%;'><font color='#395870'>CATEGORY:</font> " + job["category"] + "</span>";
+        content += "<span style='padding: 1%;'><font color='#395870'>LANGUAGE:</font> " + job["language"] + "</span>";
+        content += "<span style='padding: 1%;'><font color='#395870'>SPEAKER:</font> " + job["speaker"] + "</span>";
+        ts.innerHTML = content;
+
         // Initialize editor
 	    init_editor();
 	    wavesurfer = null;
     }
+
     var ck_ev = null;
     // Get CKEditor ready
     function init_editor() {
@@ -80,22 +91,20 @@ var Editor = (function (window, document, $, undefined) {
 		    extraPlugins : 'audio,inserttimemark,audiozoom,audiorate,removemustformat,allowsave,loadtext,closedocument,clearerror,diarizeaudio,recognizeaudio,alignaudio,sphlang',
 		    toolbar :
 		    [
-			    { name: 'document', items : ["Save", "Load Text"] },
-			    {name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] }, 
-			    { name: 'find', items: ["Find", "Replace", "SelectAll"] },
-
-
-			    { name: 'basicstyles', items : [ 'Bold','Italic', "Underline", "Strike", "Subscript", "Superscript" ] },
-			    { name: 'text', items: ["JustifyLeft", "JustifyCenter", "JustifyRight"] },
-			    { name: 'paragraph', items : [ 'NumberedList','BulletedList', 'Table', 'SpecialChar' ] },
-			    { name: 'fonts', items : [ 'Font','FontSize', 'TextColor', 'BGColor', 'Format' ] },
-			    '/',
 			    { name: 'audiotools', items : [ 'Backward Audio', 'Play Audio', 'Pause Audio', 'Stop Audio', 'Forward Audio'] },
 			    { name: 'timealignment', items : ['Audio Zoom', 'Audio Rate']},
 			    { name: 'timealignment', items : ['Time Mark']},
 			    { name: 'format', items : ['RemoveMustFormat']},
 			    { name: 'speechservives', items : ['sphlang', 'Create Audio Segments', 'Generate a transcription', 'Align Audio and Text']},
-			    { name: 'tools', items : [ 'Close Document', 'Clear Error', 'Source' ] }
+                '/',
+			    { name: 'document', items : ["Save", "Load Text", 'Close Document', 'Clear Error'] },
+			    { name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] }, 
+			    { name: 'find', items: ["Find", "Replace", "SelectAll"] },
+			    { name: 'basicstyles', items : [ 'Bold','Italic', "Underline", "Strike", "Subscript", "Superscript" ] },
+			    { name: 'text', items: ["JustifyLeft", "JustifyCenter", "JustifyRight"] },
+			    { name: 'paragraph', items : [ 'NumberedList','BulletedList', 'Table', 'SpecialChar' ] },
+			    { name: 'fonts', items : [ 'Font','FontSize', 'TextColor', 'BGColor', 'Format' ] },
+			    { name: 'tools', items : [ 'Source' ] }
 		    ]
 	    });
 
@@ -166,14 +175,15 @@ var Editor = (function (window, document, $, undefined) {
 
 	    wavesurfer.init({
 		    audioContext : audioCtx,
-		    container: '#waveform',
-		    waveColor: '#00FF00',
-		    progressColor: 'purple',
-		    scrollParent: true,
-		    fillParent: false,
-		    minPxPerSec: 10,
-		    height: waveform_height,
-		    pixelRatio: 1
+            container: '#waveform',
+            waveColor: 'violet',
+            progressColor: '#AAAAAA',
+            scrollParent: true,
+            fillParent: false,
+            minPxPerSec: 10,
+            height: waveform_height,
+            barHeight: 1,
+            pixelRatio: 1
 	    });
 
 	    wavesurfer.on('ready', function () {
@@ -205,7 +215,6 @@ var Editor = (function (window, document, $, undefined) {
 	    if(audio_url != null) {
 		    wavesurfer.load(audio_url);
 	    }
-
 	    waveform_width_pixel = $('#waveform_timeline').width();
     }
 
@@ -330,6 +339,11 @@ var Editor = (function (window, document, $, undefined) {
 	    wavesurfer.setPlaybackRate(seconds);
     }
     module.audio_rate_change = function(seconds) { audio_rate_change(seconds); };
+
+    // Return the audio skip length
+    module.get_audio_skip_length = function() {
+        return audio_skip_length;
+    }
 
     // User clicked on some text; adjust the position in the stream
     function text_clicked(event) {

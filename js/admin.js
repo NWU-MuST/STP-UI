@@ -97,7 +97,7 @@ var Admin = (function (window, document, $, undefined) {
     function listusers() {
         addfilter();
 
-        document.body.className = 'waiting';
+        document.body.className = 'vbox viewport waiting';
 	    var data = {};
 	    data['token'] = localStorage.getItem("token");
 	    appserver_send(APP_ALOADUSERS, data, listusers_callback);
@@ -119,6 +119,7 @@ var Admin = (function (window, document, $, undefined) {
                 alertify.success("Users loaded");
                 users = response_data;
                 populate_users(response_data);
+                document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
 			    alertify.alert("LISTUSERS ERROR: " + reponse_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
                 document.body.className = 'vbox viewport';
@@ -171,7 +172,8 @@ var Admin = (function (window, document, $, undefined) {
         help_message += "<h2>User list table</h2>";
         help_message += "<p>This table shows a list of registered users.";
         help_message += "You can click on a user's row to access more information pertaining to that user. ";
-        help_message += "Clicking on the table headings will sort the list by that heading.</p>";
+        help_message += "To filter the number of users, type the name, surname, full name or username to filter the users</p>";
+
         help_message += "<h2>Navigation</h2>";
         help_message += "<p><b>Home</b> -- return you to the Home page.<br>";
         help_message += "<b>Refresh Users</b> -- refresh the user's display list.<br>";
@@ -350,7 +352,7 @@ var Admin = (function (window, document, $, undefined) {
             role = EDITOR_ROLE;
         }
 
-        document.body.className = 'waiting';
+        document.body.className = 'vbox viewport waiting';
 	    var data = {};
 	    data["token"] = localStorage.token;
         data["name"] = info.name;
@@ -405,7 +407,7 @@ var Admin = (function (window, document, $, undefined) {
 
     // Delete user from application server
     function remove_user(ndx) {
-        document.body.className = 'waiting';
+        document.body.className = 'vbox viewport waiting';
 	    var data = {};
 	    data["token"] = localStorage.token;
         data["username"] = udisplay[selected][2];
@@ -421,6 +423,7 @@ var Admin = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
+                document.body.className = 'vbox viewport';
                 alertify.success("User has been deleted");
                 listusers();
 		    } else { // Something unexpected happened
@@ -448,7 +451,7 @@ var Admin = (function (window, document, $, undefined) {
 
     // Ask app server to reset the password
     function reset_user(ndx) {
-        document.body.className = 'waiting';
+        document.body.className = 'vbox viewport waiting';
 	    var data = {};
         data["username"] = udisplay[selected][2];
 	    appserver_send(APP_PRESETPASSWORD, data, reset_user_callback);

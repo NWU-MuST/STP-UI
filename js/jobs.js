@@ -11,6 +11,7 @@ var Jobs = (function (window, document, $, undefined) {
     var align_sub;
     var notset = ["null", null, undefined];
     var help_message = "";
+    var active_job_view = null;
 
     // Make sure user is using chrome
     function check_browser() {
@@ -89,7 +90,7 @@ var Jobs = (function (window, document, $, undefined) {
             help_message += "<p>This table shows a list <strong>Editing Jobs</strong> and <strong>Collator Jobs</strong>. ";
             help_message += "You can change between these editing types by clicking on the corresponding tabs.  ";
             help_message += "To access the editing jobs's information, click on a table row. ";
-            help_message += "Clicking on the table headings will sort the job list by that heading.</p>";
+            help_message += "Filter the jobs by typing job text or selecting a filter by date.</p>";
             help_message += "<h2>Editor Workflow</h2>";
             help_message += "<p>A typical editor workflow is as follows:<br>";
             help_message += "Select a job and transcribe the associated audio.<br>";
@@ -130,11 +131,49 @@ var Jobs = (function (window, document, $, undefined) {
             help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
             help_message += "<b>Help</b> -- provides this message.</p>";
         }
+        active_job_view = jobName;
+    }
+
+    // Add filter results input
+    function addfilter() {
+   	    var fil = document.getElementById("filterjob");
+        var content = '<table style="border: none; width: 100%;"><tr><td>';
+        content += '<input type="text" id="myInput" style="background-size: 5%; width: 80%" onkeyup="Jobs.filterjobs();" placeholder="Filter jobs by text..." title="Type in a name, surname, username or full name"/>';
+        content += '</td><td align="right"><label>Filter by Date:</label>&nbsp;<input type="date" id="myCal" onchange="Jobs.filterjobs();" /></td></tr></table>';
+        fil.innerHTML = content;
+    }
+
+    // Remove filter results input
+    function removefilter() {
+   	    var fil = document.getElementById("filterjob");
+        fil.innerHTML = "";
+    }
+
+    // show the job tab
+    function showjobtab() {
+   	    var tab = document.getElementById("jobtab");
+        tab.style.display = "block";
+        tab.style.border = "1px solid #ccc";
+
+   	    var tab = document.getElementById("jobspace");
+        tab.style.borderTop = "none";
+    }
+
+    // hide the job tab
+    function hidejobtab() {
+   	    var tab = document.getElementById("jobtab");
+        tab.style.display = "none";
+        tab.style.border = "none";
+
+   	    var tab = document.getElementById("jobspace");
+        tab.style.borderTop = "1px solid #ccc";
     }
 
     // Get assigned tasks
     function get_jobs() {
         document.body.className = 'vbox viewport waiting';
+        addfilter();
+        showjobtab();
 	    var data = {};
 	    data["token"] = localStorage.token;
 	    appserver_send(APP_ELOADTASKS, data, jobs_callback);
@@ -321,11 +360,97 @@ var Jobs = (function (window, document, $, undefined) {
         }
     }
 
-    // Selected a column to sort by
-    var esort = 0;
-    module.sortselect = function(tag) {
-        esort = tag;
-        display_editor(editing);
+   // Filter list as user types
+    module.filterjobs = function() {
+        if(active_job_view == "jobspace") {
+            display_editor(editing);
+        } else {
+            display_collator(collating);
+        }
+    }
+
+    // Zero pad a string
+    function pad(string, size) {
+        var s = string.toString();
+        while (s.length < (size || 2)) {s = "0" + s;}
+        return s;
+    }
+
+    // Do a search for sub string in name, surname and username
+    function searchcheck(obj, editor) {
+        var input, filter, cal, select_date;
+        input = document.getElementById("myInput");
+        if(input === undefined) { return false; }
+        filter = input.value.toUpperCase();
+
+        select_date = document.getElementById("myCal");
+        if(select_date === undefined) { return false; }
+
+        function checksearchstring() {
+            // Search through job details
+            var items = ["projectname", "category", "editing"];
+            for(var ndx = 0; ndx < items.length; ndx++) {
+                if(notset.indexOf(obj[items[ndx]]) === -1) {
+                    if (obj[items[ndx]].toUpperCase().indexOf(filter) > -1) {
+                        return true;
+                    }
+                }
+            }
+
+            if (parseInt(obj["taskid"]) == parseInt(filter)) { return true; }
+
+            if (editor.toUpperCase().indexOf(filter) > -1) { return true; }
+
+            // Include string version of the date
+            if(obj["completed"] != null) {
+                var d = new Date();
+                d.setTime(parseFloat(obj["completed"])*1000.0);
+                var ds = d.toDateString();
+                if (ds.toUpperCase().indexOf(filter) > -1) { return true; }
+            }
+
+            var d = new Date();
+            d.setTime(parseFloat(obj["creation"])*1000.0);
+            var ds = d.toDateString();
+            if (ds.toUpperCase().indexOf(filter) > -1) { return true; }
+
+            return false;
+        }
+        var ssr = checksearchstring();
+
+        // User may be filtering by date picker
+        if(obj["completed"] != null) {
+            var d = new Date();
+            d.setTime(parseFloat(obj["completed"])*1000.0);
+            if(select_date.value.length > 0) {
+                jobdate = d.getFullYear() + "-" + pad(d.getMonth()+1, 2) + "-" + pad(d.getDate(), 2);
+                if(jobdate == select_date.value) {
+                    if(ssr === true) {
+                        return true;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        }
+
+        var d = new Date();
+        d.setTime(parseFloat(obj["creation"])*1000.0);
+        if(select_date.value.length > 0) {
+            jobdate = d.getFullYear() + "-" + pad(d.getMonth()+1, 2) + "-" + pad(d.getDate(), 2);
+            console.log(jobdate);
+            console.log(select_date.value);
+            console.log(ssr);
+            if(jobdate == select_date.value) {
+                if(ssr === true) {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        return ssr;
     }
 
     // Display owned projects
@@ -336,59 +461,59 @@ var Jobs = (function (window, document, $, undefined) {
             edisplay = [];
             for (var i = 0, len = data.length; i < len; i++) {
                 var obj = data[i];
-                edisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["speaker"], parseFloat(obj["creation"]), parseFloat(obj["modified"]), parseFloat(obj["completed"]), obj["errstatus"]]);
+                edisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["creation"], parseFloat(obj["completed"])]);
             }
 
             // Sort projects by time
-            edisplay.sort(function(a, b){
-                return a[esort+1] > b[esort+1] ? 1 : -1;
-            });
+            edisplay.sort(function(a, b){ return a[1] > b[1] ? 1 : -1; });
 
             var context;
             var oldprojectname = "";
             context = "<table class='project'>";
 
-            context += "<tr><th onclick='Jobs.sortselect(1)'>Task ID</th> <th onclick='Jobs.sortselect(2)'>Category</th> <th onclick='Jobs.sortselect(3)'>Editing</th> <th onclick='Jobs.sortselect(4)'>Speaker</th>";
-            context += "<th onclick='Jobs.sortselect(5)'>Created</th> <th onclick='Jobs.sortselect(6)'>Modified</th> <th onclick='Jobs.sortselect(7)'>Completed</th> <th onclick='Jobs.sortselect(8)'> Error Status</th> </tr>";
+            context += "<tr><th> JOBS </th></tr>";
+            var prev_proj = "";
             for (var i = 0, len = edisplay.length; i < len; i++) {
                 var obj = data[edisplay[i][0]];
 
-                if(oldprojectname != obj["projectname"]) { 
-                    context += "<tr><td bgcolor='#CCCCCC' colspan='8' onclick='Jobs.sortselect(0)'>Project Name: " + obj["projectname"] + "</td></tr>";
-                    oldprojectname = obj["projectname"];
-                }
-
-                context += "<tr onclick='Jobs.editor_selected("+ edisplay[i][0] +")'";
-                if(notset.indexOf(obj["jobid"]) === -1) {
-                    context += ' style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
-                } else {
-                    context += ">";
-                }
-
-                context += "<td>" + obj["taskid"] + "</td>";
-                context += "<td>" + obj["category"] + "</td>";
-                var editing = "Missing Editor";
+                var editor = "Missing Editor";
                 if(users.hasOwnProperty(obj["editing"])) {
-                    editing = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
+                    editor = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
                 }
-                context += "<td>" + editing + "</td>";
-                context += "<td>" + obj["speaker"] + "</td>";
 
-                var d = new Date();
-                d.setTime(parseFloat(obj["creation"])*1000.0);
-                context += "<td>" + d.toDateString() + "</td>";
-                var d = new Date();
-                d.setTime(parseFloat(obj["modified"])*1000.0);
-                context += "<td>" + d.toDateString() + "</td>";
+                var result = searchcheck(obj, editor);
+                if(result === true) {
+                    context += "<tr onclick='Jobs.editor_selected("+ edisplay[i][0] +")'>";
+                } else {
+                    context += "<tr style='display: none;' onclick='Jobs.editor_selected("+ edisplay[i][0] +")'>";
+                }
+                if(prev_proj != obj["projectname"]) {
+                    context += "<td><strong style='color: #395870;'>" + obj["projectname"] + "</strong> <span class='text-offset' style='padding: none;'><table><tr>";
+                    prev_proj = obj["projectname"];
+                } else {
+                    context += "<td><strong style='color: #395870;'></strong> <span class='text-offset' style='padding: none;'><table><tr>";
+                }
 
-                if(obj["completed"] != null) {
+                if(notset.indexOf(obj["jobid"]) === -1) {
+                    context += '<td><strong>This project is locked while a speech job is running</strong></td></tr></table></span></td></tr>';
+                } else if(notset.indexOf(obj["errstatus"]) === -1) {
+                    context += '<td style="color: red;">ERRSTATUS: <strong>' + obj["errstatus"] +'</strong></td></tr></table></span></td></tr>';
+                } else {
+                    context += "<td style='border: none;'> JOB ID: <strong>" + obj["taskid"] + "</strong></td>";
+                    context += "<td style='border: none;'> CATEGORY: <strong>" + obj["category"] + "</strong></td>";
+                    context += "<td style='border: none;'> EDITING: <strong>" + editor + "</strong></td>";
                     var d = new Date();
-                    d.setTime(parseFloat(obj["completed"])*1000.0);
-                    context += "<td>" + d.toDateString() + "</td>";
-                } else { 
-                    context += "<td>Not completed</td>";
+                    d.setTime(parseFloat(obj["creation"])*1000.0);
+                    context += "<td style='border: none;'>CREATED: <strong>" + d.toDateString() + "</strong></td>";
+
+                    if(obj["completed"] != null) {
+                        var d = new Date();
+                        d.setTime(parseFloat(obj["completed"])*1000.0);
+                        context += "<td style='border: none;'>COMPLETED: <strong>" + d.toDateString() + "</strong></td></tr></table></span></td></tr>";
+                    } else {
+                        context += "<td style='border: none;'>COMPLETED: <strong> Not Completed </strong></td></tr></table></span></td></tr>";
+                    }
                 }
-                context += "<td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
             }
             context += "</table>";
             js.innerHTML = context;
@@ -398,14 +523,7 @@ var Jobs = (function (window, document, $, undefined) {
         document.body.className = 'vbox viewport';
     }
 
-    // Selected a column to sort by
-    var csort = 0;
-    module.csortselect = function(tag) {
-        csort = tag;
-        display_collator(collating);
-    }
-
-    // Display owned projects
+    // Display collator jobs
     var cdisplay;
     function display_collator(data) {
         var cs = document.getElementById("collatorspace");
@@ -414,57 +532,60 @@ var Jobs = (function (window, document, $, undefined) {
             cdisplay = [];
             for (var i = 0, len = data.length; i < len; i++) {
                 var obj = data[i];
-                cdisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["speaker"], parseFloat(obj["creation"]), parseFloat(obj["modified"]), parseFloat(obj["completed"]), obj["errstatus"]]);
+                cdisplay.push([i, obj["projectname"], obj["taskid"], obj["category"], obj["editing"], obj["creation"], parseFloat(obj["completed"])]);
             }
 
             // Sort projects by time
-            cdisplay.sort(function(a, b){
-                return a[esort+1] > b[esort+1] ? 1 : -1;
-            });
+            cdisplay.sort(function(a, b){ return a[1] > b[1] ? 1 : -1; });
 
             var context;
             var oldprojectname = "";
             context = "<table class='project'>";
-            context += "<tr><th onclick='Jobs.csortselect(1)'>Task ID</th> <th onclick='Jobs.csortselect(2)'>Category</th> <th onclick='Jobs.csortselect(3)'>Editing</th> <th onclick='Jobs.csortselect(4)'>Speaker</th>";
-            context += "<th onclick='Jobs.csortselect(5)'>Created</th> <th onclick='Jobs.csortselect(6)'>Modified</th> <th onclick='Jobs.csortselect(7)'>Completed</th> <th onclick='Jobs.csortselect(8)'> Error Status</th> </tr>";
+
+            context += "<tr><th> JOBS </th></tr>";
+            var prev_proj = "";
             for (var i = 0, len = cdisplay.length; i < len; i++) {
                 var obj = data[cdisplay[i][0]];
 
-                if(oldprojectname != obj["projectname"]) { 
-                    context += "<tr><td bgcolor='#CCCCCC' colspan='6' onclick='Jobs.sortselect(0)'>Project Name: " + obj["projectname"] + "</td>";
-                    context += "<td bgcolor='#CCCCCC' colspan='2'><button onclick='Jobs.masterfile("+ cdisplay[i][0] +")'>Master Document</button></td></tr>";
-                    oldprojectname = obj["projectname"];
-                }
-
-                context += "<tr onclick='Jobs.collator_selected("+ cdisplay[i][0] +")'";
-                if(notset.indexOf(obj["jobid"]) === -1) {
-                    context += ' style="outline: none; border-color: #ff0000; box-shadow: 0 0 10px #ff0000;">';
-                } else {
-                    context += ">";
-                }
-                context += "<td>" + obj["taskid"] + "</td>";
-                context += "<td>" + obj["category"] + "</td>";
-                var editing = "Missing Editor";
+                var editor = "Missing Editor";
                 if(users.hasOwnProperty(obj["editing"])) {
-                    editing = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
+                    editor = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
                 }
-                context += "<td>" + editing + "</td>";
-                context += "<td>" + obj["speaker"] + "</td>";
 
-                var d = new Date();
-                d.setTime(parseFloat(obj["creation"])*1000.0);
-                context += "<td>" + d.toDateString() + "</td>";
-                var d = new Date();
-                d.setTime(parseFloat(obj["modified"])*1000.0);
-                context += "<td>" + d.toDateString() + "</td>";
-                if(obj["completed"] != null) {
-                    var d = new Date();
-                    d.setTime(parseFloat(obj["completed"])*1000.0);
-                    context += "<td>" + d.toDateString() + "</td>";
-                } else { 
-                    context += "<td>Not completed</td>";
+                var result = searchcheck(obj, editing);
+                if(result === true) {
+                    context += "<tr onclick='Jobs.collator_selected("+ cdisplay[i][0] +")'>";
+                } else {
+                    context += "<tr style='display: none;' onclick='Jobs.collator_selected("+ cdisplay[i][0] +")'>";
                 }
-                context += "<td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
+                if(prev_proj != obj["projectname"]) {
+                    context += "<td><strong style='color: #395870;'>" + obj["projectname"] + "</strong> <button style='float: right;' onclick='Jobs.masterfile("+ cdisplay[i][0] +")'>Download Master Document</button>";
+                    context += "<span class='text-offset' style='padding: none;'><table><tr>";
+                    prev_proj = obj["projectname"];
+                } else {
+                    context += "<td><strong style='color: #395870;'></strong> <span class='text-offset' style='padding: none;'><table><tr>";
+                }
+
+                if(notset.indexOf(obj["jobid"]) === -1) {
+                    context += '<td><strong>This project is locked while a speech job is running</strong></td></tr></table></span></td></tr>';
+                } else if(notset.indexOf(obj["errstatus"]) === -1) {
+                    context += '<td style="color: red;">ERRSTATUS: <strong>' + obj["errstatus"] +'</strong></td></tr></table></span></td></tr>';
+                } else {
+                    context += "<td style='border: none;'> JOB ID: <strong>" + obj["taskid"] + "</strong></td>";
+                    context += "<td style='border: none;'> CATEGORY: <strong>" + obj["category"] + "</strong></td>";
+                    context += "<td style='border: none;'> EDITING: <strong>" + editor + "</strong></td>";
+                    var d = new Date();
+                    d.setTime(parseFloat(obj["creation"])*1000.0);
+                    context += "<td style='border: none;'>CREATED: <strong>" + d.toDateString() + "</strong></td>";
+
+                    if(obj["completed"] != null) {
+                        var d = new Date();
+                        d.setTime(parseFloat(obj["completed"])*1000.0);
+                        context += "<td style='border: none;'>COMPLETED: <strong>" + d.toDateString() + "</strong></td></tr></table></span></td></tr>";
+                    } else {
+                        context += "<td style='border: none;'>COMPLETED: <strong> Not Completed </strong></td></tr></table></span></td></tr>";
+                    }
+                }
             }
             context += "</table>";
             cs.innerHTML = context;
@@ -477,6 +598,8 @@ var Jobs = (function (window, document, $, undefined) {
     // User selected editing job and set eselected variable
     var eselected;
     module.editor_selected = function(i) {
+        removefilter();
+        hidejobtab();
         var js = document.getElementById("jobspace");
         js.innerHTML = "";
         var obj = editing[i];
@@ -506,38 +629,63 @@ var Jobs = (function (window, document, $, undefined) {
         help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
         help_message += "<b>Help</b> -- provides this message.</p>";
 
-        var context;
-        context = "<fieldset><legend>Job</legend><table class='project'>";
-        context += "<tr><td><label>Project Name:</label></td> <td> " + obj["projectname"] + "</td> </tr>";
-        context += "<tr><td><label>Job ID:</label></td> <td> " + obj["taskid"] + "</td> </tr>";
-        context += "<tr><td><label>Project Category:</label></td> <td> " + obj["category"] + "</td> </tr>";
-        context += "<tr><td><label>Current Editor:</label></td> <td> " + obj["editing"] + "</td> </tr>";
-        context += "<tr><td><label>Language:</label></td> <td> " + obj["language"] + "</td> </tr>";
-        context += "<tr><td><label>Job Speaker:</label></td> <td> " + obj["speaker"] + "</td> </tr>";
-        var d = new Date();
-        d.setTime(parseFloat(obj["creation"])*1000.0);
-        context += "<tr><td><label>Job Created:</label></td> <td>" + d.toDateString() + "</td></tr>";
-        var d = new Date();
-        d.setTime(parseFloat(obj["modified"])*1000.0);
-        context += "<tr><td><label>Job Modified:</label></td> <td>" + d.toDateString() + "</td></tr>";
-        if(obj["completed"] != null) {
+        var content;
+        js.innerHTML = "";
+
+        if(notset.indexOf(obj["errstatus"]) === -1) {
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
+            content += "<dl>";
+            content += "<dt style='background: #ff0000;'>JOB ERROR STATUS:</dt><dd>" + obj["errstatus"] + "</dd>";
+            content += '<button onclick="Jobs.clearerror_jobs()">Clear Job Error</button>&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button></div>';
+        } else if(notset.indexOf(obj["jobid"]) === -1) {
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
+            content += "<dl>";
+            content += "<dt style='background: #ff0000;'>JOB LOCKED BY CURRENTLY RUNNING SPEECH JOB</dt><dd>" + obj["errstatus"] + "</dd>";
+            content += '<button onclick="Jobs.unlock_jobs(0)">Unlock Job</button>&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button></div>';
+        } else {
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr>";
+            content += "<td><strong style='color: #395870;'> AUDIO DETAILS </strong> <span class='text-offset' style='padding: none;'><table><tr>";
+            content += "<td style='border: none;'> CATEGORY: <strong>" + obj["category"] + "</strong></td>";
+            content += "<td style='border: none;'> LANGUAGE: <strong>" + obj["language"] + "</strong></td>";
+            content += "<td style='border: none;'> SPEAKER: <strong>" + obj["speaker"] + "</strong></td>";
+            content += "</tr></table></span></td></tr>";
+
+            var editor = "Missing Editor";
+            if(users.hasOwnProperty(obj["editing"])) {
+                editor = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
+            }
+            content += "<td><strong style='color: #395870;'> JOB DETAILS </strong> <span class='text-offset' style='padding: none;'><table><tr>";
+            content += "<td style='border: none;'> EDITING: <strong>" + editor + "</strong></td>";
+            content += "<td style='border: none;'> JOB ID: <strong>" + obj["taskid"] + "</strong></td>";
             var d = new Date();
-            d.setTime(parseFloat(obj["completed"])*1000.0);
-            context += "<tr><td><label>Job Completion:</label></td> <td>" + d.toDateString() + "</td></tr>";
-        } else { 
-            context += "<tr><td><label>Job Completion:</label></td> <td>Not completed</td></tr>";
+            d.setTime(parseFloat(obj["creation"])*1000.0);
+            content += "<td style='border: none;'> CREATION DATE: <strong>" + d.toDateString() + "</strong></td>";
+            var d = new Date();
+            d.setTime(parseFloat(obj["modified"])*1000.0);
+            content += "<td style='border: none;'> LAST MODIFIED: <strong>" + d.toDateString() + "</strong></td>";
+
+            if(obj["completed"] != null) {
+                var d = new Date();
+                d.setTime(parseFloat(obj["completed"])*1000.0);
+                content += "<td style='border: none;'> DATE COMPLETED: <strong>" + d.toDateString() + "</strong></td>";
+            } else { 
+                content += "<td style='border: none;'> DATE COMPLETED: <strong> NOT COMPLETED </strong></td>";
+            }
+            content += "</tr></table></span></td></tr></table>";
+
+        content += '<button onclick="Jobs.edit_job(0)">Edit Job </button> <button onclick="Jobs.job_done()">Set Job Done </button>';
+        content += '&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button>';
         }
-        context += "<tr><td><label>Job Error Status:</label></td> <td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
-        context += '</table></fieldset><br><hr><br> <button onclick="Jobs.edit_job(0)">Edit Job </button> <button onclick="Jobs.job_done()">Set Job Done </button>';
-        context += '<button onclick="Jobs.clearerror_job(0)">Clear Job Error</button> <button onclick="Jobs.unlock_job(0)">Unlock Job</button> ';
-        context += '&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button>';
-        js.innerHTML = context;
+        js.innerHTML = content;
         document.body.className = 'vbox viewport';
     }
 
     // User selected editing job and set eselected variable
     var cselected;
     module.collator_selected = function(i) {
+        removefilter();
+        hidejobtab();
+
         var cs = document.getElementById("collatorspace");
         cs.innerHTML = "";
         var obj = collating[i];
@@ -567,7 +715,57 @@ var Jobs = (function (window, document, $, undefined) {
         help_message += "<b>Logout</b> -- logout and return to the Home page.<br>";
         help_message += "<b>Help</b> -- provides this message.</p>";
 
-        var context;
+        var content;
+        cs.innerHTML = "";
+
+        if(notset.indexOf(obj["errstatus"]) === -1) {
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
+            content += "<dl>";
+            content += "<dt style='background: #ff0000;'>JOB ERROR STATUS:</dt><dd>" + obj["errstatus"] + "</dd>";
+            content += '<button onclick="Jobs.clearerror_jobs()">Clear Job Error</button>&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button></div>';
+        } else if(notset.indexOf(obj["jobid"]) === -1) {
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
+            content += "<dl>";
+            content += "<dt style='background: #ff0000;'>JOB LOCKED BY CURRENTLY RUNNING SPEECH JOB</dt><dd>" + obj["errstatus"] + "</dd>";
+            content += '<button onclick="Jobs.unlock_jobs(1)">Unlock Job</button>&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button></div>';
+        } else {
+            content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr>";
+            content += "<td><strong style='color: #395870;'> AUDIO DETAILS </strong> <span class='text-offset' style='padding: none;'><table><tr>";
+            content += "<td style='border: none;'> CATEGORY: <strong>" + obj["category"] + "</strong></td>";
+            content += "<td style='border: none;'> LANGUAGE: <strong>" + obj["language"] + "</strong></td>";
+            content += "<td style='border: none;'> SPEAKER: <strong>" + obj["speaker"] + "</strong></td>";
+            content += "</tr></table></span></td></tr>";
+
+            var editor = "Missing Editor";
+            if(users.hasOwnProperty(obj["editing"])) {
+                editor = users[obj["editing"]]["name"] + " " + users[obj["editing"]]["surname"];
+            }
+            content += "<td><strong style='color: #395870;'> JOB DETAILS </strong> <span class='text-offset' style='padding: none;'><table><tr>";
+            content += "<td style='border: none;'> EDITING: <strong>" + editor + "</strong></td>";
+            content += "<td style='border: none;'> JOB ID: <strong>" + obj["taskid"] + "</strong></td>";
+            var d = new Date();
+            d.setTime(parseFloat(obj["creation"])*1000.0);
+            content += "<td style='border: none;'> CREATION DATE: <strong>" + d.toDateString() + "</strong></td>";
+            var d = new Date();
+            d.setTime(parseFloat(obj["modified"])*1000.0);
+            content += "<td style='border: none;'> LAST MODIFIED: <strong>" + d.toDateString() + "</strong></td>";
+
+            if(obj["completed"] != null) {
+                var d = new Date();
+                d.setTime(parseFloat(obj["completed"])*1000.0);
+                content += "<td style='border: none;'> DATE COMPLETED: <strong>" + d.toDateString() + "</strong></td>";
+            } else { 
+                content += "<td style='border: none;'> DATE COMPLETED: <strong> NOT COMPLETED </strong></td>";
+            }
+            content += "</tr></table></span></td></tr></table>";
+
+        content += '<button onclick="Jobs.edit_job(1)">Edit Job </button> <button onclick="Jobs.reassign_job()">Re-assign Job </button>';
+        content += '&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button>';
+        }
+        cs.innerHTML = content;
+        document.body.className = 'vbox viewport';
+
+        /*var context;
         context = "<fieldset><legend>Job</legend><table class='project'>";
         context += "<tr><td><label>Project Name:</label></td> <td> " + obj["projectname"] + "</td> </tr>";
         context += "<tr><td><label>Job ID:</label></td> <td> " + obj["taskid"] + "</td> </tr>";
@@ -593,7 +791,7 @@ var Jobs = (function (window, document, $, undefined) {
         context += '<button onclick="Jobs.clearerror_job(1)">Clear Job Error</button> <button onclick="Jobs.unlock_job(1)">Unlock Job</button> ';
         context += '&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button>';
         cs.innerHTML = context;
-        document.body.className = 'vbox viewport';
+        document.body.className = 'vbox viewport';*/
     }
 
     // Go edit a selected job
@@ -636,6 +834,8 @@ var Jobs = (function (window, document, $, undefined) {
 
     // Go back to listing projects
     module.goback = function(type) {
+        addfilter();
+        showjobtab();
         if(type == 0) {
             eselected = -1;
             display_editor(editing);
@@ -685,6 +885,7 @@ var Jobs = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Job marked as done");
+                get_jobs();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
 			    alertify.alert("TASKDONE ERROR: " + response_data["message"], function(){});
@@ -738,6 +939,7 @@ var Jobs = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Job reassigned to editor");
+                get_jobs();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
 			    alertify.alert("REASSIGNTASK ERROR: " + response_data["message"], function(){});
@@ -903,6 +1105,9 @@ var Jobs = (function (window, document, $, undefined) {
 
     // User wants to change their password
     function changepassword() {
+        removefilter();
+        hidejobtab();
+
         document.getElementById("defjob").click();
 
         var ps = document.getElementById("jobspace");
@@ -927,15 +1132,11 @@ var Jobs = (function (window, document, $, undefined) {
         help_message += "<b>Help</b> -- provides this message.</p>";
 
         var context;
-        context = "<fieldset><legend>New Password</legend><table class='project'>";
-        context += "<tr><td style='text-align: left;'><label>Password: </label></td>";
-        context += '<td><input id="password" name="password" placeholder="" type="password" maxlength="32"/></td></tr>';
-        context += "<tr><td style='text-align: left;'><label>Re-type Password: </label></td>";
-        context += '<td><input id="repassword" name="repassword" placeholder="" type="password" maxlength="32"/></td></tr>';
-        context += '</select></td></tr>';
 
-        context += '<tr><td><button onclick="Jobs.update_password()">Update Password</button></td>';
-        context += '<td style="text-align: right;"><button onclick="Jobs.password_cancel()">Cancel</button></td></tr></table></fieldset>';
+        var context;
+        context = '<dl><dt>PASSWORD: </dt><dd style="background: #ffffff;"><input id="password" name="password" placeholder="Type password" type="password" maxlength="32"/></dd>';
+        context += '<dt>RE-TYPE PASSWORD: </dt><dd style="background: #ffffff;"><input id="repassword" name="repassword" placeholder="Re-type password" type="password" maxlength="32"/></dd></dl>';
+        context += '<div><button onclick="Jobs.update_password()">Update Password</button> &nbsp;&nbsp;<button onclick="Jobs.password_cancel()">Cancel</button></div>';
         ps.innerHTML = context;
 
     }
@@ -982,7 +1183,7 @@ var Jobs = (function (window, document, $, undefined) {
 		    // Logout application was successful
 		    if(xmlhttp.status==200) {
 			    alertify.alert("Password updated!", function(){});
-                get_projects();
+                get_jobs();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
 			    alertify.alert("CHANGEPASSWORD ERROR: " + response_data["message"] + "\n(Status: " + xmlhttp.status + ")", function(){});
@@ -998,6 +1199,8 @@ var Jobs = (function (window, document, $, undefined) {
 
     // User cancelled password update
     module.password_cancel = function() {
+        addfilter();
+        showjobtab();
         display_editor(editing);
     }
 

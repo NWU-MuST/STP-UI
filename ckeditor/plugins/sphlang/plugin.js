@@ -9,8 +9,8 @@ CKEDITOR.plugins.add( 'sphlang',
      // Create style objects for all defined styles.
       editor.ui.addRichCombo( 'sphlang',
          {
-            label : "Langauge",
-            title :"Langauge",
+            label : "Language",
+            title :"Language",
             voiceLabel : "Audio Language",
             className : 'cke_format',
             multiSelect : false,
