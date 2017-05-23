@@ -7,6 +7,7 @@ var Login = (function (window, document, $, undefined) {
     $(document).on( 'ready', check_browser );
 
     var help_message = "";
+    var KEY_ENTER = 13;
 
     // Make sure user is using chrome
     function check_browser() {
@@ -50,7 +51,7 @@ var Login = (function (window, document, $, undefined) {
         document.getElementById("password")
             .addEventListener("keyup", function(event) {
             event.preventDefault();
-            if (event.keyCode == 13) {
+            if (event.keyCode == KEY_ENTER) {
                 document.getElementById("dologin").click();
             }
         });
@@ -92,9 +93,7 @@ var Login = (function (window, document, $, undefined) {
 	    }
 
 	    // Return if errorFlag has been set
-	    if(errorFlag) {
-		    return;
-	    }
+	    if(errorFlag) { return; }
 
         var role = localStorage.getItem("role");
         var APP_LOGIN, NOW_ROLE;
@@ -178,9 +177,7 @@ var Login = (function (window, document, $, undefined) {
 	    }
 
 	    // Return if errorFlag has been set
-	    if(errorFlag) {
-		    return;
-	    }
+	    if(errorFlag) { return; }
 
         var role = localStorage.getItem("role");
         var APP_LOGOUT2;

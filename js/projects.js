@@ -10,6 +10,9 @@ var Project = (function (window, document, $, undefined) {
     var notset = ["null", null, undefined];
     var help_message = "";
     var active_project_view = null;
+    var GUI_STATE = "LS";
+    var REFRESH_TIME = 5000;
+    var TIMER = null;
 
     // Make sure user is using chrome
     function check_browser() {
@@ -53,6 +56,19 @@ var Project = (function (window, document, $, undefined) {
         }
     }
 
+    // Set the timer to refresh the project list
+    function refresh_timer() {
+        if((GUI_STATE == "LS")&&(TIMER == null)) {
+            //alertify.success("SETTING TIMER");
+            TIMER = setTimeout(function(){ get_all_projects(); }, REFRESH_TIME);
+        }
+    }
+
+    // Clear the timer
+    function clear_timer() {
+        if(TIMER != null) { clearTimeout(TIMER); TIMER = null; } //alertify.success("CLEAR TIMER"); }
+    }
+
     // Redirect the user to the homepage
     module.home = function() {
         alertify.confirm('You will be redirected to the Home page. Leave anyway?',
@@ -62,6 +78,7 @@ var Project = (function (window, document, $, undefined) {
         	        localStorage.setItem(items[ndx], '');
         	        localStorage.removeItem(items[ndx]);
                 }
+                clear_timer();
 	            window.location.assign(HOME_URL);
         }, function(){alertify.error("Redirect to the Home page canceled")});
     }
@@ -270,20 +287,28 @@ var Project = (function (window, document, $, undefined) {
 
     // Get projects owned by this user
     function get_projects() {
-        addfilter();
-        showprojecttab();
-        document.body.className = 'vbox viewport waiting';
-	    var data = {};
-	    data["token"] = localStorage.token;
-	    appserver_send(APP_PLISTPROJECTS, data, projects_callback);
+        if(GUI_STATE == "LS") {
+            clear_timer();
+            addfilter();
+            showprojecttab();
+            document.body.className = 'vbox viewport waiting';
+	        var data = {};
+	        data["token"] = localStorage.token;
+	        appserver_send(APP_PLISTPROJECTS, data, projects_callback);
+        }
     }
 
     // Get all projects
     function get_all_projects() {
+        clear_timer();
+        GUI_STATE = "LS";
         get_projects();
         get_createdprojects();
     }
-    module.get_all_projects = function() { get_all_projects(); };
+
+    module.get_all_projects = function() {
+        get_all_projects();
+    };
 
     // Project application server response
     var projects;
@@ -295,7 +320,7 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Retrieved Projects");
+                //alertify.success("Retrieved Projects");
                 projects = response_data;
                 display_projects(response_data);
                 document.getElementById("defproject").click();
@@ -314,10 +339,12 @@ var Project = (function (window, document, $, undefined) {
 
     // Get all projects created by this user
     function get_createdprojects() {
-        document.body.className = 'vbox viewport waiting';
-	    var data = {};
-	    data["token"] = localStorage.token;
-	    appserver_send(APP_PLISTCREATEDPROJECTS, data, createdprojects_callback);
+        if(GUI_STATE == "LS") {
+            document.body.className = 'vbox viewport waiting';
+    	    var data = {};
+    	    data["token"] = localStorage.token;
+    	    appserver_send(APP_PLISTCREATEDPROJECTS, data, createdprojects_callback);
+        }
     }
 
     // Project application server response
@@ -330,7 +357,7 @@ var Project = (function (window, document, $, undefined) {
 	    if ((xmlhttp.readyState==4) && (xmlhttp.status != 0)) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
-                alertify.success("Retrieved create projects");
+                //alertify.success("Retrieved create projects");
                 created_projects = response_data;
                 display_createdprojects(response_data);
 		    } else { 
@@ -459,6 +486,7 @@ var Project = (function (window, document, $, undefined) {
                 }
             }
             context += "</table>";
+            refresh_timer();
         } else {
             context = "<p>No projects</p>";
         }
@@ -512,6 +540,7 @@ var Project = (function (window, document, $, undefined) {
             }
             context += "</table>";
             cps.innerHTML = context;
+            refresh_timer();
         } else {
             cps.innerHTML = "<p>No projects</p>";
         }
@@ -521,6 +550,8 @@ var Project = (function (window, document, $, undefined) {
     // User selected project and set selected variable
     var selected;
     module.project_selected = function(i) {
+        GUI_STATE = "PS";
+        clear_timer();
         var obj = projects["projects"][i];
         selected = i;
 
@@ -668,6 +699,7 @@ var Project = (function (window, document, $, undefined) {
         if(changes) {
             alertify.confirm('There are unsaved changes to this project. Leave anyway?',
                 function() {
+                GUI_STATE = "LS";
                 changes = false;
                 selected = -1;
                 addfilter();
@@ -675,6 +707,7 @@ var Project = (function (window, document, $, undefined) {
                 display_projects(projects);
             }, function(){});
         } else {
+            GUI_STATE = "LS";
             addfilter();
             showprojecttab();
             selected = -1;
@@ -708,6 +741,7 @@ var Project = (function (window, document, $, undefined) {
         localStorage.setItem("project", JSON.stringify(obj));
         localStorage.setItem("editors", JSON.stringify(editors));
         localStorage.setItem("languages", JSON.stringify(languages));
+        clear_timer();
 	    window.location.assign(TASK_URL);
     }
 
@@ -759,6 +793,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Project updated");
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -819,6 +854,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
 			    alertify.success("Tasks assigned to Editors");
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -960,6 +996,8 @@ var Project = (function (window, document, $, undefined) {
 
     // Get details for a new project
     module.new_project = function() {
+        GUI_STATE = "NP"
+        clear_timer();
         var ps = document.getElementById("projectspace");
         ps.innerHTML = "";
 
@@ -1079,6 +1117,7 @@ var Project = (function (window, document, $, undefined) {
         } else if(phase == "create") {
             alertify.confirm("At this point we are going to create the project, refresh the projects, and return you to the project list after!\nIs all the project information correct?",
                 function() {
+                    GUI_STATE = "LS";
                     module.create_project();
                 }, function(){"Project creation canceled"});
          } else {
@@ -1134,6 +1173,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Project Created");
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1150,6 +1190,7 @@ var Project = (function (window, document, $, undefined) {
 
     // User cancelled new project - display current list
     module.project_cancel = function() {
+        GUI_STATE = "LS";
         display_projects(projects);
     }
 
@@ -1186,6 +1227,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Project Deleted");
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1225,6 +1267,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Error cleared");
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1269,6 +1312,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Unlocked project!");
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1308,6 +1352,7 @@ var Project = (function (window, document, $, undefined) {
         	        localStorage.setItem(items[ndx], '');
         	        localStorage.removeItem(items[ndx]);
                 }
+                clear_timer();
                 document.body.className = 'vbox viewport';
         		window.location.assign(HOME_URL);
 		    } else { // Something unexpected happened
@@ -1324,6 +1369,8 @@ var Project = (function (window, document, $, undefined) {
 
      // User wants to change their password
     function changepassword() {
+        GUI_STATE = "CP";
+        clear_timer();
         removefilter();
         hideprojecttab();
         document.getElementById("defproject").click();
@@ -1400,6 +1447,7 @@ var Project = (function (window, document, $, undefined) {
 		    // Logout application was successful
 		    if(xmlhttp.status==200) {
 			    alertify.alert("Password updated!", function(){});
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1416,6 +1464,7 @@ var Project = (function (window, document, $, undefined) {
 
     // User cancelled password update
     module.password_cancel = function() {
+        GUI_STATE = "LS";
         addfilter();
         showprojecttab();
         display_projects(projects);

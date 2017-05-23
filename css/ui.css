@@ -70,10 +70,12 @@ or how little, content is in place. Neither is "right" or "wrong", there
 are valid cases for each. I just want to be clear what's controlling the
 page/viewport height.
 */
+
 html, body, .viewport {
     width: 100%;
     height: 100%;
     margin: 0;
+    font-family: 'Roboto', sans-serif;
 }
 
 /* encapsulate the various syntax in helper clases */
