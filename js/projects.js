@@ -11,7 +11,7 @@ var Project = (function (window, document, $, undefined) {
     var help_message = "";
     var active_project_view = null;
     var GUI_STATE = "LS";
-    var REFRESH_TIME = 5000;
+    var REFRESH_TIME = 10000;
     var TIMER = null;
 
     // Make sure user is using chrome

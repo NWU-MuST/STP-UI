@@ -12,6 +12,9 @@ var Jobs = (function (window, document, $, undefined) {
     var notset = ["null", null, undefined];
     var help_message = "";
     var active_job_view = null;
+    var GUI_STATE = "LS";
+    var REFRESH_TIME = 10000;
+    var TIMER = null;
 
     // Make sure user is using chrome
     function check_browser() {
@@ -48,6 +51,19 @@ var Jobs = (function (window, document, $, undefined) {
         } else {
             return string;
         }
+    }
+
+    // Set the timer to refresh the project list
+    function refresh_timer() {
+        if((GUI_STATE == "LS")&&(TIMER == null)) {
+            //alertify.success("SETTING TIMER");
+            TIMER = setTimeout(function(){ get_jobs(); }, REFRESH_TIME);
+        }
+    }
+
+    // Clear the timer
+    function clear_timer() {
+        if(TIMER != null) { clearTimeout(TIMER); TIMER = null; }//alertify.success("CLEAR TIMER"); }
     }
 
     // Redirect the user to the homepage
@@ -171,12 +187,14 @@ var Jobs = (function (window, document, $, undefined) {
 
     // Get assigned tasks
     function get_jobs() {
-        document.body.className = 'vbox viewport waiting';
-        addfilter();
-        showjobtab();
-	    var data = {};
-	    data["token"] = localStorage.token;
-	    appserver_send(APP_ELOADTASKS, data, jobs_callback);
+        if(GUI_STATE == "LS") {
+            document.body.className = 'vbox viewport waiting';
+            addfilter();
+            showjobtab();
+	        var data = {};
+	        data["token"] = localStorage.token;
+	        appserver_send(APP_ELOADTASKS, data, jobs_callback);
+        }
     }
     module.get_jobs = function() { get_jobs(); };
 
@@ -198,7 +216,7 @@ var Jobs = (function (window, document, $, undefined) {
                 display_editor(editing);
                 display_collator(collating);
                 document.getElementById("defjob").click();
-                alertify.success("Jobs loaded");
+                //alertify.success("Jobs loaded");
                 document.body.className = 'vbox viewport';
 		    } else { 
 			    alertify.alert("LOADTASKS ERROR: " + response_data["message"], function(){});
@@ -438,9 +456,9 @@ var Jobs = (function (window, document, $, undefined) {
         d.setTime(parseFloat(obj["creation"])*1000.0);
         if(select_date.value.length > 0) {
             jobdate = d.getFullYear() + "-" + pad(d.getMonth()+1, 2) + "-" + pad(d.getDate(), 2);
-            console.log(jobdate);
-            console.log(select_date.value);
-            console.log(ssr);
+            //console.log(jobdate);
+            //console.log(select_date.value);
+            //console.log(ssr);
             if(jobdate == select_date.value) {
                 if(ssr === true) {
                     return true;
@@ -517,6 +535,7 @@ var Jobs = (function (window, document, $, undefined) {
             }
             context += "</table>";
             js.innerHTML = context;
+            refresh_timer();
         } else {
             js.innerHTML = "<p>No editing jobs</p>";
         }
@@ -589,6 +608,7 @@ var Jobs = (function (window, document, $, undefined) {
             }
             context += "</table>";
             cs.innerHTML = context;
+            refresh_timer();
         } else {
             cs.innerHTML = "<p>No collating jobs</p>";
         }
@@ -598,6 +618,8 @@ var Jobs = (function (window, document, $, undefined) {
     // User selected editing job and set eselected variable
     var eselected;
     module.editor_selected = function(i) {
+        GUI_STATE = "JS";
+        clear_timer();
         removefilter();
         hidejobtab();
         var js = document.getElementById("jobspace");
@@ -683,6 +705,8 @@ var Jobs = (function (window, document, $, undefined) {
     // User selected editing job and set eselected variable
     var cselected;
     module.collator_selected = function(i) {
+        GUI_STATE = "CS";
+        clear_timer();
         removefilter();
         hidejobtab();
 
@@ -764,34 +788,6 @@ var Jobs = (function (window, document, $, undefined) {
         }
         cs.innerHTML = content;
         document.body.className = 'vbox viewport';
-
-        /*var context;
-        context = "<fieldset><legend>Job</legend><table class='project'>";
-        context += "<tr><td><label>Project Name:</label></td> <td> " + obj["projectname"] + "</td> </tr>";
-        context += "<tr><td><label>Job ID:</label></td> <td> " + obj["taskid"] + "</td> </tr>";
-        context += "<tr><td><label>Project Category:</label></td> <td> " + obj["category"] + "</td> </tr>";
-        context += "<tr><td><label>Current Editor:</label></td> <td> " + obj["editing"] + "</td> </tr>";
-        context += "<tr><td><label>Language:</label></td> <td> " + obj["language"] + "</td> </tr>";
-        context += "<tr><td><label>Job Speaker:</label></td> <td> " + obj["speaker"] + "</td> </tr>";
-        var d = new Date();
-        d.setTime(parseFloat(obj["creation"])*1000.0);
-        context += "<tr><td><label>Job Created:</label></td> <td>" + d.toDateString() + "</td></tr>";
-        var d = new Date();
-        d.setTime(parseFloat(obj["modified"])*1000.0);
-        context += "<tr><td><label>Job Modified:</label></td> <td>" + d.toDateString() + "</td></tr>";
-        if(obj["completed"] != null) {
-            var d = new Date();
-            d.setTime(parseFloat(obj["completed"])*1000.0);
-            context += "<tr><td><label>Job Completion:</label></td> <td>" + d.toDateString() + "</td></tr>";
-        } else { 
-            context += "<tr><td><label>Job Completion:</label></td> <td>Not completed</td></tr>";
-        }
-        context += "<tr><td><label>Job Error Status:</label></td> <td> " + normnull(obj["errstatus"], "No Error") + " </td></tr>";
-        context += '</table></fieldset><br><hr><br> <button onclick="Jobs.edit_job(1)">Edit Job </button> <button onclick="Jobs.reassign_job()">Re-assign Job </button>';
-        context += '<button onclick="Jobs.clearerror_job(1)">Clear Job Error</button> <button onclick="Jobs.unlock_job(1)">Unlock Job</button> ';
-        context += '&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button>';
-        cs.innerHTML = context;
-        document.body.className = 'vbox viewport';*/
     }
 
     // Go edit a selected job
@@ -828,6 +824,7 @@ var Jobs = (function (window, document, $, undefined) {
         obj["recongize_sub"] = recognize_sub;
         obj["align_sub"] = align_sub;
 
+        clear_timer();
         localStorage.setItem("job", JSON.stringify(obj)); 
 	    window.location.assign(EDITOR_URL);
     }
@@ -837,9 +834,11 @@ var Jobs = (function (window, document, $, undefined) {
         addfilter();
         showjobtab();
         if(type == 0) {
+            GUI_STATE = "LS";
             eselected = -1;
             display_editor(editing);
         } else {
+            GUI_STATE = "LS";
             cselected = -1;
             display_collator(collating);
         }
@@ -885,6 +884,7 @@ var Jobs = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Job marked as done");
+                GUI_STATE = "LS";
                 get_jobs();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -939,6 +939,7 @@ var Jobs = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Job reassigned to editor");
+                GUI_STATE = "LS";
                 get_jobs();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1105,6 +1106,8 @@ var Jobs = (function (window, document, $, undefined) {
 
     // User wants to change their password
     function changepassword() {
+        GUI_STATE = "CP";
+        clear_timer();
         removefilter();
         hidejobtab();
 
@@ -1183,6 +1186,7 @@ var Jobs = (function (window, document, $, undefined) {
 		    // Logout application was successful
 		    if(xmlhttp.status==200) {
 			    alertify.alert("Password updated!", function(){});
+                GUI_STATE = "LS";
                 get_jobs();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1199,6 +1203,7 @@ var Jobs = (function (window, document, $, undefined) {
 
     // User cancelled password update
     module.password_cancel = function() {
+        GUI_STATE = "LS";
         addfilter();
         showjobtab();
         display_editor(editing);
