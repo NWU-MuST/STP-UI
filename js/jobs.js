@@ -658,7 +658,7 @@ var Jobs = (function (window, document, $, undefined) {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
             content += "<dl>";
             content += "<dt style='background: #ff0000;'>JOB ERROR STATUS:</dt><dd>" + obj["errstatus"] + "</dd>";
-            content += '<button onclick="Jobs.clearerror_jobs()">Clear Job Error</button>&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button></div>';
+            content += '<button onclick="Jobs.clearerror_job()">Clear Job Error</button>&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button></div>';
         } else if(notset.indexOf(obj["jobid"]) === -1) {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
             content += "<dl>";
@@ -746,7 +746,7 @@ var Jobs = (function (window, document, $, undefined) {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
             content += "<dl>";
             content += "<dt style='background: #ff0000;'>JOB ERROR STATUS:</dt><dd>" + obj["errstatus"] + "</dd>";
-            content += '<button onclick="Jobs.clearerror_jobs()">Clear Job Error</button>&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button></div>';
+            content += '<button onclick="Jobs.clearerror_job()">Clear Job Error</button>&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button></div>';
         } else if(notset.indexOf(obj["jobid"]) === -1) {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
             content += "<dl>";
