@@ -58,6 +58,7 @@ var Editor = (function (window, document, $, undefined) {
         localStorage.setItem("taskid", job["taskid"]);
         speech_service_language = job["language"];
         languages = job["languages"];
+        languages.sort();
         diarize_sub = job["diarize_sub"];
         recognize_sub = job["recognize_sub"];
         align_sub = job["align_sub"];
@@ -419,7 +420,7 @@ var Editor = (function (window, document, $, undefined) {
 
     // User has changed the language
     module.set_speech_language = function(value) {
-        alertify.success("Langauge set to: " + value);
+        alertify.success("Language set to: " + value);
         speech_service_language = value;
     }
 

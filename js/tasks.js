@@ -567,15 +567,22 @@ var Tasks = (function (window, document, $, undefined) {
                 }
 
                 shtml += '<tr ><td> ' + ndx + ' </td> <td>'+ region.formatTime(region.start, region.end) +'</td>';
-                shtml += '<td ><select id="editor_'+ key +'" onchange="Tasks.assign_editor(this.id,this.value)">';
+                shtml += '<td ><select style="width: 100%;" id="editor_'+ key +'" onchange="Tasks.assign_editor(this.id,this.value)">';
                 shtml += '<option value="null">Editor...</option>';
+                var ed_users = [];
+                var ed_key = {};
                 for(var edit in editors) {
                     var name = editors[edit]["name"] + " " + editors[edit]["surname"];
-                    shtml += '<option value="'+ edit +'">'+ name +'</option>';
+                    ed_key[name] = edit;
+                    ed_users.push(name);
+                }
+                ed_users.sort();
+                for(var ndx = 0; ndx < ed_users.length; ndx++) {
+                    shtml += '<option value="'+ ed_key[ed_users[ndx]] +'">'+ ed_users[ndx] +'</option>';
                 }
                 shtml += '</select></td>';
 
-                shtml += '<td><select id="lang_'+ key +'" onchange="Tasks.assign_lang(this.id,this.value)">';
+                shtml += '<td><select style="width: 100%" id="lang_'+ key +'" onchange="Tasks.assign_lang(this.id,this.value)">';
                 shtml += '<option value="null">Language...</option>';
                 for(var i = 0; i < languages.length; i++) {
                     shtml += '<option value="'+ languages[i] +'">'+ languages[i] +'</option>';

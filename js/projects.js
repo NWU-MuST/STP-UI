@@ -222,6 +222,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 languages = response_data["languages"];
+                languages.sort();
                 document.body.className = 'vbox viewport';
 		    } else { 
 			    alertify.alert("LANGUAGES ERROR: " + response_data["message"], function(){});
@@ -637,9 +638,16 @@ var Project = (function (window, document, $, undefined) {
                         content += "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 6: PROJECT COLLATOR ASSIGNMENT</th></tr><tr><td>";
                         content += "<select id='colsel' onchange='Project.assign_collator(this.id,this.value)'>";
                         content += '<option value="null">Collators...</option>';
+                        var ed_users = [];
+                        var ed_key = {};
                         for(var key in editors) {
                             var tmp = editors[key]["name"] + " " + editors[key]["surname"];
-                            content += '<option value="' + key + '">' + tmp + '</option>';
+                            ed_users.push(tmp);
+                            ed_key[tmp] = key;
+                        }
+                        ed_users.sort();
+                        for(var ndx = 0; ndx < ed_users.length; ndx++) {
+                            content += '<option value="' + ed_key[ed_users[ndx]] + '">' + ed_users[ndx] + '</option>';
                         }
                         content += "</select></td><td><button onclick='Project.assign_tasks()'>Assign Tasks</button></td></tr></table>";
                     }
@@ -980,6 +988,7 @@ var Project = (function (window, document, $, undefined) {
 		    var response_data = JSON.parse(xmlhttp.responseText);
 		    if(xmlhttp.status==200) {
                 alertify.success("Audio Uploaded");
+                GUI_STATE = "LS";
                 get_projects();
                 document.body.className = 'vbox viewport';
 		    } else { // Something unexpected happened
@@ -1077,9 +1086,16 @@ var Project = (function (window, document, $, undefined) {
 
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 2: PROJECT MANAGER</th></tr>";
             content += '<tr><td><select id="projectmanager"><option value="null">Project Managers...</option>';
+            var pj_users = [];
+            var pj_key = {};
             for(var key in projectmanagers) {
                 var tmp = projectmanagers[key]["name"] + " " + projectmanagers[key]["surname"];
-                content += '<option value="' + key + '">' + tmp + '</option>';
+                pj_users.push(tmp);
+                pj_key[tmp] = key;
+            }
+            pj_users.sort();
+            for(var ndx = 0; ndx < pj_users.length; ndx++) {
+                content += '<option value="' + pj_key[pj_users[ndx]] + '">' + pj_users[ndx] + '</option>';
             }
             content += '</select></td>';
             content += "<td align='right'><span id='stepbutton2'><button onclick='Project.get_projectdetails(\"category\")'>Next</button></span></td></tr></table>";
@@ -1091,7 +1107,7 @@ var Project = (function (window, document, $, undefined) {
             var pm = document.getElementById("projectmanager");
 
             if(pm.value == "null") {
-                alertify.alert("Please enter a project manager!", function(){});
+                alertify.alert("Please select a project manager!", function(){});
                 return false;
             }
             var projectname = pn.value;
@@ -1103,10 +1119,12 @@ var Project = (function (window, document, $, undefined) {
 
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>STEP 3: PROJECT CATEGORY</th></tr>";
             content += '<tr><td><select id="projectcategory"><option value="null">Categories...</option>';
+
             for(var i = 0 ; i < categories.length; i++) {
                 var key = categories[i];
                 content += '<option value="' + key + '">' + key + '</option>';
             }
+
             content += '</select></td>';
             content += "<td align='right'><button id='stepbutton3' onclick='Project.get_projectdetails(\"create\")'>Next</button></td></tr></table>";
             ps.innerHTML += content;
@@ -1115,6 +1133,24 @@ var Project = (function (window, document, $, undefined) {
             pn.value = projectname;
             pm.value = projectmanager;
         } else if(phase == "create") {
+            var pn = document.getElementById("projectname");
+            var pm = document.getElementById("projectmanager");
+            var pc = document.getElementById("projectcategory");
+            if(pc.value == "null") {
+                alertify.alert("Please select a project category!", function(){});
+                return false;
+            }
+            var projectname = pn.value;
+            var projectmanager = pm.value;
+            var projectcategory = pc.value;
+
+            var pn = document.getElementById("projectname");
+            var pm = document.getElementById("projectmanager");
+            var pc = document.getElementById("projectcategory");
+            pn.value = projectname;
+            pm.value = projectmanager;
+            pc.value = projectcategory;
+
             alertify.confirm("At this point we are going to create the project, refresh the projects, and return you to the project list after!\nIs all the project information correct?",
                 function() {
                     GUI_STATE = "LS";
@@ -1148,7 +1184,7 @@ var Project = (function (window, document, $, undefined) {
         var cat = e.options[e.selectedIndex].value;
         var cattext = e.options[e.selectedIndex].text;
         if(cat === "null") {
-            alertify.alert("Please select a project category", function(){});
+            alertify.alert("Please select a project category!", function(){});
             return false;
         }
 
