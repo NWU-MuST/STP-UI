@@ -12,7 +12,7 @@ CKEDITOR.plugins.add( 'audio',
 
 		editor.ui.addButton( 'Play Audio',
 		{
-			label: 'Start audio playback',
+			label: 'Start Audio Playback',
 			command: 'start_audio_play',
 			icon: this.path + 'images/play.png'
 		} );
@@ -27,7 +27,7 @@ CKEDITOR.plugins.add( 'audio',
 
 		editor.ui.addButton( 'Stop Audio',
 		{
-			label: 'Stop audio playback',
+			label: 'Stop Audio Playback',
 			command: 'stop_audio_play',
 			icon: this.path + 'images/stop.png'
 		} );
@@ -42,7 +42,7 @@ CKEDITOR.plugins.add( 'audio',
 
 		editor.ui.addButton( 'Pause Audio',
 		{
-			label: 'Pause audio playback',
+			label: 'Pause Audio Playback',
 			command: 'pause_audio_play',
 			icon: this.path + 'images/pause.png'
 		} );
@@ -58,7 +58,7 @@ CKEDITOR.plugins.add( 'audio',
 
 		editor.ui.addButton( 'Forward Audio',
 		{
-			label: 'Skip forward',
+			label: 'Skip Forward',
 			command: 'forward_audio_play',
 			icon: this.path + 'images/ff.png'
 		} );
@@ -73,7 +73,7 @@ CKEDITOR.plugins.add( 'audio',
 
 		editor.ui.addButton( 'Backward Audio',
 		{
-			label: 'Skip backwards',
+			label: 'Skip Backwards',
 			command: 'backward_audio_play',
 			icon: this.path + 'images/rewind.png'
 		} );

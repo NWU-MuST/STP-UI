@@ -16,7 +16,7 @@ CKEDITOR.plugins.add( 'inserttimemark',
 
 		editor.ui.addButton( 'Time Mark',
 		{
-			label: 'Add time mark',
+			label: 'Add Time Mark',
 			command: 'add_time_mark',
 			icon: this.path + 'images/time-marker.png'
 		} );

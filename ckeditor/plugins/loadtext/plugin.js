@@ -12,7 +12,7 @@ CKEDITOR.plugins.add( 'loadtext',
 
 		editor.ui.addButton( 'Load Text',
 		{
-			label: 'Load text from server',
+			label: 'Load Text From Server',
 			command: 'load_text',
 			icon: this.path + 'images/load.png'
 		} );
