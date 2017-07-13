@@ -97,7 +97,7 @@ var Editor = (function (window, document, $, undefined) {
 			    { name: 'timealignment', items : ['Audio Zoom', 'Audio Rate']},
 			    { name: 'timealignment', items : ['Time Mark']},
 			    { name: 'format', items : ['RemoveMustFormat']},
-			    { name: 'speechservives', items : ['sphlang', 'Create Audio Segments', 'Generate a transcription', 'Align Audio and Text']},
+			    { name: 'speechservives', items : ['sphlang', 'Create Audio Segments', 'Generate A Transcription', 'Align Audio and Text']},
                 '/',
 			    { name: 'document', items : ["Save", "Load Text", 'Close Document', 'Clear Error'] },
 			    { name: 'clipboard', items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] }, 
