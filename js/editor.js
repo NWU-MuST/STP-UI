@@ -71,6 +71,10 @@ var Editor = (function (window, document, $, undefined) {
         content += "<span style='padding: 1%;'><font color='#395870'>CATEGORY:</font> " + job["category"] + "</span>";
         content += "<span style='padding: 1%;'><font color='#395870'>LANGUAGE:</font> " + job["language"] + "</span>";
         content += "<span style='padding: 1%;'><font color='#395870'>SPEAKER:</font> " + job["speaker"] + "</span>";
+		var ddate = new Date(1970,0,1);
+		ddate.setSeconds(parseFloat(job["start"]));
+		var display_time = ddate.getHours() + ':' + ddate.getMinutes() + ':' + ddate.getSeconds();
+        content += "<span style='padding: 1%;'><font color='#395870'>START TIME:</font> " + display_time + "</span>";
         content += "<span style='padding: 1%;'><button style='padding: 0px; margin: 0px; font: 0.9em;' onclick='Editor.close_save()'>Go Back</button> </span>";
         ts.innerHTML = content;
 
