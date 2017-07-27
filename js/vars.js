@@ -5,7 +5,7 @@ String.prototype.insertAt=function(index, string) {
 
 //APP SERVER URLs
 // ADMIN
-var ABASE_URL = "http://rkv-must1.puk.ac.za/app/admin"
+var ABASE_URL = "http://127.0.0.1/app/admin"
 var APP_ALOGIN = ABASE_URL + "/login";
 var APP_ALOGOUT = ABASE_URL + "/logout";
 var APP_ALOGOUT2 = ABASE_URL + "/logout2";
@@ -15,7 +15,7 @@ var APP_AADDUSER = ABASE_URL + "/adduser";
 var APP_ADELUSER = ABASE_URL + "/deluser";
 
 // PROJECT
-var PBASE_URL = "http://rkv-must1.puk.ac.za/app/projects"
+var PBASE_URL = "http://127.0.0.1/app/projects"
 var APP_PLOGIN = PBASE_URL + "/login";
 var APP_PLOGOUT = PBASE_URL + "/logout";
 var APP_PLOGOUT2 = PBASE_URL + "/logout2";
@@ -39,7 +39,7 @@ var APP_PCLEARERROR = PBASE_URL + "/clearerror";
 var APP_PCHANGEPASSWORD = PBASE_URL + "/changepassword";
 
 // EDITOR
-var EBASE_URL = "http://rkv-must1.puk.ac.za/app/editor"
+var EBASE_URL = "http://127.0.0.1/app/editor"
 var APP_ELOGIN = EBASE_URL + "/login";
 var APP_ELOGOUT = EBASE_URL + "/logout";
 var APP_ELOGOUT2 = EBASE_URL + "/logout2";
