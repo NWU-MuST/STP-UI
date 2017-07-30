@@ -493,7 +493,7 @@ var Editor = (function (window, document, $, undefined) {
     // Save text and close the editor
     module.close_save = function() {
         if(CKEDITOR.instances.trans_editor.checkDirty() == true) {
-            alertify.confirm('Redirecting you back to the Jobs page. Leave anyway?',
+            alertify.confirm('There are unsaved changes. Leave anyway?',
                 function() {
                    var items = ["taskid", "projectid", "job"];
                     for(var ndx = 0; ndx < items.length; items++) {
