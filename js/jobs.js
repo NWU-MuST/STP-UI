@@ -663,7 +663,7 @@ var Jobs = (function (window, document, $, undefined) {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
             content += "<dl>";
             content += "<dt style='background: #ff0000;'>JOB LOCKED BY CURRENTLY RUNNING SPEECH JOB</dt><dd>" + obj["errstatus"] + "</dd>";
-            content += '<button onclick="Jobs.unlock_jobs(0)">Unlock Job</button>&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button></div>';
+            content += '<button onclick="Jobs.unlock_job(0)">Unlock Job</button>&nbsp;&nbsp;<button onclick="Jobs.goback(0)">Go Back</button></div>';
         } else {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr>";
             content += "<td><strong style='color: #395870;'> AUDIO DETAILS </strong> <span class='text-offset' style='padding: none;'><table><tr>";
@@ -751,7 +751,7 @@ var Jobs = (function (window, document, $, undefined) {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr></table>";
             content += "<dl>";
             content += "<dt style='background: #ff0000;'>JOB LOCKED BY CURRENTLY RUNNING SPEECH JOB</dt><dd>" + obj["errstatus"] + "</dd>";
-            content += '<button onclick="Jobs.unlock_jobs(1)">Unlock Job</button>&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button></div>';
+            content += '<button onclick="Jobs.unlock_job(1)">Unlock Job</button>&nbsp;&nbsp;<button onclick="Jobs.goback(1)">Go Back</button></div>';
         } else {
             content = "<table class='project'><tr><th colspan='2' style='background-color: #4CAF50; color: white;'>" + obj["projectname"] + "</th></tr>";
             content += "<td><strong style='color: #395870;'> AUDIO DETAILS </strong> <span class='text-offset' style='padding: none;'><table><tr>";
